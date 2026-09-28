@@ -91,8 +91,47 @@ if (spySections.length && 'IntersectionObserver' in window) {
   spySections.forEach((s) => so.observe(s));
 }
 
+// ── Titulares palabra por palabra ───────────────────────────────────────────
+// Envuelve cada palabra en <span class="sw"><span>…</span></span> conservando
+// los elementos internos (p. ej. <span class="text-neon">).
+if (!reduceMotion) {
+  document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
+    let w = 0;
+    const walk = (node: Node) => {
+      Array.from(node.childNodes).forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          const parts = (child.textContent ?? '').split(/(\s+)/);
+          const frag = document.createDocumentFragment();
+          parts.forEach((part) => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) return frag.append(document.createTextNode(part));
+            const outer = document.createElement('span');
+            outer.className = 'sw';
+            const inner = document.createElement('span');
+            inner.style.setProperty('--w', String(w++));
+            inner.textContent = part;
+            outer.append(inner);
+            frag.append(outer);
+          });
+          child.replaceWith(frag);
+        } else if (
+          child.nodeType === Node.ELEMENT_NODE &&
+          (child as Element).tagName !== 'BR' &&
+          !(child as Element).hasAttribute('data-nosplit')
+        ) {
+          walk(child);
+        }
+      });
+    };
+    el.setAttribute('aria-label', el.innerText.replace(/\s+/g, ' ').trim());
+    walk(el);
+    el.querySelectorAll('.sw').forEach((s) => s.setAttribute('aria-hidden', 'true'));
+    el.classList.add('is-split');
+  });
+}
+
 // ── Scroll reveal ───────────────────────────────────────────────────────────
-const revealables = document.querySelectorAll<HTMLElement>('[data-reveal]');
+const revealables = document.querySelectorAll<HTMLElement>('[data-reveal], [data-split], [data-draw]');
 if ('IntersectionObserver' in window && !reduceMotion) {
   const io = new IntersectionObserver(
     (entries) => {
@@ -108,6 +147,15 @@ if ('IntersectionObserver' in window && !reduceMotion) {
   revealables.forEach((el) => io.observe(el));
 } else {
   revealables.forEach((el) => el.classList.add('is-visible'));
+}
+
+// ── Animaciones continuas sólo mientras están en pantalla ──────────────────
+const lives = document.querySelectorAll<HTMLElement>('[data-live]');
+if ('IntersectionObserver' in window) {
+  const lo = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-live', e.isIntersecting)));
+  lives.forEach((el) => lo.observe(el));
+} else {
+  lives.forEach((el) => el.classList.add('is-live'));
 }
 
 // ── Contadores animados ─────────────────────────────────────────────────────
@@ -169,3 +217,61 @@ document.querySelectorAll<HTMLElement>('.before-after').forEach((root) => {
     update();
   });
 });
+
+// ── Efectos de cursor (sólo punteros finos y sin reducción de movimiento) ──
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (finePointer && !reduceMotion) {
+  // Spotlight + inclinación 3D en tarjetas
+  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
+    const tilt = card.hasAttribute('data-tilt');
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--mx', `${x * 100}%`);
+      card.style.setProperty('--my', `${y * 100}%`);
+      if (tilt) {
+        card.style.setProperty('--rx', `${(0.5 - y) * 7}deg`);
+        card.style.setProperty('--ry', `${(x - 0.5) * 7}deg`);
+      }
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--rx', '0deg');
+      card.style.setProperty('--ry', '0deg');
+    });
+  });
+
+  // Botones magnéticos
+  document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((btn) => {
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty('--mag-x', `${(e.clientX - r.left - r.width / 2) * 0.1}px`);
+      btn.style.setProperty('--mag-y', `${(e.clientY - r.top - r.height / 2) * 0.25}px`);
+    });
+    btn.addEventListener('pointerleave', () => {
+      btn.style.setProperty('--mag-x', '0px');
+      btn.style.setProperty('--mag-y', '0px');
+    });
+  });
+
+  // Hero: luz que sigue al cursor + profundidad en elementos flotantes
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const layers = hero.querySelectorAll<HTMLElement>('[data-depth]');
+    let raf = 0;
+    hero.addEventListener('pointermove', (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = hero.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        hero.style.setProperty('--sx', `${x * 100}%`);
+        hero.style.setProperty('--sy', `${y * 100}%`);
+        layers.forEach((l) => {
+          const d = Number(l.dataset.depth) || 10;
+          l.style.transform = `translate3d(${(x - 0.5) * -d}px, ${(y - 0.5) * -d}px, 0)`;
+        });
+      });
+    });
+  }
+}

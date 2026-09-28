@@ -11,8 +11,10 @@ interface Props {
   class?: string;
   /** Identificador para analítica (atributo data-cta). */
   cta?: string;
+  /** Atrae el botón hacia el cursor (escritorio). */
+  magnetic?: boolean;
 }
-const { message, label = 'Agendar por WhatsApp', variant = 'primary', size = 'md', class: className = '', cta } = Astro.props;
+const { message, label = 'Agendar por WhatsApp', variant = 'primary', size = 'md', class: className = '', cta, magnetic = size === 'lg' } = Astro.props;
 ---
 
 <a
@@ -21,6 +23,7 @@ const { message, label = 'Agendar por WhatsApp', variant = 'primary', size = 'md
   rel="noopener"
   class:list={['btn', variant === 'primary' ? 'btn-primary' : 'btn-ghost', size === 'lg' && 'btn-lg', className]}
   data-cta={cta}
+  data-magnetic={magnetic || undefined}
 >
   <Icon name="whatsapp" size={size === 'lg' ? 20 : 18} />
   <span>{label}</span>

@@ -99,8 +99,7 @@ export const site = {
     license: 'Céd. Prof. por confirmar',
     // PLACEHOLDER: bio provisional, reemplazar con la del doctor.
     bio: [
-      'Al frente de Dental MX, el Dr. Contreras combina la precisión clínica con un trato cercano: explica cada paso, resuelve dudas sin prisa y diseña planes de tratamiento a la medida de cada paciente y de cada presupuesto.',
-      'Su enfoque es preventivo y familiar: que niños, jóvenes y adultos se sientan en confianza desde la primera visita.',
+      'Combina precisión clínica con trato cercano: explica cada paso y diseña planes a la medida de cada paciente y presupuesto.',
     ],
     // PLACEHOLDER: ruta a foto real, p. ej. '/img/doctor.jpg' (vacío = marco provisional).
     photo: '',
@@ -126,8 +125,11 @@ export type Service = {
   slug: string;
   name: string;
   icon: IconName;
+  /** Una línea: qué es. */
   short: string;
+  /** Descripción ampliada (datos estructurados / SEO). */
   description: string;
+  /** Para quién es, en etiquetas cortas. */
   forWho: string[];
   waMessage: string;
   /** PLACEHOLDER: promociones vistas en Facebook; pueden estar vencidas. */
@@ -136,129 +138,96 @@ export type Service = {
 
 export const services: Service[] = [
   {
-    slug: 'piezas-dentales',
-    name: 'Piezas dentales',
-    icon: 'tooth',
-    short: 'Recupera las piezas que faltan con prótesis fijas o removibles que se ven y se sienten naturales.',
-    description:
-      'Coronas, puentes y prótesis a la medida para devolverte la función al masticar y la seguridad al sonreír. Te explicamos cada alternativa y su costo antes de empezar.',
-    forWho: [
-      'Perdiste una o varias piezas',
-      'Tienes dientes muy desgastados o fracturados',
-      'Buscas renovar una prótesis que ya no ajusta',
-    ],
-    waMessage: 'Hola, quiero información sobre piezas dentales / prótesis.',
-  },
-  {
-    slug: 'resinas-esteticas',
-    name: 'Resinas estéticas',
-    icon: 'sparkle',
-    short: 'Restauraciones del color de tu diente para caries, fracturas o pequeños detalles estéticos.',
-    description:
-      'Reparamos caries, bordes astillados y espacios pequeños con resinas del tono exacto de tu diente, en una sola cita y con mínima intervención.',
-    forWho: [
-      'Tienes caries o empastes oscuros antiguos',
-      'Un diente se astilló o fracturó',
-      'Quieres cerrar pequeños espacios sin ortodoncia',
-    ],
-    waMessage: 'Hola, quiero información sobre resinas estéticas.',
-  },
-  {
     slug: 'ortodoncia',
     name: 'Ortodoncia',
     icon: 'braces',
-    short: 'Brackets y alineadores para una mordida correcta y una sonrisa alineada, a cualquier edad.',
+    short: 'Brackets y alineadores para una sonrisa alineada, a cualquier edad.',
     description:
-      'Corregimos apiñamiento, espacios y problemas de mordida con brackets o alineadores transparentes. Plan de pagos claro y seguimiento en cada ajuste.',
-    forWho: [
-      'Niños y adolescentes en crecimiento',
-      'Adultos que quieren alinear su sonrisa',
-      'Personas con dolor o desgaste por mala mordida',
-    ],
+      'Corregimos apiñamiento, espacios y problemas de mordida con brackets o alineadores transparentes, con plan de pagos claro y seguimiento en cada ajuste.',
+    forWho: ['Niños y adolescentes', 'Adultos', 'Mordida incorrecta'],
     waMessage: 'Hola, quiero información sobre ortodoncia (brackets).',
     // PLACEHOLDER: promo "Estrena sonrisa desde $499" vista en Facebook; confirmar vigencia.
-    promo: { label: 'Estrena sonrisa', now: 'desde $499', note: 'Precio promocional sujeto a valoración' },
-  },
-  {
-    slug: 'implantes',
-    name: 'Implantes',
-    icon: 'implant',
-    short: 'La solución más estable y duradera para reemplazar dientes perdidos, con raíz de titanio.',
-    description:
-      'Un implante sustituye la raíz del diente y sostiene una corona fija: no se mueve, no afecta a los dientes vecinos y se cuida como un diente natural.',
-    forWho: [
-      'Perdiste una pieza y quieres una solución fija',
-      'Tu prótesis removible te resulta incómoda',
-      'Buscas un resultado duradero a largo plazo',
-    ],
-    waMessage: 'Hola, quiero información sobre implantes dentales.',
+    promo: { label: 'Estrena sonrisa', now: 'desde $499', note: 'Sujeto a valoración' },
   },
   {
     slug: 'blanqueamientos',
     name: 'Blanqueamientos',
     icon: 'shine',
-    short: 'Aclara varios tonos tu sonrisa en una sola sesión, de forma segura y supervisada.',
+    short: 'Varios tonos más blanca en una sola sesión, con supervisión profesional.',
     description:
       'Blanqueamiento profesional en consultorio con protección de encías y control de sensibilidad. Resultados visibles desde la primera sesión.',
-    forWho: [
-      'Tus dientes se han manchado por café, té o tabaco',
-      'Tienes un evento especial próximamente',
-      'Quieres complementar un tratamiento estético',
-    ],
+    forWho: ['Manchas por café o tabaco', 'Eventos especiales'],
     waMessage: 'Hola, quiero información sobre el blanqueamiento dental.',
     // PLACEHOLDER: promo $3,000 → $1,200 vista en Facebook; confirmar vigencia.
     promo: { label: 'Promoción', was: '$3,000', now: '$1,200', note: 'En una sola sesión' },
   },
   {
+    slug: 'implantes',
+    name: 'Implantes',
+    icon: 'implant',
+    short: 'La solución fija y duradera para reemplazar dientes perdidos.',
+    description:
+      'Un implante sustituye la raíz del diente y sostiene una corona fija: no se mueve, no afecta a los dientes vecinos y se cuida como un diente natural.',
+    forWho: ['Diente perdido', 'Adiós a la prótesis removible'],
+    waMessage: 'Hola, quiero información sobre implantes dentales.',
+  },
+  {
+    slug: 'resinas-esteticas',
+    name: 'Resinas estéticas',
+    icon: 'sparkle',
+    short: 'Restauraciones del color de tu diente, en una sola cita.',
+    description:
+      'Reparamos caries, bordes astillados y espacios pequeños con resinas del tono exacto de tu diente, en una sola cita y con mínima intervención.',
+    forWho: ['Caries', 'Dientes astillados', 'Espacios pequeños'],
+    waMessage: 'Hola, quiero información sobre resinas estéticas.',
+  },
+  {
+    slug: 'piezas-dentales',
+    name: 'Piezas dentales',
+    icon: 'tooth',
+    short: 'Coronas, puentes y prótesis que se ven y se sienten naturales.',
+    description:
+      'Coronas, puentes y prótesis a la medida para devolverte la función al masticar y la seguridad al sonreír. Te explicamos cada alternativa y su costo antes de empezar.',
+    forWho: ['Piezas perdidas', 'Dientes desgastados', 'Prótesis que no ajusta'],
+    waMessage: 'Hola, quiero información sobre piezas dentales / prótesis.',
+  },
+  {
     slug: 'atencion-personalizada',
     name: 'Atención personalizada',
     icon: 'heart',
-    short: 'Valoración integral, plan de tratamiento claro y acompañamiento en cada visita.',
+    short: 'Valoración integral y un plan claro, a tu ritmo y a tu presupuesto.',
     description:
       'Revisamos tu salud bucal completa, te explicamos opciones y costos sin letras chiquitas, y diseñamos un plan a tu ritmo y a tu presupuesto. Para toda la familia.',
-    forWho: [
-      'Primera visita o revisión general',
-      'Familias que buscan un dentista de confianza',
-      'Pacientes con miedo o ansiedad al dentista',
-    ],
+    forWho: ['Primera visita', 'Toda la familia', 'Miedo al dentista'],
     waMessage: 'Hola, quiero agendar una valoración general.',
   },
 ];
 
-// ─── Barra de confianza ──────────────────────────────────────────────────────
-type TrustItem = { icon: IconName; label: string; value?: number; suffix?: string; placeholder?: boolean };
+// ─── Cifras / confianza ──────────────────────────────────────────────────────
+type TrustItem = { icon: IconName; label: string; value?: number; suffix?: string; text?: string; placeholder?: boolean };
 
 export const trust: TrustItem[] = [
-  { icon: 'family', label: 'Atención para toda la familia' },
-  { icon: 'chat', label: 'Citas por WhatsApp' },
   // PLACEHOLDER: años de experiencia por confirmar.
   { icon: 'award', label: 'Años de experiencia', value: 10, suffix: '+', placeholder: true },
   // PLACEHOLDER: número de pacientes atendidos por confirmar.
   { icon: 'users', label: 'Pacientes atendidos', value: 2500, suffix: '+', placeholder: true },
+  { icon: 'tooth', label: 'Servicios integrales', value: 6 },
+  { icon: 'family', label: 'Para toda la familia', text: 'Niños y adultos' },
+];
+
+// ─── Cómo funciona ───────────────────────────────────────────────────────────
+export const steps = [
+  { icon: 'chat' as IconName, title: 'Escríbenos', text: 'Cuéntanos por WhatsApp qué necesitas.' },
+  { icon: 'shield' as IconName, title: 'Valoración', text: 'Revisamos tu caso y te damos un plan claro.' },
+  { icon: 'shine' as IconName, title: 'Sonríe', text: 'Tratamiento a tu ritmo y a tu presupuesto.' },
 ];
 
 // ─── Por qué elegirnos ───────────────────────────────────────────────────────
 export const reasons = [
-  {
-    icon: 'chip' as IconName,
-    title: 'Tecnología actual',
-    text: 'Equipo y materiales de calidad para diagnósticos precisos y tratamientos más cómodos.',
-  },
-  {
-    icon: 'heart' as IconName,
-    title: 'Atención personalizada',
-    text: 'Te explicamos cada paso y resolvemos tus dudas. Aquí no eres un número de expediente.',
-  },
-  {
-    icon: 'leaf' as IconName,
-    title: 'Ambiente cómodo',
-    text: 'Un consultorio cálido y tranquilo, pensado para que la visita al dentista se sienta ligera.',
-  },
-  {
-    icon: 'tag' as IconName,
-    title: 'Precios accesibles',
-    text: 'Presupuestos claros desde el inicio y opciones para que cuidar tu sonrisa quepa en tu bolsillo.',
-  },
+  { icon: 'chip' as IconName, title: 'Tecnología actual', text: 'Diagnósticos precisos y tratamientos más cómodos.' },
+  { icon: 'heart' as IconName, title: 'Trato cercano', text: 'Te explicamos cada paso, sin prisas.' },
+  { icon: 'leaf' as IconName, title: 'Ambiente cómodo', text: 'Un consultorio cálido que se siente ligero.' },
+  { icon: 'tag' as IconName, title: 'Precios accesibles', text: 'Presupuestos claros desde el inicio.' },
 ];
 
 // ─── Testimonios ─────────────────────────────────────────────────────────────
@@ -266,20 +235,20 @@ export const reasons = [
 export const testimonials = [
   {
     name: 'Mariana G.',
-    detail: 'Paciente de ortodoncia',
-    text: 'Desde la primera cita me explicaron todo con mucha paciencia. Llevo seis meses con brackets y el cambio ya se nota. El consultorio está súper bonito y limpio.',
+    detail: 'Ortodoncia',
+    text: 'Me explicaron todo con paciencia. A seis meses con brackets, el cambio ya se nota.',
     rating: 5,
   },
   {
     name: 'Luis R.',
     detail: 'Blanqueamiento',
-    text: 'Me hice el blanqueamiento antes de mi boda y quedé feliz. Cero sensibilidad y el resultado se vio desde la misma sesión.',
+    text: 'Me lo hice antes de mi boda: cero sensibilidad y resultado desde la primera sesión.',
     rating: 5,
   },
   {
     name: 'Patricia S.',
     detail: 'Mamá de dos pacientes',
-    text: 'Llevo a mis hijos y a mí me atienden también. Son muy pacientes con los niños y los precios son muy justos. Agendar por WhatsApp es comodísimo.',
+    text: 'Súper pacientes con mis hijos, precios justos y agendar por WhatsApp es comodísimo.',
     rating: 5,
   },
 ];
@@ -289,53 +258,41 @@ export const tips = [
   {
     tag: 'Brackets',
     title: 'Cuida tus brackets',
-    points: [
-      'Evita alimentos pegajosos o muy duros: caramelos, chicles, palomitas.',
-      'Usa cepillo interproximal y enhebrador para el hilo dental.',
-      'Si un bracket se despega, agenda una revisión cuanto antes.',
-    ],
+    points: ['Evita alimentos pegajosos o duros.', 'Usa cepillo interproximal.', '¿Se despegó uno? Agenda revisión.'],
   },
   {
     tag: 'Prótesis',
     title: 'Tu prótesis, como nueva',
-    points: [
-      'Cepíllala a diario con jabón neutro, no con pasta abrasiva.',
-      'No duermas con ella puesta: deja descansar tus encías.',
-      'Guárdala en un recipiente limpio y con agua.',
-    ],
+    points: ['Límpiala con jabón neutro.', 'No duermas con ella puesta.', 'Guárdala en agua, en un recipiente limpio.'],
   },
   {
     tag: 'Alineadores',
     title: 'Alineadores transparentes',
-    points: [
-      'Úsalos de 20 a 22 horas al día para ver resultados.',
-      'Quítalos para comer y lávate los dientes antes de volver a ponerlos.',
-      'Límpialos con agua fría: el agua caliente los deforma.',
-    ],
+    points: ['Úsalos de 20 a 22 horas al día.', 'Quítalos para comer y cepíllate antes de ponerlos.', 'Lávalos con agua fría, nunca caliente.'],
   },
 ];
 
-// ─── Preguntas frecuentes (página de servicios) ──────────────────────────────
+// ─── Preguntas frecuentes ────────────────────────────────────────────────────
 export const faqs = [
   {
     q: '¿Cada cuánto debo ir al dentista?',
-    a: 'Recomendamos una revisión y limpieza cada seis meses. Así detectamos a tiempo caries o problemas de encías, cuando su tratamiento es más sencillo y económico.',
+    a: 'Cada seis meses, para revisión y limpieza. Detectar a tiempo es más sencillo y económico.',
   },
   {
-    q: '¿Qué señales indican que debo agendar una cita pronto?',
-    a: 'Dolor o sensibilidad persistente, encías que sangran o están inflamadas, mal aliento constante, un diente flojo o fracturado, o dolor al masticar. Si notas alguna, escríbenos por WhatsApp.',
+    q: '¿Qué señales indican que debo ir pronto?',
+    a: 'Dolor o sensibilidad persistente, encías que sangran, mal aliento constante o un diente flojo o fracturado.',
   },
   {
     q: '¿El blanqueamiento daña el esmalte?',
-    a: 'No, cuando se realiza en consultorio y bajo supervisión profesional. Protegemos las encías y usamos productos que controlan la sensibilidad.',
+    a: 'No, si se hace en consultorio y con supervisión profesional. Protegemos tus encías y controlamos la sensibilidad.',
   },
   {
     q: '¿A qué edad se puede iniciar la ortodoncia?',
-    a: 'Una primera valoración a partir de los 7 años permite anticipar problemas. Sin embargo, la ortodoncia funciona a cualquier edad, también en adultos.',
+    a: 'Recomendamos una valoración desde los 7 años, pero la ortodoncia funciona a cualquier edad.',
   },
   {
     q: '¿Cómo agendo una cita?',
-    a: 'Escríbenos por WhatsApp con el servicio que te interesa y el horario que prefieres. Te respondemos para confirmar tu cita.',
+    a: 'Escríbenos por WhatsApp con el servicio y el horario que prefieres, y confirmamos tu cita.',
   },
 ];
 

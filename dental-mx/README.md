@@ -1,11 +1,16 @@
 # Dental MX — sitio web
 
-Landing page de **Dental MX** (Torreón, Coahuila), construida a partir del PRD. Todo el contenido vive en una sola página con navegación por anclas: Servicios, Promociones, Por qué elegirnos, Antes/después, Nosotros, Testimonios, Tips, Preguntas frecuentes y Contacto. Además incluye Aviso de privacidad y una página 404. La única conversión es la cita por WhatsApp.
+Landing page de **Dental MX** (Torreón, Coahuila), construida a partir del PRD. Todo el contenido vive en una sola página con navegación por anclas: Servicios, Cómo funciona (3 pasos), Promociones, Por qué elegirnos, Antes/después, Nosotros, Testimonios, Tips, Preguntas frecuentes y Contacto. Además incluye Aviso de privacidad y una página 404. La única conversión es la cita por WhatsApp.
 
 Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su sección (`redirects` en `astro.config.mjs`).
 
 - **Stack:** [Astro](https://astro.build) (genera HTML estático, sin JS de framework en el cliente) + Tailwind CSS v4 + fuentes auto-hospedadas (Sora, Inter y Yellowtail vía Fontsource).
-- **Animaciones:** CSS con un script pequeño en TypeScript (`src/scripts/main.ts`). Incluyen scroll reveal con stagger, parallax del hero, encendido del neón, pulso del botón de WhatsApp, contadores y transiciones de página nativas (View Transitions). Todas respetan `prefers-reduced-motion`.
+- **Animaciones y efectos:** CSS y un script pequeño en TypeScript (`src/scripts/main.ts`):
+  - Hero centrado con letrero de neón que se dibuja, aurora de luz, rejilla en perspectiva, luz que sigue al cursor y tarjetas flotantes con profundidad.
+  - Titulares que aparecen palabra por palabra (`data-split`), scroll reveal con stagger (`data-reveal`) y fotos con revelado tipo cortina (`data-reveal="clip"`).
+  - Tarjetas con inclinación 3D y brillo bajo el cursor (`data-tilt`), botones magnéticos (`data-magnetic`) y destello en botones principales.
+  - Bandas y carrusel de testimonios en movimiento continuo, borde de neón giratorio, contadores y transiciones de página nativas.
+  - Las animaciones continuas se pausan fuera de pantalla (`data-live`) y todo se desactiva con `prefers-reduced-motion`.
 - **SEO local:** title, description, canonical, Open Graph (`public/og.png`), sitemap y `robots.txt`. También JSON-LD `Dentist` con NAP, horario y datos del doctor, más `FAQPage` e `ItemList` de servicios.
 - **Navegación:** menú con anclas y resaltado automático de la sección visible (scrollspy).
 

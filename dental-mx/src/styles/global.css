@@ -38,13 +38,12 @@
   /* Movimiento */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --animate-wa-pulse: wa-pulse 2.8s var(--ease-out-soft) infinite;
+  --animate-wa-pulse: wa-ring 2.8s var(--ease-out-soft) infinite;
   --animate-flicker: neon-on 1.6s steps(1, end) both;
 
-  @keyframes wa-pulse {
-    0% { box-shadow: 0 0 0 0 rgb(181 238 58 / 0.45); }
-    70% { box-shadow: 0 0 0 16px rgb(181 238 58 / 0); }
-    100% { box-shadow: 0 0 0 0 rgb(181 238 58 / 0); }
+  @keyframes wa-ring {
+    0% { scale: 1; opacity: 0.55; }
+    70%, 100% { scale: 1.55; opacity: 0; }
   }
   /* Encendido tipo letrero de neón (una sola vez, al cargar) */
   @keyframes neon-on {
@@ -143,20 +142,36 @@
       border-color 0.25s ease;
   }
   .btn svg { flex-shrink: 0; }
-  .btn:active { transform: scale(0.98); }
+  .btn {
+    transform: translate3d(var(--mag-x, 0px), calc(var(--mag-y, 0px) + var(--lift, 0px)), 0);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .btn:active { scale: 0.98; }
+  /* Destello que cruza el botón al pasar el cursor */
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+    translate: -110% 0;
+    transition: translate 0.8s var(--ease-out-soft);
+  }
+  .btn-primary:hover::after { translate: 110% 0; }
   .btn-primary {
     background: var(--color-lime);
     color: var(--color-ink);
     box-shadow: 0 0 0 0 rgb(181 238 58 / 0);
   }
-  .btn-primary:hover { box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+  .btn-primary:hover { box-shadow: var(--shadow-glow); --lift: -2px; }
   .btn-ghost {
     color: var(--color-snow);
     border: 1px solid rgb(255 255 255 / 0.22);
     background: rgb(255 255 255 / 0.03);
     backdrop-filter: blur(6px);
   }
-  .btn-ghost:hover { border-color: var(--color-lime); color: var(--color-lime); transform: translateY(-2px); }
+  .btn-ghost:hover { border-color: var(--color-lime); color: var(--color-lime); --lift: -2px; }
   .on-light .btn-ghost { color: var(--color-ink); border-color: rgb(14 16 14 / 0.22); background: transparent; }
   .on-light .btn-ghost:hover { color: var(--color-lime-ink); border-color: var(--color-lime-ink); }
   .btn-lg { @apply min-h-14 px-8 text-base; }
@@ -171,8 +186,23 @@
       box-shadow 0.45s var(--ease-out-soft),
       border-color 0.3s ease;
   }
+  .card {
+    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--lift, 0px), 0);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(181 238 58 / 0.12), transparent 45%);
+    transition: opacity 0.4s ease;
+  }
+  .card:hover::before { opacity: 1; }
+  .on-light .card::before { background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(181 238 58 / 0.22), transparent 45%); }
   .card-hover:hover {
-    transform: translateY(-6px);
+    --lift: -6px;
     border-color: rgb(181 238 58 / 0.4);
     box-shadow: var(--shadow-lift), 0 0 40px -12px rgb(181 238 58 / 0.4);
   }
@@ -231,26 +261,168 @@
   }
 }
 
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@layer components {
+  /* Borde de neón giratorio */
+  .spin-border { position: relative; isolation: isolate; }
+  .spin-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(from var(--angle), transparent 0 60%, rgb(181 238 58 / 0.9) 75%, transparent 90%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+
+  /* Texto con contorno (titulares gigantes decorativos) */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.14);
+  }
+  .text-outline-lime {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(181 238 58 / 0.35);
+  }
+
+  /* Suelo de rejilla en perspectiva (hero) */
+  .grid-floor {
+    overflow: hidden;
+    transform: perspective(520px) rotateX(62deg);
+    transform-origin: 50% 0;
+    mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 45%, transparent 90%);
+  }
+  .grid-floor > i {
+    position: absolute;
+    inset: -56px 0 0;
+    background-image:
+      linear-gradient(rgb(181 238 58 / 0.22) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(181 238 58 / 0.22) 1px, transparent 1px);
+    background-size: 56px 56px;
+    will-change: translate;
+  }
+
+  .marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee-track { display: flex; width: max-content; }
+
+  .live-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: var(--color-lime); box-shadow: 0 0 10px var(--color-lime); }
+  .live-dot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--color-lime); }
+
+  .glass {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.02));
+    border: 1px solid rgb(255 255 255 / 0.12);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 40px -20px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    Movimiento (scroll reveal, stagger) — sólo si hay JS y el usuario lo permite
    ══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    translate: 0 18px;
     transition:
-      opacity 0.8s var(--ease-out-soft),
-      transform 0.8s var(--ease-out-soft);
-    transition-delay: calc(var(--i, 0) * 90ms);
+      opacity 0.9s var(--ease-out-soft) calc(var(--i, 0) * 90ms),
+      translate 0.9s var(--ease-out-soft) calc(var(--i, 0) * 90ms),
+      transform 0.45s var(--ease-out-soft),
+      box-shadow 0.45s var(--ease-out-soft),
+      border-color 0.3s ease;
   }
-  .js [data-reveal].is-visible { opacity: 1; transform: none; }
+  .js [data-reveal].is-visible { opacity: 1; translate: none; }
+
+  /* Revelado tipo cortina (fotos) */
+  /* El recorte va en el hijo: el contenedor debe conservar su área para el IntersectionObserver */
+  .js [data-reveal='clip'] { opacity: 1; translate: none; }
+  .js [data-reveal='clip'] > * {
+    clip-path: inset(100% 0 0 0 round var(--radius-card));
+    transition: clip-path 1.2s var(--ease-out-soft) calc(var(--i, 0) * 120ms);
+  }
+  .js [data-reveal='clip'].is-visible > * { clip-path: inset(0 0 0 0 round var(--radius-card)); }
+  .js [data-reveal='clip'] svg, .js [data-reveal='clip'] img { scale: 1.15; transition: scale 1.6s var(--ease-out-soft); }
+  .js [data-reveal='clip'].is-visible svg, .js [data-reveal='clip'].is-visible img { scale: 1; }
+
+  /* Titulares palabra por palabra */
+  .js [data-split] .sw { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .js [data-split] .sw > span {
+    display: inline-block;
+    translate: 0 110%;
+    transition: translate 0.9s var(--ease-out-soft);
+    transition-delay: calc(var(--w, 0) * 55ms + 80ms);
+  }
+  .js [data-split].is-visible .sw > span { translate: none; }
+  .js [data-split][data-reveal] { opacity: 1; translate: none; }
+  .js [data-split]:not(.is-split) { opacity: 0; }
+
+  /* Línea que se dibuja (pasos) */
+  .js [data-draw] { scale: 0 1; transform-origin: left; transition: scale 1.4s var(--ease-out-soft) 0.2s; }
+  .js [data-draw].is-visible { scale: 1 1; }
+
+  /* Letrero de neón que se dibuja */
+  .neon-draw path[pathLength] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: neon-draw 2.2s var(--ease-out-soft) forwards 0.2s;
+  }
+  @keyframes neon-draw { to { stroke-dashoffset: 0; } }
+
+  .float-a { animation: float 7s ease-in-out infinite; }
+  .float-b { animation: float 8s ease-in-out infinite -3s; }
+  @keyframes float { 50% { translate: 0 -12px; } }
+
+  .aurora > * { animation: aurora 18s ease-in-out infinite alternate; will-change: translate; }
+  .js .aurora:not(.is-live) > *, .js [data-live]:not(.is-live) .grid-floor > i { animation-play-state: paused; }
+  .aurora > *:nth-child(2) { animation-duration: 22s; animation-delay: -6s; }
+  .aurora > *:nth-child(3) { animation-duration: 26s; animation-delay: -12s; }
+  @keyframes aurora {
+    33% { translate: 8% -6%; }
+    66% { translate: -6% 8%; }
+    100% { translate: 4% 4%; }
+  }
+
+  .marquee-track { animation: marquee var(--speed, 40s) linear infinite; will-change: translate; }
+  .marquee:hover .marquee-track,
+  .js [data-live]:not(.is-live) .marquee-track,
+  .js [data-live]:not(.is-live).marquee-track { animation-play-state: paused; }
+  @keyframes marquee { to { translate: -50% 0; } }
+
+  .grid-floor > i { animation: grid-move 3s linear infinite; }
+  @keyframes grid-move { to { translate: 0 56px; } }
+
+  .spin-border.is-live::before { animation: spin-angle 6s linear infinite; }
+  @keyframes spin-angle { to { --angle: 360deg; } }
+
+  .scroll-cue span { animation: cue 2s var(--ease-out-soft) infinite; }
+  @keyframes cue { 0% { translate: 0 0; opacity: 0; } 30% { opacity: 1; } 80%, 100% { translate: 0 12px; opacity: 0; } }
+
+  .live-dot::after { animation: live 2s ease-out infinite; }
+  @keyframes live { from { scale: 1; opacity: 0.7; } to { scale: 2.6; opacity: 0; } }
 
   .hero-in { animation: hero-in 1s var(--ease-out-soft) both; animation-delay: calc(var(--i, 0) * 120ms + 150ms); }
   @keyframes hero-in {
     from { opacity: 0; transform: translate3d(0, 16px, 0); }
   }
   .neon-on { animation: var(--animate-flicker); animation-delay: 0.35s; }
-  .wa-pulse { animation: var(--animate-wa-pulse); }
+  .wa-pulse { position: relative; }
+  .wa-pulse::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-lime);
+    z-index: -1;
+    animation: var(--animate-wa-pulse);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -261,4 +433,5 @@
     transition-duration: 0.01ms !important;
   }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  .marquee { overflow-x: auto; }
 }
