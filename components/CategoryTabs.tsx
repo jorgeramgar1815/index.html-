@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { Category } from "@/content/services";
-import { categoryIcons } from "./Icons";
 
-/** Navegación por anclas entre categorías, con resaltado de la sección visible. */
-export function CategoryTabs({ items }: { items: Pick<Category, "slug" | "short" | "icon">[] }) {
+/** Índice fijo de categorías con subrayado en la sección visible. */
+export function CategoryTabs({ items }: { items: Pick<Category, "slug" | "short">[] }) {
   const [active, setActive] = useState(items[0]?.slug);
 
   useEffect(() => {
@@ -24,27 +23,28 @@ export function CategoryTabs({ items }: { items: Pick<Category, "slug" | "short"
   }, [items]);
 
   return (
-    <nav aria-label="Categorías de servicio" className="sticky top-[62px] z-30 border-y border-navy/10 bg-cream-50/92 backdrop-blur-md">
-      <ul className="no-scrollbar mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 py-3 sm:justify-center sm:px-6">
-        {items.map((c) => {
-          const Icon = categoryIcons[c.icon];
+    <nav aria-label="Categorías de servicio" className="sticky top-[58px] z-30 border-y border-ink/15 bg-cream/95">
+      <ol className="no-scrollbar mx-auto flex max-w-[88rem] overflow-x-auto px-5 sm:px-8">
+        {items.map((c, i) => {
           const isActive = active === c.slug;
           return (
             <li key={c.slug} className="shrink-0">
               <a
                 href={`#${c.slug}`}
                 aria-current={isActive ? "true" : undefined}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm tracking-wide transition-all duration-300 ${
-                  isActive ? "bg-navy text-cream shadow-soft" : "text-navy/80 hover:bg-cream-100 hover:text-navy"
-                }`}
+                className={`relative flex min-h-14 items-center gap-2 px-4 text-sm transition-colors duration-300 first:pl-0 ${isActive ? "text-ink" : "text-stone hover:text-ink"}`}
               >
-                <Icon size={18} className={isActive ? "text-gold" : "text-jade-ink"} />
-                {c.short}
+                <span className="eyebrow text-gold-ink">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-serif text-xl">{c.short}</span>
+                <span
+                  aria-hidden
+                  className={`absolute inset-x-4 bottom-0 h-[2px] origin-left bg-jade-ink transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0"}`}
+                />
               </a>
             </li>
           );
         })}
-      </ul>
+      </ol>
     </nav>
   );
 }

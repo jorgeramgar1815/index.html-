@@ -16,11 +16,11 @@ export default function AvisoPage() {
       <PageHeader
         crumbs={[{ href: "/", label: "Inicio" }, { label: "Aviso de privacidad" }]}
         eyebrow="Legal"
-        script="Tu confianza"
-        title="Aviso de privacidad"
+        title="Aviso de"
+        accent="privacidad."
         intro="Documento en preparación."
       />
-      <section className="bg-cream-50 pb-40 pt-6">
+      <section className="border-t border-ink/15 bg-cream-50 pb-40 pt-16">
         <div className="mx-auto max-w-3xl space-y-5 px-5 text-[1.02rem] leading-relaxed text-stone sm:px-6">
           <p data-placeholder="aviso-de-privacidad">
             {site.fullName}, con domicilio en {site.address.street}, {site.address.neighborhood}, {site.address.city},{" "}

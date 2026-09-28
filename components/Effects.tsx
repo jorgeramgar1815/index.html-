@@ -1,24 +1,18 @@
 "use client";
 
-import { m, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import { m, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { useRef, type ReactNode } from "react";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const ease = [0.76, 0, 0.24, 1] as const;
 
-/** Barra dorada de progreso de lectura (parte superior). */
+/** Filete de progreso de lectura (parte superior). */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
-  return (
-    <m.div
-      aria-hidden
-      style={{ scaleX }}
-      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-jade via-gold to-gold-soft"
-    />
-  );
+  return <m.div aria-hidden style={{ scaleX }} className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-jade-ink" />;
 }
 
-/** Titular que se revela palabra por palabra desde una máscara. */
+/** Titular revelado palabra por palabra desde una máscara. */
 export function WordsReveal({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) {
   const reduce = useReducedMotion();
   const words = text.split(" ");
@@ -28,15 +22,15 @@ export function WordsReveal({ text, className = "", delay = 0 }: { text: string;
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "0px 0px -10% 0px" }}
-      transition={{ staggerChildren: 0.07, delayChildren: delay }}
+      transition={{ staggerChildren: 0.06, delayChildren: delay }}
     >
       {words.map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden pb-[0.12em] align-bottom">
+        <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
           <m.span
             className="inline-block"
             variants={{
-              hidden: { y: reduce ? 0 : "105%", opacity: reduce ? 0 : 1 },
-              show: { y: 0, opacity: 1, transition: { duration: 0.85, ease } },
+              hidden: { y: reduce ? 0 : "108%", opacity: reduce ? 0 : 1 },
+              show: { y: 0, opacity: 1, transition: { duration: 1, ease } },
             }}
           >
             {w}
@@ -48,81 +42,51 @@ export function WordsReveal({ text, className = "", delay = 0 }: { text: string;
   );
 }
 
-/** Línea decorativa que crece al entrar en viewport. */
-export function GrowLine({ className = "", origin = "left" }: { className?: string; origin?: "left" | "right" }) {
+/** Filete que se dibuja de izquierda a derecha. */
+export function Rule({ className = "", dark = false }: { className?: string; dark?: boolean }) {
   return (
     <m.span
       aria-hidden
-      className={`block h-px ${origin === "left" ? "origin-left" : "origin-right"} ${className}`}
+      className={`block h-px origin-left ${dark ? "bg-cream/20" : "bg-ink/15"} ${className}`}
       initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true }}
-      transition={{ duration: 1.1, ease, delay: 0.15 }}
+      transition={{ duration: 1.4, ease }}
     />
   );
 }
 
 /**
- * Inclinación 3D + reflejo que sigue al cursor (solo mouse; nada en touch
- * ni con reduced-motion). Usa variables CSS para no re-renderizar.
+ * Imagen que se revela como cortina (de abajo hacia arriba) y luego
+ * se desplaza levemente con el scroll dentro de su marco.
  */
-export function Tilt({ children, className = "", max = 7 }: { children: ReactNode; className?: string; max?: number }) {
+export function ClipReveal({
+  children,
+  className = "",
+  delay = 0,
+  drift = 40,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  drift?: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-
-  const onMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduce || e.pointerType !== "mouse" || !ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width;
-    const y = (e.clientY - r.top) / r.height;
-    ref.current.style.setProperty("--rx", `${(0.5 - y) * max}deg`);
-    ref.current.style.setProperty("--ry", `${(x - 0.5) * max}deg`);
-    ref.current.style.setProperty("--gx", `${x * 100}%`);
-    ref.current.style.setProperty("--gy", `${y * 100}%`);
-    ref.current.style.setProperty("--go", "1");
-  };
-  const onLeave = () => {
-    if (!ref.current) return;
-    ref.current.style.setProperty("--rx", "0deg");
-    ref.current.style.setProperty("--ry", "0deg");
-    ref.current.style.setProperty("--go", "0");
-  };
-
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-drift, drift]);
   return (
-    <div
+    <m.div
       ref={ref}
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
-      className={`group/tilt relative h-full [transform:perspective(1000px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] transition-transform duration-300 ease-out will-change-transform ${className}`}
+      className={`relative overflow-hidden ${className}`}
+      initial={{ clipPath: reduce ? "inset(0 0 0 0)" : "inset(100% 0 0 0)" }}
+      whileInView={{ clipPath: "inset(0 0 0 0)" }}
+      viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+      transition={{ duration: 1.4, ease, delay }}
     >
-      {children}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] opacity-[var(--go,0)] transition-opacity duration-300 [background:radial-gradient(420px_circle_at_var(--gx,50%)_var(--gy,50%),rgba(255,244,214,.22),transparent_45%)]"
-      />
-    </div>
-  );
-}
-
-/** Contenedor que expone la posición del mouse (--px, --py en -1..1) para capas con parallax. */
-export function PointerParallax({ children, className = "" }: { children: ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const frame = useRef(0);
-  const onMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduce || e.pointerType !== "mouse" || !ref.current) return;
-    const el = ref.current;
-    const { clientX, clientY } = e;
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty("--px", (((clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-      el.style.setProperty("--py", (((clientY - r.top) / r.height) * 2 - 1).toFixed(3));
-    });
-  };
-  return (
-    <div ref={ref} onPointerMove={onMove} className={className}>
-      {children}
-    </div>
+      <m.div className="absolute -inset-y-12 inset-x-0" style={{ y }}>
+        {children}
+      </m.div>
+    </m.div>
   );
 }

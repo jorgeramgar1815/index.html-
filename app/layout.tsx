@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Great_Vibes, Jost } from "next/font/google";
+import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import type { ReactNode } from "react";
 import { ScrollProgress } from "@/components/Effects";
 import { Footer } from "@/components/Footer";
@@ -10,15 +10,14 @@ import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+const display = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: "400",
   style: ["normal", "italic"],
-  variable: "--font-cormorant",
+  variable: "--font-display",
   display: "swap",
 });
-const jost = Jost({ subsets: ["latin"], weight: ["300", "400", "500"], variable: "--font-jost", display: "swap" });
-const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "--font-great-vibes", display: "swap" });
+const body = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -57,7 +56,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7f3ec",
+  themeColor: "#f2ede4",
   width: "device-width",
   initialScale: 1,
 };
@@ -101,7 +100,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es-MX" className={`${cormorant.variable} ${jost.variable} ${greatVibes.variable}`}>
+    <html lang="es-MX" className={`${display.variable} ${body.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <MotionProvider>

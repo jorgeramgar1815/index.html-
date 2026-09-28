@@ -35,18 +35,16 @@ export function Lotus({ className, strokeWidth = 1.4, accent = "var(--color-gold
   );
 }
 
-/** Wordmark "R E D U Z E N" + subtítulo en itálicas. */
+/** Wordmark editorial: "Reduzen" en serif display + folio "Mesoterapia & Spa". */
 export function Wordmark({ className = "", light = false }: { className?: string; light?: boolean }) {
   return (
-    <span className={`flex items-center gap-2.5 ${className}`}>
-      <Lotus className={`h-9 w-9 shrink-0 ${light ? "text-jade" : "text-jade-ink"}`} />
-      <span className="flex flex-col leading-none">
-        <span className={`font-serif text-[1.35rem] font-medium tracking-[0.32em] ${light ? "text-cream" : "text-navy"}`}>
-          REDUZEN
-        </span>
-        <span className={`mt-1 font-serif text-[0.8rem] italic tracking-wide ${light ? "text-gold" : "text-gold-ink"}`}>
-          Mesoterapia &amp; Spa
-        </span>
+    <span className={`flex items-center gap-3 ${className}`}>
+      <Lotus className={`h-8 w-8 shrink-0 ${light ? "text-jade" : "text-jade-ink"}`} strokeWidth={1.6} />
+      <span className={`font-serif text-[1.9rem] leading-none tracking-[-0.02em] ${light ? "text-cream" : "text-ink"}`}>Reduzen</span>
+      <span className={`hidden h-6 w-px sm:block ${light ? "bg-cream/30" : "bg-ink/20"}`} aria-hidden />
+      <span className={`eyebrow hidden !text-[0.6rem] leading-tight sm:block ${light ? "text-cream/70" : "text-stone"}`}>
+        Mesoterapia
+        <br />& Spa
       </span>
     </span>
   );

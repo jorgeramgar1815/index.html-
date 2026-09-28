@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { navLinks, pageLinks } from "@/content/site";
+import { navLinks, pageLinks, site } from "@/content/site";
 import { waLink, waMessages } from "@/lib/whatsapp";
-import { CloseIcon, MenuIcon, WhatsAppIcon } from "./Icons";
+import { ArrowIcon, CloseIcon, WhatsAppIcon } from "./Icons";
 import { Wordmark } from "./Lotus";
+
+const ease = [0.76, 0, 0.24, 1] as const;
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -40,47 +42,37 @@ export function Header() {
     };
   }, [open]);
 
-  const solid = scrolled || open;
+  const links = [...navLinks, ...pageLinks.filter((l) => l.href === "/nosotros/")];
 
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          solid
-            ? "bg-cream/92 py-2.5 shadow-[0_8px_30px_-18px_rgba(27,42,74,.35)] backdrop-blur-md"
-            : "bg-transparent py-4 sm:py-5"
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,padding] duration-500 ${
+          open
+            ? "border-transparent bg-transparent py-5"
+            : scrolled
+              ? "border-ink/10 bg-cream/95 py-3"
+              : "border-transparent py-5"
         }`}
       >
         <a
           href="#contenido"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-full focus:bg-navy focus:px-4 focus:py-2 focus:text-cream"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:bg-ink focus:px-4 focus:py-2 focus:text-cream"
         >
           Saltar al contenido
         </a>
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-10">
+        <div className="mx-auto flex max-w-[88rem] items-center justify-between gap-6 px-5 sm:px-8">
           <Link href="/" className="shrink-0">
-            <Wordmark />
+            <Wordmark light={open} />
             <span className="sr-only">, ir al inicio</span>
           </Link>
 
-          <nav aria-label="Principal" className="hidden items-center gap-7 lg:flex">
-            {navLinks.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="relative text-[0.8rem] uppercase tracking-[0.18em] text-navy/80 transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-gold after:transition-transform after:duration-300 hover:text-navy hover:after:scale-x-100"
-              >
+          <nav aria-label="Principal" className="hidden items-center gap-8 xl:flex">
+            {links.map((l) => (
+              <Link key={l.href} href={l.href} className="link-draw eyebrow !text-[0.68rem] text-ink/80 hover:text-ink">
                 {l.label}
               </Link>
             ))}
-            <span className="h-4 w-px bg-navy/15" aria-hidden />
-            <Link
-              href="/nosotros/"
-              aria-current={pathname?.startsWith("/nosotros") ? "page" : undefined}
-              className="text-[0.8rem] uppercase tracking-[0.18em] text-navy/80 transition-colors hover:text-navy aria-[current=page]:text-jade-ink"
-            >
-              Nosotros
-            </Link>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -88,9 +80,12 @@ export function Header() {
               href={waLink(waMessages.header)}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-shine hidden min-h-11 items-center gap-2 rounded-full bg-jade-ink px-5 text-sm font-medium tracking-wide text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow sm:inline-flex"
+              className={`btn-fill hidden min-h-11 items-center gap-2 px-5 text-sm font-medium transition-colors duration-500 sm:inline-flex ${
+                open ? "border border-cream/40 text-cream" : "bg-ink text-cream-50"
+              }`}
+              style={{ "--fill": "var(--color-jade-ink)" } as CSSProperties}
             >
-              <WhatsAppIcon size={18} />
+              <WhatsAppIcon size={17} />
               Agenda tu cita
             </a>
             <button
@@ -99,58 +94,65 @@ export function Header() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="menu-movil"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-navy/5 lg:hidden"
+              className={`flex min-h-11 items-center gap-3 px-2 xl:hidden ${open ? "text-cream" : "text-ink"}`}
             >
-              <span className="sr-only">{open ? "Cerrar menú" : "Abrir menú"}</span>
-              {open ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
+              <span className="eyebrow">{open ? "Cerrar" : "Menú"}</span>
+              {open ? (
+                <CloseIcon size={22} />
+              ) : (
+                <span aria-hidden className="flex w-6 flex-col gap-1.5">
+                  <span className="h-px w-full bg-current" />
+                  <span className="h-px w-2/3 bg-current" />
+                </span>
+              )}
             </button>
           </div>
         </div>
-
       </header>
 
-      {/* Fuera del <header>: su backdrop-filter crearía un bloque contenedor para el menú fijo */}
+      {/* Fuera del <header>: menú a pantalla completa en jade profundo */}
       <AnimatePresence>
         {open && (
           <m.div
             id="menu-movil"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-0 bottom-0 top-[64px] z-[45] overflow-y-auto bg-cream px-6 pb-10 pt-6 lg:hidden"
+            className="on-dark fixed inset-0 z-[45] flex flex-col overflow-y-auto bg-jade-ink px-5 pb-10 pt-28 text-cream sm:px-8 xl:hidden"
+            initial={{ clipPath: "inset(0 0 100% 0)" }}
+            animate={{ clipPath: "inset(0 0 0% 0)" }}
+            exit={{ clipPath: "inset(0 0 100% 0)" }}
+            transition={{ duration: 0.7, ease }}
           >
-            <nav aria-label="Menú móvil" className="flex flex-col">
-              {[...navLinks, ...pageLinks].map((l, i) => (
-                <m.div
-                  key={l.href}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.04 * i + 0.05, duration: 0.4 }}
-                >
-                  <Link
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between border-b border-navy/10 py-4 font-serif text-2xl text-navy"
-                  >
-                    {l.label}
-                    <span className="text-gold" aria-hidden>
-                      ✦
-                    </span>
-                  </Link>
-                </m.div>
-              ))}
+            <nav aria-label="Menú móvil" className="flex-1">
+              <ol>
+                {[...navLinks, ...pageLinks].map((l, i) => (
+                  <li key={l.href} className="overflow-hidden border-b border-cream/15">
+                    <m.div initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ duration: 0.7, ease, delay: 0.15 + i * 0.05 }}>
+                      <Link href={l.href} onClick={() => setOpen(false)} className="group flex items-baseline gap-5 py-3.5">
+                        <span className="eyebrow w-6 text-gold-pale">{String(i + 1).padStart(2, "0")}</span>
+                        <span className="font-serif text-[2.4rem] leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">
+                          {l.label}
+                        </span>
+                        <ArrowIcon size={22} className="ml-auto -rotate-45 text-gold-pale opacity-70" />
+                      </Link>
+                    </m.div>
+                  </li>
+                ))}
+              </ol>
             </nav>
             <a
               href={waLink(waMessages.header)}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-jade-ink text-base font-medium text-white shadow-soft"
+              className="mt-10 flex min-h-16 items-center justify-between bg-gold px-6 text-base font-medium text-night"
             >
-              <WhatsAppIcon size={22} />
-              Agenda tu cita por WhatsApp
+              <span className="flex items-center gap-3">
+                <WhatsAppIcon size={22} />
+                Agenda por WhatsApp
+              </span>
+              <ArrowIcon size={20} />
             </a>
-            <p className="script mt-10 text-center text-4xl text-gold-ink">Te mereces este espacio</p>
+            <p className="eyebrow mt-6 text-cream/70">
+              {site.phoneDisplay} · {site.address.city}
+            </p>
           </m.div>
         )}
       </AnimatePresence>

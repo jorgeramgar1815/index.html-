@@ -62,7 +62,7 @@ export function Stagger({
 }: {
   children: ReactNode;
   className?: string;
-  as?: "div" | "ul";
+  as?: "div" | "ul" | "ol";
 }) {
   const Comp = m[as];
   return (

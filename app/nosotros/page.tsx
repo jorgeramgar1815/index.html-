@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { ArtFrame, type ArtVariant } from "@/components/ArtFrame";
 import { CTASection } from "@/components/CTASection";
+import { ClipReveal } from "@/components/Effects";
 import { valueIcons } from "@/components/Icons";
-import { Lotus } from "@/components/Lotus";
-import { Parallax, Reveal, Stagger, StaggerItem } from "@/components/Motion";
+import { Reveal, Stagger, StaggerItem } from "@/components/Motion";
 import { PageHeader } from "@/components/PageHeader";
-import { SectionHeading } from "@/components/Section";
+import { SectionHead } from "@/components/Section";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { brandValues } from "@/content/site";
 import { story, team } from "@/content/team";
@@ -21,11 +21,11 @@ export const metadata: Metadata = {
 
 // PLACEHOLDER: fotos reales del espacio físico (recepción, cabinas, área de uñas, detalles)
 const gallery: { variant: ArtVariant; alt: string; className: string }[] = [
-  { variant: "space", alt: "Recepción de Reduzen", className: "col-span-2 row-span-2 aspect-square sm:aspect-auto" },
-  { variant: "portrait", alt: "Cabina de faciales", className: "aspect-square" },
-  { variant: "nails", alt: "Área de uñas", className: "aspect-square" },
-  { variant: "pedicure", alt: "Sillón de pedicure", className: "aspect-square" },
-  { variant: "laser", alt: "Cabina de depilación láser", className: "aspect-square" },
+  { variant: "space", alt: "Recepción", className: "col-span-2 aspect-[4/5] lg:col-span-5 lg:row-span-2 lg:aspect-auto" },
+  { variant: "portrait", alt: "Cabina de faciales", className: "aspect-square lg:col-span-4" },
+  { variant: "nails", alt: "Área de uñas", className: "aspect-square lg:col-span-3" },
+  { variant: "pedicure", alt: "Pedicure", className: "aspect-square lg:col-span-3" },
+  { variant: "laser", alt: "Cabina láser", className: "aspect-square lg:col-span-4" },
 ];
 
 export default function NosotrosPage() {
@@ -34,65 +34,58 @@ export default function NosotrosPage() {
       <PageHeader
         crumbs={[{ href: "/", label: "Inicio" }, { label: "Nosotros" }]}
         eyebrow="Nuestra historia"
-        script="Te mereces este espacio"
-        title="Un lugar para volver a ti"
+        title="Un lugar para"
+        accent="volver a ti."
         intro="Un spa boutique en Torreón donde la técnica y el bienestar se encuentran."
       />
 
-      {/* ============ HISTORIA ============ */}
-      <section aria-labelledby="historia-titulo" className="bg-cream-50 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
-          <Reveal className="relative mx-auto w-full max-w-md">
-            <div className="absolute -inset-3 rounded-[999px_999px_36px_36px] border border-gold/50" aria-hidden />
-            <Parallax speed={30}>
-              <ArtFrame
-                variant="portrait"
-                alt="El equipo de Reduzen en el spa"
-                className="aspect-[4/5] w-full rounded-[999px_999px_28px_28px] shadow-lift"
-              />
-            </Parallax>
-          </Reveal>
-          <div>
-            <SectionHeading id="historia-titulo" align="left" eyebrow="Quiénes somos" title="Belleza con alma de spa" />
+      {/* 01 — HISTORIA */}
+      <section aria-labelledby="historia-titulo" className="bg-cream-50 py-24 sm:py-32">
+        <div className="mx-auto grid max-w-[88rem] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+          <figure className="lg:col-span-5">
+            <ClipReveal className="aspect-[4/5]">
+              <ArtFrame variant="portrait" alt="El equipo de Reduzen en el spa" className="h-full w-full" />
+            </ClipReveal>
+            <figcaption className="mt-3 flex items-baseline justify-between border-b border-ink/15 pb-3">
+              <span className="eyebrow text-gold-ink">Fig. 01</span>
+              <span className="font-serif text-lg italic text-ink">Col. Hacienda Residencial, Torreón</span>
+            </figcaption>
+          </figure>
+          <div className="lg:col-span-6 lg:col-start-7 lg:pt-10">
+            <p className="eyebrow text-gold-ink">01 — Quiénes somos</p>
+            <h2 id="historia-titulo" className="display mt-6 text-5xl sm:text-7xl">
+              Belleza con <em className="text-jade-ink">alma de spa.</em>
+            </h2>
             {/* PLACEHOLDER: historia editable en content/team.ts */}
-            <Reveal className="mt-6 space-y-5 text-[1.02rem] leading-relaxed text-stone">
+            <Reveal className="mt-8 space-y-5 text-lg leading-relaxed text-stone first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:leading-[0.8] first-letter:text-jade-ink">
               {story.map((p) => (
                 <p key={p.slice(0, 20)}>{p}</p>
               ))}
             </Reveal>
-            <Reveal delay={0.2} className="mt-8 border-l-2 border-gold pl-5">
-              <p className="script text-4xl text-jade-ink sm:text-5xl">Te mereces este espacio</p>
+            <Reveal delay={0.2} className="mt-10 border-l-2 border-gold pl-6">
+              <p className="display text-4xl text-ink sm:text-5xl">“Te mereces este espacio.”</p>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ============ VALORES ============ */}
-      <section aria-labelledby="valores-titulo" className="bg-cream py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-          <SectionHeading
-            id="valores-titulo"
-            eyebrow="Nuestros valores"
-            script="Florece"
-            title="Lo que nos mueve"
-            intro="Cuatro ideas que guían cada cita."
-          />
-          <Stagger as="ul" className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {brandValues.map((v) => {
+      {/* 02 — VALORES */}
+      <section aria-labelledby="valores-titulo" className="bg-jade-ink py-24 text-cream sm:py-32">
+        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+          <SectionHead id="valores-titulo" dark number="02" label="Valores" title="Lo que nos mueve." />
+          <Stagger as="ul" className="mt-16 grid border-t border-cream/20 sm:grid-cols-2 lg:grid-cols-4">
+            {brandValues.map((v, i) => {
               const Icon = valueIcons[v.icon];
               return (
-                <StaggerItem
-                  as="li"
-                  key={v.key}
-                  className="group rounded-[24px] bg-cream-50 p-7 ring-1 ring-navy/8 transition-all duration-500 hover:-translate-y-1 hover:shadow-lift hover:ring-gold/50"
-                >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream text-jade-ink ring-1 ring-gold/35 transition-all duration-500 group-hover:rotate-12 group-hover:bg-jade-ink group-hover:text-cream">
-                    <Icon size={26} />
-                  </span>
-                  <h3 className="mt-5 text-2xl text-navy">
-                    {v.title} <em className="text-gold-ink">{v.phrase}</em>
+                <StaggerItem as="li" key={v.key} className="border-b border-cream/20 py-10 sm:pr-6 lg:border-b-0 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0">
+                  <div className="flex items-center justify-between">
+                    <span className="eyebrow text-gold-pale">{String(i + 1).padStart(2, "0")}</span>
+                    <Icon size={26} className="text-gold-pale" />
+                  </div>
+                  <h3 className="mt-10 font-serif text-4xl leading-none !text-cream">
+                    {v.title} <em className="text-gold-pale">{v.phrase}</em>
                   </h3>
-                  <p className="mt-3 text-[0.95rem] leading-relaxed text-stone">{v.body}</p>
+                  <p className="mt-3 text-cream/80">{v.body}</p>
                 </StaggerItem>
               );
             })}
@@ -100,71 +93,64 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* ============ EQUIPO ============ */}
-      <section aria-labelledby="equipo-titulo" className="bg-cream-50 py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-          <SectionHeading
-            id="equipo-titulo"
-            eyebrow="Nuestro equipo"
-            title="Manos expertas, trato cercano"
-            intro="Especialistas que te acompañan en cada paso."
-          />
+      {/* 03 — EQUIPO */}
+      <section aria-labelledby="equipo-titulo" className="bg-cream py-24 sm:py-32">
+        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+          <SectionHead id="equipo-titulo" number="03" label="Equipo" title="Manos expertas." intro="Especialistas que te acompañan en cada paso." />
           {/* PLACEHOLDER: fotos, nombres y bios reales en content/team.ts */}
-          <Stagger className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
-              <StaggerItem key={i} className="text-center" >
-                <div data-placeholder="especialista">
-                  <div className="group mx-auto max-w-xs overflow-hidden rounded-[999px_999px_24px_24px] shadow-soft">
+              <StaggerItem key={i} className={i === 1 ? "lg:mt-20" : ""}>
+                <figure data-placeholder="especialista" className="group">
+                  <div className="overflow-hidden">
                     <ArtFrame
                       variant="team"
                       src={member.image}
                       alt={`Foto de ${member.name}`}
-                      className="aspect-[4/5] w-full transition-transform duration-[1.2s] group-hover:scale-105"
+                      className="aspect-[3/4] w-full grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
                     />
                   </div>
-                  <h3 className="mt-6 text-2xl text-navy">{member.name}</h3>
-                  <p className="eyebrow mt-2 text-gold-ink">{member.role}</p>
-                  <p className="mx-auto mt-3 max-w-xs text-[0.95rem] leading-relaxed text-stone">{member.bio}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* ============ ESPACIO ============ */}
-      <section aria-labelledby="espacio-titulo" className="bg-cream py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-          <SectionHeading
-            id="espacio-titulo"
-            eyebrow="Nuestro espacio"
-            title="Diseñado para que desconectes"
-            intro="Luz cálida y cabinas privadas en Col. Hacienda Residencial."
-          />
-          <Stagger className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5">
-            {gallery.map((g) => (
-              <StaggerItem key={g.alt} className={g.className}>
-                <figure className="group relative h-full overflow-hidden rounded-[24px] shadow-soft">
-                  <ArtFrame
-                    variant={g.variant}
-                    alt={g.alt}
-                    className="h-full min-h-full w-full transition-transform duration-[1.2s] ease-out group-hover:scale-110"
-                  />
-                  <figcaption className="absolute inset-x-3 bottom-3 translate-y-2 rounded-full bg-cream/90 px-4 py-2 text-center text-xs uppercase tracking-[0.18em] text-navy opacity-0 backdrop-blur transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                    {g.alt}
+                  <figcaption className="mt-4 border-b border-ink/15 pb-4">
+                    <span className="eyebrow text-gold-ink">{member.role}</span>
+                    <h3 className="mt-2 font-serif text-3xl text-ink">{member.name}</h3>
+                    <p className="mt-1 text-stone">{member.bio}</p>
                   </figcaption>
                 </figure>
               </StaggerItem>
             ))}
           </Stagger>
-          <Reveal className="mt-12 flex flex-col items-center gap-4 text-center">
-            <Lotus className="h-10 w-10 text-jade-ink" />
-            <WhatsAppButton message={waMessages.about}>Agenda una visita</WhatsAppButton>
-          </Reveal>
         </div>
       </section>
 
-      <CTASection />
+      {/* 04 — ESPACIO */}
+      <section aria-labelledby="espacio-titulo" className="bg-cream-50 py-24 sm:py-32">
+        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+          <SectionHead
+            id="espacio-titulo"
+            number="04"
+            label="Espacio"
+            title="Hecho para desconectar."
+            intro="Luz cálida y cabinas privadas en Col. Hacienda Residencial."
+            aside={
+              <WhatsAppButton message={waMessages.about} variant="outline" className="mt-6">
+                Agenda una visita
+              </WhatsAppButton>
+            }
+          />
+          <div className="mt-16 grid grid-cols-2 gap-4 lg:grid-cols-12 lg:gap-5">
+            {gallery.map((g, i) => (
+              <figure key={g.alt} className={`group relative ${g.className}`}>
+                <ClipReveal className="h-full min-h-full" delay={i * 0.08} drift={20}>
+                  <ArtFrame variant={g.variant} alt={g.alt} className="h-full w-full transition-transform duration-[1.2s] group-hover:scale-110" />
+                </ClipReveal>
+                <figcaption className="eyebrow absolute bottom-3 left-3 bg-cream-50 px-2.5 py-1 text-ink">{g.alt}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CTASection number="05" />
     </>
   );
 }

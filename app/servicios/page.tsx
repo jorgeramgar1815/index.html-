@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { ArtFrame } from "@/components/ArtFrame";
-import { TreatmentCard } from "@/components/Cards";
+import { TreatmentRow } from "@/components/Cards";
 import { CategoryTabs } from "@/components/CategoryTabs";
 import { CTASection } from "@/components/CTASection";
-import { WordsReveal } from "@/components/Effects";
-import { Reveal, Stagger, StaggerItem } from "@/components/Motion";
+import { ClipReveal, WordsReveal } from "@/components/Effects";
+import { Reveal } from "@/components/Motion";
 import { PageHeader } from "@/components/PageHeader";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { categories } from "@/content/services";
@@ -19,70 +19,68 @@ export const metadata: Metadata = {
 };
 
 export default function ServiciosPage() {
+  const total = categories.reduce((n, c) => n + c.treatments.length, 0);
   return (
     <>
       <PageHeader
         crumbs={[{ href: "/", label: "Inicio" }, { label: "Servicios" }]}
         eyebrow="Catálogo completo"
-        script="Florece desde adentro"
-        title="Nuestros servicios"
+        title="Nuestros"
+        accent="servicios."
         intro="Elige tu ritual. Cada tratamiento incluye una valoración previa."
-      />
+      >
+        <p className="eyebrow mt-6 text-gold-ink">
+          {categories.length} categorías · {total} tratamientos
+        </p>
+      </PageHeader>
 
-      <div className="bg-cream-50">
-        <CategoryTabs items={categories.map(({ slug, short, icon }) => ({ slug, short, icon }))} />
+      <CategoryTabs items={categories.map(({ slug, short }) => ({ slug, short }))} />
 
-        {categories.map((c, idx) => (
-          <section
-            key={c.slug}
-            id={c.slug}
-            aria-labelledby={`${c.slug}-titulo`}
-            className={`scroll-mt-32 py-16 sm:py-24 ${idx % 2 ? "bg-cream" : "bg-cream-50"}`}
-          >
-            <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-              <div className="grid items-start gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-14">
-                <Reveal className={`lg:sticky lg:top-40 ${idx % 2 ? "lg:order-2" : ""}`}>
-                  <ArtFrame
-                    variant={c.art}
-                    src={c.image}
-                    alt={`${c.name} en Reduzen`}
-                    className="aspect-[16/10] w-full rounded-[28px] shadow-lift lg:aspect-[4/5] lg:rounded-[999px_999px_28px_28px]"
-                  />
+      {categories.map((c, idx) => (
+        <section
+          key={c.slug}
+          id={c.slug}
+          aria-labelledby={`${c.slug}-titulo`}
+          className={`scroll-mt-28 py-20 sm:py-28 ${idx % 2 ? "bg-cream-50" : "bg-cream"}`}
+        >
+          <div className="mx-auto grid max-w-[88rem] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+            {/* Columna fija con número gigante, título e imagen */}
+            <div className="lg:col-span-4">
+              <div className="lg:sticky lg:top-36">
+                <span aria-hidden className="outline-text display block text-[7rem] text-gold sm:text-[9rem]">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <h2 id={`${c.slug}-titulo`} className="display -mt-4 text-5xl sm:text-6xl">
+                  <WordsReveal text={c.name} />
+                </h2>
+                <Reveal delay={0.15}>
+                  <p className="mt-4 max-w-xs text-lg text-stone">{c.intro}</p>
                 </Reveal>
-                <div>
-                  <Reveal className="relative">
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute -top-10 right-0 select-none font-serif text-[7rem] leading-none text-transparent [-webkit-text-stroke:1px_rgba(201,162,75,.45)] sm:text-[9rem]"
-                    >
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <p className="eyebrow relative text-gold-ink">{c.treatments.length} tratamientos</p>
-                    <h2 id={`${c.slug}-titulo`} className="relative mt-3 text-[2.3rem] leading-tight text-navy sm:text-5xl">
-                      <WordsReveal text={c.name} />
-                    </h2>
-                    <p className="relative mt-3 max-w-xl text-[1.05rem] text-stone">{c.intro}</p>
-                  </Reveal>
-                  <Stagger className="mt-8 grid gap-5 sm:grid-cols-2">
-                    {c.treatments.map((t) => (
-                      <StaggerItem key={t.slug}>
-                        <TreatmentCard treatment={t} categoryIcon={c.icon} />
-                      </StaggerItem>
-                    ))}
-                  </Stagger>
-                  <Reveal className="mt-8">
-                    <WhatsAppButton message={waMessages.category(c.name)} variant="outline">
-                      Preguntar por {c.short.toLowerCase()}
-                    </WhatsAppButton>
-                  </Reveal>
-                </div>
+                <ClipReveal className="mt-8 hidden aspect-[4/3] lg:block">
+                  <ArtFrame variant={c.art} src={c.image} alt={`${c.name} en Reduzen`} className="h-full w-full" />
+                </ClipReveal>
               </div>
             </div>
-          </section>
-        ))}
-      </div>
 
-      <CTASection withMap={false} />
+            <div className="lg:col-span-8">
+              <Reveal>
+                <div className="border-t border-ink/15">
+                  {c.treatments.map((t, i) => (
+                    <TreatmentRow key={t.slug} treatment={t} index={i} />
+                  ))}
+                </div>
+              </Reveal>
+              <Reveal className="mt-10">
+                <WhatsAppButton message={waMessages.category(c.name)} variant="outline">
+                  Preguntar por {c.short.toLowerCase()}
+                </WhatsAppButton>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+      ))}
+
+      <CTASection withMap={false} number="06" />
     </>
   );
 }

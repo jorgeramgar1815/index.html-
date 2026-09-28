@@ -26,29 +26,6 @@ export function Bubbles({ count = 14, light = false, className = "" }: { count?:
   );
 }
 
-/** Manchas de luz tipo aurora que se desplazan suavemente. */
-export function Aurora({ dark = false }: { dark?: boolean }) {
-  const blobs = dark
-    ? ["rgba(58,166,160,.28)", "rgba(201,162,75,.22)", "rgba(39,64,107,.55)"]
-    : ["rgba(58,166,160,.20)", "rgba(212,179,106,.30)", "rgba(236,213,197,.75)"];
-  const pos = [
-    "left-[-12%] top-[-10%] h-[34rem] w-[34rem]",
-    "right-[-10%] top-[18%] h-[30rem] w-[30rem] [animation-delay:-6s]",
-    "left-[28%] bottom-[-18%] h-[28rem] w-[36rem] [animation-delay:-12s]",
-  ];
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {blobs.map((c, i) => (
-        <div
-          key={i}
-          className={`absolute animate-aurora rounded-full will-change-transform ${pos[i]}`}
-          style={{ background: `radial-gradient(closest-side, ${c}, transparent)` }}
-        />
-      ))}
-    </div>
-  );
-}
-
 /** Cinta infinita horizontal. El segundo juego se oculta a lectores de pantalla. */
 export function Marquee({
   children,

@@ -1,190 +1,135 @@
-import Link from "next/link";
-import type { Category, Treatment } from "@/content/services";
-import type { Testimonial } from "@/content/testimonials";
+import type { Treatment } from "@/content/services";
 import { waLink, waMessages } from "@/lib/whatsapp";
-import { ArtFrame, type ArtVariant } from "./ArtFrame";
-import { Tilt } from "./Effects";
-import { ArrowIcon, ClockIcon, QuoteIcon, StarIcon, WhatsAppIcon, categoryIcons } from "./Icons";
+import { ArtFrame } from "./ArtFrame";
+import { ClipReveal } from "./Effects";
+import { ArrowIcon, ClockIcon, WhatsAppIcon } from "./Icons";
+import { Reveal, Stagger, StaggerItem } from "./Motion";
+import { WhatsAppButton } from "./WhatsAppButton";
 
-/* ---------- ServiceCard: categoría en la landing (imagen a sangre + texto sobrepuesto) ---------- */
-export function ServiceCard({ category }: { category: Category }) {
-  const Icon = categoryIcons[category.icon];
+export function Chips({ items, dark = false }: { items?: string[]; dark?: boolean }) {
+  if (!items?.length) return null;
   return (
-    <Tilt className="rounded-[28px]">
-      <Link
-        href={`/servicios/#${category.slug}`}
-        className="group relative flex h-[25rem] flex-col justify-end overflow-hidden rounded-[28px] shadow-soft ring-1 ring-navy/10 transition-shadow duration-500 hover:shadow-lift sm:h-[27rem]"
-      >
-        <ArtFrame
-          variant={category.art}
-          src={category.image}
-          alt={`${category.name} en Reduzen`}
-          className="absolute inset-0 transition-transform duration-[1.2s] ease-out group-hover:scale-[1.08]"
-        />
-        <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-night/90 via-night/35 to-transparent transition-opacity duration-500 group-hover:opacity-95" />
-        <span className="absolute left-5 top-5 rounded-full bg-cream/85 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-navy">
-          {category.treatments.length} tratamientos
-        </span>
-        <span className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-cream/85 text-jade-ink transition-transform duration-700 group-hover:rotate-[360deg]">
-          <Icon size={24} />
-        </span>
-        <div className="relative p-6">
-          <h3 className="text-[2rem] leading-none text-cream">{category.short}</h3>
-          <p className="mt-2 text-[0.95rem] text-cream/85">{category.intro}</p>
-          <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium tracking-wide text-gold">
-            Ver tratamientos
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/60 transition-all duration-300 group-hover:translate-x-1 group-hover:bg-gold group-hover:text-night">
-              <ArrowIcon size={16} />
-            </span>
-          </span>
-        </div>
-      </Link>
-    </Tilt>
+    <ul className="flex flex-wrap gap-x-4 gap-y-1" aria-label="Incluye">
+      {items.map((h) => (
+        <li key={h} className={`eyebrow !text-[0.62rem] ${dark ? "text-jade" : "text-jade-ink"}`}>
+          + {h}
+        </li>
+      ))}
+    </ul>
   );
 }
 
-/* ---------- TreatmentSpotlightCard: sección oscura premium ---------- */
-const spotlightArt: Record<string, ArtVariant> = {
-  hydrafacial: "facial",
-  "bubble-oxygen-facial": "facial",
-  microneedling: "facial",
-  hidralips: "facial",
-};
-
-export function TreatmentSpotlightCard({ treatment, index }: { treatment: Treatment; index: number }) {
+/* ---------- CoverStory: spread oscuro con el tratamiento estrella ---------- */
+export function CoverStory({ lead, others }: { lead: Treatment; others: Treatment[] }) {
   return (
-    <Tilt className="rounded-[28px]">
-      <article className="group relative flex h-full flex-col overflow-hidden rounded-[28px] bg-night-3/80 ring-1 ring-cream/10 transition-all duration-500 hover:-translate-y-1.5 hover:ring-gold/50 hover:shadow-[0_30px_60px_-25px_rgba(201,162,75,.45)]">
-        <ArtFrame
-          variant={spotlightArt[treatment.slug] ?? "facial"}
-          alt={`${treatment.name}: tratamiento facial en Reduzen`}
-          className="aspect-[5/4] w-full transition-transform duration-[1.2s] group-hover:scale-[1.06]"
-        >
-          <span className="absolute left-5 top-5 font-serif text-sm tracking-[0.3em] text-gold">
-            0{index + 1}
-          </span>
-          {treatment.price && (
-            // PLACEHOLDER: precio a confirmar con la clienta (ver content/services.ts)
-            <span className="absolute bottom-5 right-5 rounded-full bg-gold px-4 py-2 text-night shadow-lg">
-              <span className="block text-[0.62rem] uppercase leading-none tracking-[0.2em]">{treatment.price.label}</span>
-              <span className="block font-serif text-2xl font-semibold leading-none">{treatment.price.amount}</span>
-            </span>
-          )}
-        </ArtFrame>
-        <div className="flex flex-1 flex-col p-6">
-          <h3 className="font-serif text-[1.55rem] uppercase leading-tight tracking-[0.06em] text-cream">
-            {treatment.name}
-          </h3>
-          <p className="mt-2 text-[0.95rem] leading-relaxed text-cream/80">{treatment.summary}</p>
-          {treatment.highlights && (
-            <ul className="mb-6 mt-4 flex flex-wrap content-start gap-2" aria-label="Beneficios">
-              {treatment.highlights.map((h) => (
-                <li key={h} className="rounded-full border border-jade/40 px-3 py-1 text-xs tracking-wide text-jade">
-                  {h}
-                </li>
-              ))}
-            </ul>
-          )}
-          <a
-            href={waLink(waMessages.treatment(treatment.name))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-shine mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-gold/60 px-5 text-sm font-medium tracking-wide text-gold transition-all duration-300 hover:bg-gold hover:text-night"
-          >
-            <WhatsAppIcon size={18} />
-            Quiero este tratamiento
-            <span className="sr-only"> (abre WhatsApp)</span>
-          </a>
+    <>
+      <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
+        <figure className="lg:col-span-6">
+          <div className="relative">
+            <ClipReveal className="aspect-[4/5]">
+              <ArtFrame variant="facial" alt={`${lead.name}: tratamiento facial en Reduzen`} className="h-full w-full" />
+            </ClipReveal>
+            {lead.price && (
+              // PLACEHOLDER: precio a confirmar con la clienta (content/services.ts)
+              <Reveal delay={0.6} className="absolute -right-2 -top-6 sm:-right-8">
+                <span className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-gold text-center text-night sm:h-40 sm:w-40">
+                  <span className="eyebrow !text-[0.6rem]">{lead.price.label}</span>
+                  <span className="font-serif text-5xl leading-none sm:text-6xl">{lead.price.amount}</span>
+                </span>
+              </Reveal>
+            )}
+          </div>
+          <figcaption className="mt-3 flex items-baseline justify-between gap-4 border-b border-cream/15 pb-3">
+            <span className="eyebrow text-gold">Fig. 02</span>
+            <span className="font-serif text-lg italic text-cream/80">Limpieza, exfoliación e hidratación</span>
+          </figcaption>
+        </figure>
+
+        <div className="flex flex-col justify-end lg:col-span-6 lg:pl-6">
+          <Reveal>
+            <p className="eyebrow text-gold">Portada del mes</p>
+            <h3 className="display mt-4 text-[4.2rem] !text-cream sm:text-8xl xl:text-[9rem]">{lead.name}</h3>
+            <p className="mt-6 max-w-md text-xl leading-relaxed text-cream/80">{lead.summary}</p>
+            <div className="mt-6">
+              <Chips items={lead.highlights} dark />
+            </div>
+            <WhatsAppButton message={waMessages.treatment(lead.name)} variant="gold" size="lg" className="mt-10 w-full sm:w-auto">
+              Quiero mi {lead.name}
+            </WhatsAppButton>
+          </Reveal>
         </div>
-      </article>
-    </Tilt>
+      </div>
+
+      <Stagger as="ul" className="mt-20 grid border-t border-cream/15 md:grid-cols-3">
+        {others.map((t, i) => (
+          <StaggerItem as="li" key={t.slug} className="border-b border-cream/15 md:border-b-0 md:border-r md:last:border-r-0">
+            <a
+              href={waLink(waMessages.treatment(t.name))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`group flex h-full flex-col gap-4 py-8 transition-colors duration-500 hover:bg-cream/[0.04] ${i === 0 ? "md:pr-8" : "md:px-8"}`}
+            >
+              <span className="eyebrow text-gold">{String(i + 2).padStart(2, "0")}</span>
+              <span className="font-serif text-4xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
+              <span className="text-cream/75">{t.summary}</span>
+              <Chips items={t.highlights?.slice(0, 3)} dark />
+              <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium text-gold">
+                <WhatsAppIcon size={17} />
+                <span className="link-draw">Pedir información</span>
+                <ArrowIcon size={17} className="-rotate-45 transition-transform duration-500 group-hover:rotate-0" />
+                <span className="sr-only"> sobre {t.name} por WhatsApp</span>
+              </span>
+            </a>
+          </StaggerItem>
+        ))}
+      </Stagger>
+    </>
   );
 }
 
-/* ---------- TreatmentCard: catálogo en /servicios ---------- */
-export function TreatmentCard({ treatment, categoryIcon }: { treatment: Treatment; categoryIcon: Category["icon"] }) {
-  const Icon = categoryIcons[categoryIcon];
+/* ---------- TreatmentRow: fila del catálogo en /servicios ---------- */
+export function TreatmentRow({ treatment, index }: { treatment: Treatment; index: number }) {
   return (
-    <Tilt className="rounded-[24px]" max={5}>
-      <article
-        className="group flex h-full flex-col rounded-[24px] bg-cream-50 p-6 ring-1 ring-navy/8 transition-all duration-500 hover:shadow-lift hover:ring-gold/50"
-        data-placeholder={treatment.confirmed ? undefined : "tratamiento-por-confirmar"}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream-100 text-jade-ink ring-1 ring-gold/25 transition-all duration-500 group-hover:bg-jade-ink group-hover:text-cream">
-            <Icon size={24} />
-          </span>
+    <article
+      className="group grid gap-5 border-b border-ink/15 py-8 transition-colors duration-500 hover:bg-cream-50 sm:grid-cols-[3rem_1fr_auto] sm:gap-8 sm:px-4"
+      data-placeholder={treatment.confirmed ? undefined : "tratamiento-por-confirmar"}
+    >
+      <span className="eyebrow pt-2 text-gold-ink">{String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <h3 className="font-serif text-4xl leading-none text-ink transition-transform duration-500 group-hover:translate-x-1.5 sm:text-5xl">
+          {treatment.name}
+        </h3>
+        <p className="mt-3 text-[1.05rem] text-stone">{treatment.summary}</p>
+        <div className="mt-4">
+          <Chips items={treatment.highlights} />
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 sm:flex-col sm:items-end">
+        <div className="flex items-center gap-5 sm:flex-col sm:items-end sm:gap-1">
           {treatment.price && (
             // PLACEHOLDER: precio a confirmar
-            <span className="rounded-2xl bg-gold/15 px-3 py-1.5 text-right ring-1 ring-gold/40">
-              <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-gold-ink">{treatment.price.label}</span>
-              <span className="block font-serif text-2xl font-semibold leading-none text-navy">{treatment.price.amount}</span>
+            <span className="text-right">
+              <span className="eyebrow block text-gold-ink">{treatment.price.label}</span>
+              <span className="font-serif text-4xl leading-none text-ink">{treatment.price.amount}</span>
             </span>
           )}
-        </div>
-        <h3 className="mt-5 text-[1.6rem] leading-tight text-navy">{treatment.name}</h3>
-        <p className="mt-1.5 text-[0.95rem] text-stone">{treatment.summary}</p>
-        {treatment.highlights && (
-          <ul className="mt-4 flex flex-1 flex-wrap content-start gap-1.5" aria-label="Incluye">
-            {treatment.highlights.map((h) => (
-              <li key={h} className="rounded-full bg-cream-100 px-2.5 py-1 text-xs text-navy/80">
-                {h}
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-navy/10 pt-4">
           {/* PLACEHOLDER: duración estimada */}
           <span className="inline-flex items-center gap-1.5 text-sm text-stone">
-            <ClockIcon size={17} className="text-gold-ink" />
+            <ClockIcon size={16} className="text-gold-ink" />
             {treatment.duration}
           </span>
-          <a
-            href={waLink(waMessages.treatment(treatment.name))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-shine inline-flex min-h-11 items-center gap-2 rounded-full bg-jade-ink px-4 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow"
-          >
-            <WhatsAppIcon size={17} />
-            Pedir info
-            <span className="sr-only"> sobre {treatment.name} por WhatsApp</span>
-          </a>
         </div>
-      </article>
-    </Tilt>
-  );
-}
-
-/* ---------- TestimonialCard ---------- */
-export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  return (
-    <figure
-      className="relative flex h-full flex-col rounded-[24px] bg-cream-50 p-7 shadow-soft ring-1 ring-navy/8 transition-all duration-500 hover:-translate-y-1 hover:ring-gold/50"
-      data-placeholder={testimonial.isExample ? "testimonio-de-ejemplo" : undefined}
-    >
-      <QuoteIcon size={30} className="text-gold" />
-      <div className="mt-3 flex gap-0.5 text-gold" role="img" aria-label={`${testimonial.rating} de 5 estrellas`}>
-        {Array.from({ length: testimonial.rating }).map((_, i) => (
-          <StarIcon key={i} size={16} />
-        ))}
+        <a
+          href={waLink(waMessages.treatment(treatment.name))}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-fill inline-flex min-h-12 items-center gap-2 border border-ink/80 px-5 text-sm font-medium text-ink transition-colors duration-500 hover:text-cream-50"
+        >
+          <WhatsAppIcon size={17} />
+          Pedir info
+          <span className="sr-only"> sobre {treatment.name} por WhatsApp</span>
+        </a>
       </div>
-      <blockquote className="mt-4 flex-1 font-serif text-[1.3rem] leading-snug text-navy">
-        “{testimonial.quote}”
-      </blockquote>
-      <figcaption className="mt-6 flex items-center gap-3 border-t border-navy/10 pt-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sand font-serif text-lg text-navy" aria-hidden>
-          {testimonial.name.charAt(0)}
-        </span>
-        <span>
-          <span className="block text-sm font-medium text-navy">{testimonial.name}</span>
-          <span className="block text-xs tracking-wide text-stone">{testimonial.detail}</span>
-        </span>
-        {testimonial.isExample && (
-          <span className="ml-auto rounded-full bg-cream-100 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.15em] text-stone">
-            Ejemplo
-          </span>
-        )}
-      </figcaption>
-    </figure>
+    </article>
   );
 }

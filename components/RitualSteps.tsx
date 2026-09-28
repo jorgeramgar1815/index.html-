@@ -1,70 +1,54 @@
-"use client";
+import { HandIcon, LeafIcon, LotusIcon, ShieldIcon, SparkleIcon, WhatsAppIcon } from "./Icons";
+import { Stagger, StaggerItem } from "./Motion";
 
-import { m } from "framer-motion";
-import { HandIcon, LotusIcon, WhatsAppIcon } from "./Icons";
+const steps = [
+  { icon: WhatsAppIcon, title: "Escríbenos", body: "Cuéntanos qué buscas por WhatsApp." },
+  { icon: HandIcon, title: "Valoración", body: "Elegimos contigo el tratamiento ideal." },
+  { icon: LotusIcon, title: "Florece", body: "Relájate y disfruta tus resultados." },
+];
 
-const icons = { whatsapp: WhatsAppIcon, hand: HandIcon, lotus: LotusIcon };
+const reasons = [
+  { icon: SparkleIcon, title: "Tecnología", body: "Hydrafacial, ultrasonido 3D y láser." },
+  { icon: HandIcon, title: "Atención personal", body: "Un plan pensado para ti." },
+  { icon: LeafIcon, title: "Ambiente sereno", body: "Desconectas desde que llegas." },
+  { icon: ShieldIcon, title: "Resultados reales", body: "Seguimiento sesión a sesión." },
+];
 
-type Step = { icon: keyof typeof icons; title: string; body: string };
-
-const ease = [0.22, 1, 0.36, 1] as const;
-
-/** Pasos conectados por una línea dorada que se dibuja al hacer scroll. */
-export function RitualSteps({ steps }: { steps: Step[] }) {
+/** El método: 3 pasos con numerales gigantes en contorno + 4 diferenciadores. */
+export function Method() {
   return (
-    <m.ol
-      className="relative mt-16 grid gap-12 md:grid-cols-3 md:gap-8"
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.4 }}
-    >
-      {/* Línea conectora: horizontal en desktop, vertical en móvil */}
-      <svg aria-hidden className="absolute left-[16.6%] right-[16.6%] top-10 hidden h-4 md:block" viewBox="0 0 100 4" preserveAspectRatio="none">
-        <m.path
-          d="M0 2 Q25 0 50 2 T100 2"
-          fill="none"
-          stroke="var(--color-gold)"
-          strokeWidth="1.5"
-          vectorEffect="non-scaling-stroke"
-          variants={{ hidden: { pathLength: 0 }, show: { pathLength: 1, transition: { duration: 1.6, ease, delay: 0.3 } } }}
-        />
-      </svg>
-      <svg aria-hidden className="absolute bottom-10 left-10 top-10 w-2 md:hidden" viewBox="0 0 4 100" preserveAspectRatio="none">
-        <m.path
-          d="M2 0 V100"
-          fill="none"
-          stroke="var(--color-gold)"
-          strokeWidth="1.5"
-          vectorEffect="non-scaling-stroke"
-          variants={{ hidden: { pathLength: 0 }, show: { pathLength: 1, transition: { duration: 1.4, ease, delay: 0.2 } } }}
-        />
-      </svg>
-
-      {steps.map((s, i) => {
-        const Icon = icons[s.icon];
-        return (
-        <m.li
-          key={s.title}
-          className="relative flex items-start gap-6 md:flex-col md:items-center md:text-center"
-          variants={{
-            hidden: { opacity: 0, y: 18 },
-            show: { opacity: 1, y: 0, transition: { duration: 0.8, ease, delay: 0.25 + i * 0.35 } },
-          }}
-        >
-          <span className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-cream-50 text-jade-ink shadow-soft ring-1 ring-gold/40">
-            <span aria-hidden className="absolute inset-[-6px] rounded-full border border-gold/30" />
-            <Icon size={30} />
-            <span className="absolute -right-1 -top-1 flex h-7 w-7 items-center justify-center rounded-full bg-navy font-serif text-sm text-cream">
+    <>
+      <Stagger as="ol" className="mt-16 grid border-t border-ink/15 md:grid-cols-3">
+        {steps.map((s, i) => (
+          <StaggerItem
+            as="li"
+            key={s.title}
+            className="group relative border-b border-ink/15 py-10 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
+          >
+            <span aria-hidden className="outline-text display block text-[7rem] text-gold transition-colors duration-700 group-hover:text-jade-ink sm:text-[9rem]">
               {i + 1}
             </span>
-          </span>
-          <div className="pt-3 md:pt-0">
-            <h3 className="text-[1.75rem] leading-tight text-navy md:mt-6">{s.title}</h3>
-            <p className="mt-1.5 text-[0.98rem] text-stone">{s.body}</p>
-          </div>
-        </m.li>
-        );
-      })}
-    </m.ol>
+            <div className="mt-4 flex items-center gap-3">
+              <s.icon size={22} className="text-jade-ink" />
+              <h3 className="font-serif text-4xl text-ink">{s.title}</h3>
+            </div>
+            <p className="mt-2 text-[1.05rem] text-stone">{s.body}</p>
+          </StaggerItem>
+        ))}
+      </Stagger>
+
+      <div className="mt-20 bg-jade-ink p-8 text-cream sm:p-12">
+        <p className="eyebrow text-gold-pale">Por qué Reduzen</p>
+        <Stagger as="ul" className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {reasons.map((r) => (
+            <StaggerItem as="li" key={r.title} className="border-t border-cream/25 pt-6">
+              <r.icon size={26} className="text-gold-pale" />
+              <h3 className="mt-4 font-serif text-3xl !text-cream">{r.title}</h3>
+              <p className="mt-1 text-cream/80">{r.body}</p>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </div>
+    </>
   );
 }

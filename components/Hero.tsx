@@ -1,76 +1,34 @@
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
+import { categories } from "@/content/services";
+import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
-import { ArtFrame, type ArtVariant } from "./ArtFrame";
-import { Aurora, Bubbles, Star } from "./Decor";
-import { PointerParallax } from "./Effects";
-import { ArrowIcon, HandIcon, PinIcon, SparkleIcon } from "./Icons";
+import { ArtFrame } from "./ArtFrame";
+import { ArrowIcon } from "./Icons";
 import { Lotus } from "./Lotus";
-import { Branch } from "./Section";
-import { SectionDivider } from "./SectionDivider";
 import { WhatsAppButton } from "./WhatsAppButton";
 
-// PLACEHOLDER: fotos reales para los arcos flotantes del hero (retrato spa / tratamiento facial)
-const HERO_LEFT: string | null = null;
-const HERO_RIGHT: string | null = null;
+// PLACEHOLDER: foto real de portada (retrato spa, luz cálida, formato vertical)
+const HERO_IMAGE: string | null = null;
 
 const d = (s: number) => ({ "--d": `${s}s` }) as CSSProperties;
 
-/** Capa que sigue al mouse (profundidad = px de desplazamiento máximo). */
-function Depth({ depth, className = "", children }: { depth: number; className?: string; children: ReactNode }) {
+/** Sello circular con texto que gira y loto que se dibuja. */
+function Seal() {
   return (
-    <div
-      className={`transition-[translate] duration-700 ease-out ${className}`}
-      style={{ translate: `calc(var(--px, 0) * ${depth}px) calc(var(--py, 0) * ${depth * 0.7}px)` }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function FloatingArch({
-  variant,
-  src,
-  alt,
-  rotate,
-  delay,
-  className,
-}: {
-  variant: ArtVariant;
-  src: string | null;
-  alt: string;
-  rotate: number;
-  delay: number;
-  className: string;
-}) {
-  return (
-    <div className={`rise ${className}`} style={d(delay)}>
-      <div className="animate-float-tilt" style={{ "--r": `${rotate}deg`, animationDelay: `${-delay * 3}s` } as CSSProperties}>
-        <div className="relative">
-          <div className="absolute -inset-2.5 rounded-[999px_999px_30px_30px] border border-gold/50" aria-hidden />
-          <ArtFrame variant={variant} src={src} alt={alt} className="aspect-[3/4] w-full rounded-[999px_999px_24px_24px] shadow-lift" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Emblema: loto que se dibuja dentro de un anillo de texto que gira. */
-function Emblem() {
-  return (
-    <div className="rise relative mx-auto h-32 w-32 sm:h-36 sm:w-36" aria-hidden>
-      <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full animate-spin-slow text-gold-ink">
+    <div className="relative h-28 w-28 sm:h-36 sm:w-36" aria-hidden>
+      <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full animate-spin-slow text-ink">
         <defs>
-          <path id="anillo" d="M100 100m-84 0a84 84 0 1 1 168 0a84 84 0 1 1-168 0" />
+          <path id="sello" d="M100 100m-80 0a80 80 0 1 1 160 0a80 80 0 1 1-160 0" />
         </defs>
-        <text fontSize="12.5" letterSpacing="3" fill="currentColor" style={{ fontFamily: "var(--font-jost)" }}>
-          <textPath href="#anillo" textLength="520" lengthAdjust="spacing">
-            MESOTERAPIA &amp; SPA ✦ TORREÓN ✦ BIENESTAR ✦
+        <text fontSize="14" fill="currentColor" style={{ fontFamily: "var(--font-body)", fontWeight: 600 }}>
+          <textPath href="#sello" textLength="496" lengthAdjust="spacing">
+            TE MERECES ESTE ESPACIO ✦ REDUZEN ✦
           </textPath>
         </text>
       </svg>
-      <div className="absolute inset-[21%] flex items-center justify-center rounded-full bg-cream-50 shadow-[0_0_0_6px_rgba(201,162,75,.08),0_18px_40px_-16px_rgba(27,42,74,.35)] ring-1 ring-gold/40">
-        <Lotus draw className="w-[62%] text-jade-ink" strokeWidth={1.5} />
+      <div className="absolute inset-[24%] flex items-center justify-center rounded-full bg-gold">
+        <Lotus draw className="w-[64%] text-ink" accent="var(--color-cream-50)" strokeWidth={1.7} />
       </div>
     </div>
   );
@@ -78,95 +36,99 @@ function Emblem() {
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero-titulo" className="relative isolate overflow-hidden bg-cream">
-      <PointerParallax className="relative flex min-h-[100svh] flex-col items-center justify-center px-5 pb-28 pt-28 text-center sm:pb-32">
-        <Aurora />
-        <Bubbles count={10} />
+    <section aria-labelledby="hero-titulo" className="relative overflow-hidden bg-cream pt-24 sm:pt-28">
+      <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+        {/* Folio superior */}
+        <div className="rise flex items-center justify-between border-b border-ink/15 pb-3 text-stone" style={d(0)}>
+          <span className="eyebrow">Mesoterapia &amp; Spa</span>
+          <span className="eyebrow hidden sm:block">{site.address.neighborhood}</span>
+          <span className="eyebrow">{site.address.city}, Coah.</span>
+        </div>
 
-        {/* Ramas en las esquinas */}
-        <Depth depth={-14} className="pointer-events-none absolute -left-10 top-20 w-40 text-jade-ink/25 sm:w-56">
-          <Branch />
-        </Depth>
-        <Depth depth={-14} className="pointer-events-none absolute -right-10 bottom-24 w-40 -scale-x-100 rotate-180 text-jade-ink/25 sm:w-56">
-          <Branch />
-        </Depth>
+        <div className="grid gap-10 pb-12 pt-8 lg:grid-cols-12 lg:gap-8 lg:pb-16 lg:pt-10">
+          <div className="lg:col-span-7">
+            <p className="rise eyebrow text-jade-ink" style={d(0.1)}>
+              — Este es tu momento
+            </p>
+            <h1 id="hero-titulo" className="display mt-5 text-[5.3rem] sm:text-[8rem] lg:text-[8.5rem] xl:text-[9.5rem]">
+              <span className="line">
+                <span style={d(0.15)}>Florece</span>
+              </span>
+              <span className="line">
+                <span style={d(0.25)} className="pl-[12%]">
+                  desde
+                </span>
+              </span>
+              <span className="line">
+                <span style={d(0.35)}>
+                  <em className="text-jade-ink">adentro.</em>
+                </span>
+              </span>
+              <span className="sr-only"> Reduzen, mesoterapia y spa en Torreón</span>
+            </h1>
 
-        {/* Arcos flotantes (desktop) */}
-        <Depth depth={-26} className="pointer-events-none absolute left-[2%] top-[20%] hidden w-40 lg:block xl:left-[4%] xl:w-52">
-          <FloatingArch variant="facial" src={HERO_LEFT} alt="Tratamiento facial con burbujas en Reduzen" rotate={-7} delay={0.45} className="" />
-        </Depth>
-        <Depth depth={-18} className="pointer-events-none absolute left-[13%] bottom-[16%] hidden w-24 lg:block xl:left-[16%]">
-          <div className="rise" style={d(0.7)}>
-            <ArtFrame variant="nails" alt="Detalle de manicure" className="aspect-square w-full animate-float rounded-full shadow-lift ring-4 ring-cream-50" />
+            <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end lg:max-w-2xl">
+              <p className="rise max-w-sm text-lg leading-relaxed text-stone" style={d(0.5)}>
+                Faciales, corporales, uñas, pedicure y láser con la calma de un spa boutique.
+              </p>
+              <div className="rise hidden sm:block lg:hidden" style={d(0.6)}>
+                <Seal />
+              </div>
+            </div>
+            <div className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8" style={d(0.65)}>
+              <WhatsAppButton message={waMessages.hero} size="lg">
+                Agenda tu cita
+              </WhatsAppButton>
+              <Link href="#servicios" className="group inline-flex min-h-12 items-center gap-2 self-start text-sm font-medium tracking-wide text-ink sm:self-auto">
+                <span className="link-draw">Ver servicios</span>
+                <ArrowIcon size={18} className="rotate-90 transition-transform duration-500 group-hover:translate-y-1" />
+              </Link>
+            </div>
           </div>
-        </Depth>
-        <Depth depth={-26} className="pointer-events-none absolute right-[2%] top-[26%] hidden w-40 lg:block xl:right-[4%] xl:w-52">
-          <FloatingArch variant="portrait" src={HERO_RIGHT} alt="Mujer relajada con piel luminosa" rotate={7} delay={0.55} className="" />
-        </Depth>
-        <Depth depth={-18} className="pointer-events-none absolute right-[14%] top-[14%] hidden w-20 lg:block xl:right-[17%]">
-          <div className="rise" style={d(0.8)}>
-            <ArtFrame variant="pedicure" alt="Ritual de pedicure" className="aspect-square w-full animate-float rounded-full shadow-lift ring-4 ring-cream-50 [animation-delay:-3s]" />
-          </div>
-        </Depth>
 
-        {/* Destellos */}
-        <Depth depth={20} className="pointer-events-none absolute inset-0" >
-          <Star className="absolute left-[22%] top-[24%] h-4 w-4 animate-twinkle text-gold" />
-          <Star className="absolute right-[26%] top-[62%] h-3 w-3 animate-twinkle text-gold [animation-delay:1.4s]" />
-          <Star className="absolute left-[30%] bottom-[20%] h-2.5 w-2.5 animate-twinkle text-gold [animation-delay:2.4s]" />
-        </Depth>
+          <figure className="relative lg:col-span-5 lg:pt-8">
+            <div className="curtain relative" style={d(0.3)}>
+              <ArtFrame
+                variant="portrait"
+                src={HERO_IMAGE}
+                priority
+                alt="Mujer relajada con piel luminosa durante un tratamiento facial en Reduzen"
+                className="aspect-[4/5] w-full"
+              />
+              <span className="eyebrow absolute left-4 top-4 bg-cream-50 px-3 py-1.5 text-ink">Tratamiento estrella</span>
+            </div>
+            <figcaption className="rise mt-3 flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3" style={d(0.8)}>
+              <span className="eyebrow shrink-0 text-gold-ink">Fig. 01</span>
+              <span className="font-serif text-xl italic text-ink">Hydrafacial — piel luminosa en una sesión</span>
+            </figcaption>
+            <div className="absolute -left-16 top-1/2 hidden -translate-y-1/2 lg:block">
+              <div className="rise" style={d(0.9)}>
+                <Seal />
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
 
-        <Depth depth={8} className="relative z-10 mx-auto max-w-3xl">
-          <Emblem />
-          <p className="rise script mt-6 text-[3.1rem] text-jade-ink sm:text-7xl" style={d(0.1)} aria-hidden>
-            Este es tu momento
-          </p>
-          <h1 id="hero-titulo" className="rise mt-1 text-[3.3rem] leading-[0.98] text-navy sm:text-7xl xl:text-[5.6rem]" style={d(0.18)}>
-            Florece <em className="text-shine font-normal italic">desde adentro</em>
-            <span className="sr-only"> — Reduzen, mesoterapia y spa en Torreón</span>
-          </h1>
-          <p className="rise mx-auto mt-6 max-w-xl text-[1.08rem] leading-relaxed text-stone sm:text-lg" style={d(0.28)}>
-            Faciales, corporales, uñas, pedicure y láser con la calma de un spa boutique en Torreón.
-          </p>
-          <div className="rise mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center" style={d(0.38)}>
-            <WhatsAppButton message={waMessages.hero} size="lg">
-              Agenda tu cita
-            </WhatsAppButton>
-            <Link
-              href="#servicios"
-              className="btn-shine inline-flex min-h-14 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-navy/20 bg-cream-50/60 px-7 text-[0.95rem] font-medium tracking-wide text-navy backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:shadow-glow"
-            >
-              Ver tratamientos
-              <ArrowIcon size={18} />
-            </Link>
-          </div>
-          <ul className="rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-stone" style={d(0.5)}>
-            <li className="inline-flex items-center gap-2">
-              <SparkleIcon size={18} className="text-gold-ink" /> Tecnología de vanguardia
+      {/* Índice: las 5 categorías como tabla de contenidos */}
+      <nav aria-label="Categorías" className="rise border-y border-ink/15 bg-cream-50" style={d(0.9)}>
+        <ol className="no-scrollbar mx-auto flex max-w-[88rem] overflow-x-auto sm:grid sm:grid-cols-5">
+          {categories.map((c, i) => (
+            <li key={c.slug} className="shrink-0 border-r border-ink/10 last:border-r-0">
+              <Link
+                href={`/servicios/#${c.slug}`}
+                className="group flex min-h-20 items-center gap-4 px-5 py-4 transition-colors duration-500 hover:bg-ink sm:px-6"
+              >
+                <span className="eyebrow text-gold-ink group-hover:text-gold">{String(i + 1).padStart(2, "0")}</span>
+                <span className="whitespace-nowrap font-serif text-2xl text-ink transition-colors duration-500 group-hover:text-cream">
+                  {c.short}
+                </span>
+                <ArrowIcon size={18} className="ml-auto -rotate-45 text-ink/40 transition-all duration-500 group-hover:rotate-0 group-hover:text-gold" />
+              </Link>
             </li>
-            <li className="inline-flex items-center gap-2">
-              <HandIcon size={18} className="text-gold-ink" /> Atención personalizada
-            </li>
-            <li className="inline-flex items-center gap-2">
-              <PinIcon size={18} className="text-gold-ink" /> Hacienda Residencial
-            </li>
-          </ul>
-        </Depth>
-
-        {/* Indicador de scroll */}
-        <Link
-          href="#servicios"
-          aria-label="Bajar a servicios"
-          className="rise absolute bottom-20 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-[0.65rem] uppercase tracking-[0.3em] text-stone sm:flex"
-          style={d(0.9)}
-        >
-          <span className="flex h-9 w-5 justify-center rounded-full border border-navy/30 pt-1.5">
-            <span className="h-1.5 w-1 rounded-full bg-gold [animation:scroll-dot_1.8s_ease-in-out_infinite]" />
-          </span>
-          Descubre
-        </Link>
-      </PointerParallax>
-      <SectionDivider fill="var(--color-cream-50)" accent="rgba(201,162,75,.2)" animated className="absolute inset-x-0 bottom-0" />
+          ))}
+        </ol>
+      </nav>
     </section>
   );
 }
