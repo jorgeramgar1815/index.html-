@@ -4,8 +4,8 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  // PLACEHOLDER: reemplazar por el dominio definitivo (ver pregunta abierta #6 del PRD).
-  site: 'https://dentalmx.mx',
+  // PLACEHOLDER: reemplazar por el dominio definitivo (pregunta #6 del PRD). Por ahora, dominio de Vercel.
+  site: 'https://dental-mx-three.vercel.app',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   integrations: [sitemap()],

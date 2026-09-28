@@ -75,7 +75,7 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 | Casos antes/después reales | `src/components/BeforeAfter.astro` (hoy son ilustraciones) |
 | Historia de la clínica | `src/pages/nosotros.astro` |
 | Aviso de privacidad integral | `src/pages/aviso-de-privacidad.astro` |
-| Dominio | `astro.config.mjs` y `public/robots.txt` |
+| Dominio (hoy: dental-mx-three.vercel.app) | `astro.config.mjs` y `public/robots.txt` |
 
 ### Cómo reemplazar fotos
 
