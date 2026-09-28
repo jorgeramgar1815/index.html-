@@ -2,9 +2,6 @@
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { nav, site, waLink } from '../data/site';
-
-const path = Astro.url.pathname.replace(/\/?$/, '/');
-const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
 
 <header
@@ -24,15 +21,12 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
             <li>
               <a
                 href={item.href}
-                aria-current={isActive(item.href) ? 'page' : undefined}
-                class="relative rounded-full px-4 py-2 text-[0.94rem] font-medium text-snow/75 transition-colors hover:text-white aria-[current=page]:text-white"
+                data-spy={item.id}
+                class="group/link relative rounded-full px-3 py-2 text-[0.94rem] font-medium text-snow/75 transition-colors hover:text-white aria-[current=true]:text-white lg:px-4"
               >
                 {item.label}
                 <span
-                  class:list={[
-                    'absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-lime shadow-[0_0_10px_rgb(181_238_58/0.9)] transition-transform duration-500',
-                    isActive(item.href) ? 'scale-x-100' : 'scale-x-0',
-                  ]}
+                  class="absolute inset-x-3 -bottom-0.5 h-0.5 scale-x-0 rounded-full bg-lime shadow-[0_0_10px_rgb(181_238_58/0.9)] transition-transform duration-500 group-aria-[current=true]/link:scale-x-100 lg:inset-x-4"
                   aria-hidden="true"
                 />
               </a>
@@ -82,11 +76,11 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           <li class="mobile-link border-b border-line" style={`--i:${i}`}>
             <a
               href={item.href}
-              aria-current={isActive(item.href) ? 'page' : undefined}
-              class="flex items-center justify-between py-5 font-display text-3xl font-bold tracking-tight text-snow aria-[current=page]:text-lime"
+              data-spy={item.id}
+              class="flex items-center justify-between py-4 font-display text-3xl font-bold tracking-tight text-snow aria-[current=true]:text-lime"
             >
               {item.label}
-              <Icon name="arrow-up-right" size={22} class="text-mute" />
+              <Icon name="arrow-right" size={22} class="text-mute" />
             </a>
           </li>
         ))

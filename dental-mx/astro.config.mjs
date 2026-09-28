@@ -8,6 +8,12 @@ export default defineConfig({
   site: 'https://dental-mx-three.vercel.app',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
+  // El sitio es una landing de una sola página; las URLs anteriores llevan a su sección.
+  redirects: {
+    '/servicios': '/#servicios',
+    '/nosotros': '/#nosotros',
+    '/contacto': '/#contacto',
+  },
   integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

@@ -1,10 +1,13 @@
 # Dental MX — sitio web
 
-Sitio multipágina de **Dental MX** (Torreón, Coahuila), construido a partir del PRD. Tiene cuatro páginas: Inicio, Servicios, Nosotros y Contacto. Además incluye Aviso de privacidad y una página 404. La única conversión es la cita por WhatsApp.
+Landing page de **Dental MX** (Torreón, Coahuila), construida a partir del PRD. Todo el contenido vive en una sola página con navegación por anclas: Servicios, Promociones, Por qué elegirnos, Antes/después, Nosotros, Testimonios, Tips, Preguntas frecuentes y Contacto. Además incluye Aviso de privacidad y una página 404. La única conversión es la cita por WhatsApp.
+
+Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su sección (`redirects` en `astro.config.mjs`).
 
 - **Stack:** [Astro](https://astro.build) (genera HTML estático, sin JS de framework en el cliente) + Tailwind CSS v4 + fuentes auto-hospedadas (Sora, Inter y Yellowtail vía Fontsource).
 - **Animaciones:** CSS con un script pequeño en TypeScript (`src/scripts/main.ts`). Incluyen scroll reveal con stagger, parallax del hero, encendido del neón, pulso del botón de WhatsApp, contadores y transiciones de página nativas (View Transitions). Todas respetan `prefers-reduced-motion`.
-- **SEO local:** title y description por página, canonical, Open Graph (`public/og.png`), sitemap y `robots.txt`. También JSON-LD `Dentist` con NAP, horario y datos del doctor, más `BreadcrumbList`, `FAQPage` e `ItemList` de servicios.
+- **SEO local:** title, description, canonical, Open Graph (`public/og.png`), sitemap y `robots.txt`. También JSON-LD `Dentist` con NAP, horario y datos del doctor, más `FAQPage` e `ItemList` de servicios.
+- **Navegación:** menú con anclas y resaltado automático de la sección visible (scrollspy).
 
 ## Comandos
 
@@ -34,7 +37,7 @@ src/
   layouts/BaseLayout    ← <head> SEO + JSON-LD, header, footer, botón flotante
   components/           ← Header, Footer, ServiceCard, TestimonialCard, TipCard, WhatsAppButton,
                           WhatsAppFab, CTASection, BeforeAfter, Photo, MapEmbed, TrustBar, …
-  pages/                ← index, servicios, nosotros, contacto, aviso-de-privacidad, 404
+  pages/                ← index (landing completa), aviso-de-privacidad, 404
 public/                 ← favicon, íconos, og.png, manifest, img/ (fotos reales)
 scripts/generate-images.mjs ← regenera favicon PNG, íconos PWA y og.png
 ```
@@ -70,10 +73,9 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 | Años de experiencia y pacientes atendidos | `trust` |
 | Testimonios reales (3–6) | `testimonials` |
 | URL exacta de Facebook | `site.social.facebook.url` |
-| Fotos del consultorio | `gallery` en `src/pages/nosotros.astro` y `heroImage` en `src/pages/index.astro` |
-| Fotos por servicio (opcional) | `image` de cada servicio |
+| Fotos del consultorio | `gallery` y `heroImage` en `src/pages/index.astro` |
 | Casos antes/después reales | `src/components/BeforeAfter.astro` (hoy son ilustraciones) |
-| Historia de la clínica | `src/pages/nosotros.astro` |
+| Historia de la clínica | Sección Nosotros en `src/pages/index.astro` |
 | Aviso de privacidad integral | `src/pages/aviso-de-privacidad.astro` |
 | Dominio (hoy: dental-mx-three.vercel.app) | `astro.config.mjs` y `public/robots.txt` |
 

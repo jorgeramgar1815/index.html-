@@ -12,13 +12,45 @@ import BeforeAfter from '../components/BeforeAfter.astro';
 import Photo from '../components/Photo.astro';
 import MapEmbed from '../components/MapEmbed.astro';
 import HoursList from '../components/HoursList.astro';
-import { reasons, services, site, testimonials, tips } from '../data/site';
+import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import { faqs, flags, reasons, services, site, testimonials, tips, waLink } from '../data/site';
+
+const promos = services.filter((s) => s.promo);
+
+const values = [
+  { icon: 'tooth', title: 'Salud bucal', text: 'Prevenir antes que curar.' },
+  { icon: 'shield', title: 'Confianza', text: 'Diagnósticos honestos y claros.' },
+  { icon: 'leaf', title: 'Bienestar', text: 'Visitas cómodas y sin prisa.' },
+];
+
+// PLACEHOLDER: fotos del consultorio. Agregar `src: '/img/...'` cuando el cliente las entregue (pregunta #4).
+const gallery = [
+  { scene: 'reception' as const, alt: 'Recepción de Dental MX con letrero de neón', label: 'Recepción', src: '' },
+  { scene: 'chair' as const, alt: 'Área de tratamiento con sillón dental', label: 'Consultorio', src: '' },
+  { scene: 'lounge' as const, alt: 'Sala de espera con iluminación cálida', label: 'Sala de espera', src: '' },
+];
+
+const schema = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@type': 'ItemList',
+    name: 'Servicios de Dental MX',
+    itemListElement: services.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: { '@type': 'MedicalProcedure', name: s.name, description: s.description, url: new URL(`/#${s.slug}`, Astro.site).href },
+    })),
+  },
+];
 
 // PLACEHOLDER: ruta a foto/video real del consultorio para el fondo del hero (vacío = escena de marca).
 const heroImage = '';
 ---
 
-<BaseLayout>
+<BaseLayout schema={schema}>
   <!-- ═══════════════ HERO ═══════════════ -->
   <section class="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-28 sm:pt-32 sm:pb-36">
     <div class="absolute inset-0 -z-10" aria-hidden="true">
@@ -51,7 +83,7 @@ const heroImage = '';
         </p>
         <div class="hero-in mt-9 flex flex-col gap-3 sm:flex-row" style="--i:3">
           <WhatsAppButton size="lg" message="Hola, me gustaría agendar una cita en Dental MX." cta="hero-whatsapp" />
-          <a href="/servicios/" class="btn btn-ghost btn-lg">
+          <a href="#servicios" class="btn btn-ghost btn-lg">
             Ver servicios <Icon name="arrow-right" size={18} />
           </a>
         </div>
@@ -72,19 +104,65 @@ const heroImage = '';
   <!-- ═══════════════ SERVICIOS ═══════════════ -->
   <section class="section" id="servicios">
     <div class="container-x">
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <SectionHeading
-          eyebrow="Servicios"
-          title='Todo lo que tu sonrisa necesita, <span class="text-neon">en un solo lugar</span>'
-          intro="Desde una limpieza hasta un implante: tratamientos completos para cada etapa de la vida, con un plan claro desde la primera cita."
-        />
-        <a href="/servicios/" class="btn btn-ghost w-fit shrink-0" data-reveal>Todos los servicios <Icon name="arrow-right" size={18} /></a>
-      </div>
+      <SectionHeading
+        eyebrow="Servicios"
+        title='Todo lo que tu sonrisa necesita, <span class="text-neon">en un solo lugar</span>'
+        intro="Desde una limpieza hasta un implante: tratamientos completos para cada etapa de la vida, con un plan claro desde la primera cita. Pregunta por el tuyo directo por WhatsApp."
+      />
       <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((s, i) => <ServiceCard service={s} index={i} />)}
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════ PROMOCIONES ═══════════════ -->
+  {
+    flags.showPrices && promos.length > 0 && (
+      <section class="pb-20 sm:pb-24 lg:pb-32" aria-labelledby="promos-title">
+        <div class="container-x">
+          <div class="grain relative overflow-hidden rounded-[2rem] border border-lime/25 bg-surface p-6 sm:p-10 lg:p-14" data-reveal>
+            <div class="pointer-events-none absolute -top-32 -right-20 size-[26rem] rounded-full bg-lime/20 blur-[120px]" aria-hidden="true" />
+            <div class="pointer-events-none absolute inset-0 grid-fade opacity-60" aria-hidden="true" />
+            <div class="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+              <div>
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="eyebrow">Promociones</p>
+                  <PlaceholderBadge label="Precios por confirmar" />
+                </div>
+                <h2 id="promos-title" class="mt-4 text-3xl leading-[1.1] font-bold sm:text-4xl lg:text-5xl">
+                  Estrena <span class="script-neon text-[1.25em] font-normal">sonrisa</span> sin romper tu presupuesto
+                </h2>
+                <p class="mt-5 text-lg text-mute">Aparta tu lugar por WhatsApp. Cupo limitado y sujeto a valoración.</p>
+              </div>
+              {/* PLACEHOLDER: promociones vistas en Facebook; confirmar vigencia antes de publicar. */}
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {promos.map((s) => (
+                  <div class="flex flex-col rounded-2xl border border-line bg-ink/60 p-6 backdrop-blur">
+                    <span class="icon-tube"><Icon name={s.icon} size={24} /></span>
+                    <p class="mt-5 text-sm font-semibold tracking-[0.14em] text-mute uppercase">{s.name}</p>
+                    <p class="mt-2 flex items-baseline gap-3">
+                      {s.promo!.was && <s class="text-lg text-mute">{s.promo!.was}</s>}
+                      <strong class="font-display text-4xl font-extrabold text-lime">{s.promo!.now}</strong>
+                    </p>
+                    {s.promo!.note && <p class="mt-1 text-sm text-mute">{s.promo!.note}</p>}
+                    <a
+                      href={waLink(`Hola, me interesa la promoción de ${s.name.toLowerCase()} (${s.promo!.now}).`)}
+                      target="_blank"
+                      rel="noopener"
+                      class="btn btn-primary mt-6 min-h-11 px-5 text-sm"
+                      data-cta={`promo-${s.slug}`}
+                    >
+                      <Icon name="whatsapp" size={17} /> Aprovechar promoción
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <!-- ═══════════════ POR QUÉ ELEGIRNOS ═══════════════ -->
   <section class="on-light section bg-paper text-ink">
@@ -134,8 +212,65 @@ const heroImage = '';
     </div>
   </section>
 
+  <!-- ═══════════════ NOSOTROS ═══════════════ -->
+  <section class="section overflow-hidden bg-ink-2" id="nosotros">
+    <div class="container-x">
+      <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <div class="relative mx-auto w-full max-w-md" data-reveal>
+          <div class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-lime/15 blur-3xl" aria-hidden="true"></div>
+          {/* PLACEHOLDER: foto del doctor — definir `site.doctor.photo` en src/data/site.ts */}
+          <Photo scene="portrait" src={site.doctor.photo} alt={flags.showDoctorName ? `Retrato de ${site.doctor.name}` : 'Retrato del director clínico'} label="Foto del doctor" class="relative aspect-[4/5]" />
+        </div>
+        <div data-reveal style="--i:1">
+          <div class="flex flex-wrap items-center gap-3">
+            <p class="eyebrow">Nosotros</p>
+            <PlaceholderBadge label="Textos por confirmar" />
+          </div>
+          <h2 class="mt-4 text-3xl leading-[1.1] font-bold sm:text-4xl lg:text-5xl">
+            Una clínica de barrio con estándares <span class="text-neon">de especialista</span>
+          </h2>
+          {/* PLACEHOLDER: historia de la clínica — reemplazar con la versión del cliente. */}
+          <p class="mt-5 text-lg leading-relaxed text-snow/80">
+            Dental MX nació en Torreón Residencial para que las familias de la zona tengan un consultorio moderno, cómodo y honesto, donde cada tratamiento se explica con palabras claras y precios justos.
+          </p>
+
+          <div class="mt-8 rounded-2xl border border-line bg-ink/50 p-6">
+            <p class="font-display text-xl font-bold text-white">{flags.showDoctorName ? site.doctor.name : 'Nuestro director clínico'}</p>
+            <p class="mt-1 font-display text-sm font-semibold text-lime">{site.doctor.role}</p>
+            <p class="mt-0.5 text-sm text-mute">{site.doctor.license}</p>
+            <p class="mt-4 leading-relaxed text-snow/80">{site.doctor.bio[0]}</p>
+          </div>
+
+          <ul class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {
+              values.map((v) => (
+                <li class="flex items-center gap-3 rounded-2xl border border-line p-4 sm:flex-col sm:items-start">
+                  <span class="icon-tube size-10"><Icon name={v.icon} size={20} /></span>
+                  <span>
+                    <span class="block font-display font-semibold text-white">{v.title}</span>
+                    <span class="block text-sm text-mute">{v.text}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-3 lg:mt-20">
+        {
+          gallery.map((g, i) => (
+            <div data-reveal style={`--i:${i}`}>
+              <Photo scene={g.scene} src={g.src} alt={g.alt} label={g.label} class="aspect-[4/3]" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ TESTIMONIOS ═══════════════ -->
-  <section class="section bg-ink-2">
+  <section class="section" id="testimonios">
     <div class="container-x">
       <SectionHeading
         align="center"
@@ -151,7 +286,7 @@ const heroImage = '';
   </section>
 
   <!-- ═══════════════ TIPS ═══════════════ -->
-  <section class="section">
+  <section class="section pt-0 sm:pt-0 lg:pt-0">
     <div class="container-x">
       <SectionHeading
         eyebrow="Tips Dental MX"
@@ -164,14 +299,38 @@ const heroImage = '';
     </div>
   </section>
 
+  <!-- ═══════════════ PREGUNTAS FRECUENTES ═══════════════ -->
+  <section class="section bg-ink-2" id="preguntas">
+    <div class="container-x grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <SectionHeading eyebrow="Preguntas frecuentes" title="Lo que más nos preguntan" intro="¿No encuentras tu respuesta? Escríbenos y te orientamos sin compromiso.">
+        <WhatsAppButton class="mt-8" variant="ghost" label="Hacer una pregunta" message="Hola, tengo una duda sobre un tratamiento." cta="faq" />
+      </SectionHeading>
+      <div class="divide-y divide-line border-y border-line" data-reveal>
+        {
+          faqs.map((f) => (
+            <details class="group py-2">
+              <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-6 py-4 font-display text-lg font-semibold [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <span class="grid size-9 shrink-0 place-items-center rounded-full border border-line text-lime transition-transform duration-300 group-open:rotate-45">
+                  <Icon name="plus" size={18} />
+                </span>
+              </summary>
+              <p class="pr-12 pb-5 leading-relaxed text-mute">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ CTA FINAL + MAPA ═══════════════ -->
-  <section class="section pt-8 sm:pt-8 lg:pt-8" id="visitanos">
+  <section class="section" id="contacto">
     <div class="container-x">
       <div class="grain relative overflow-hidden rounded-[2rem] border border-lime/20 bg-surface" data-reveal>
         <div class="pointer-events-none absolute -top-40 -left-24 size-[26rem] rounded-full bg-lime/15 blur-[120px]" aria-hidden="true"></div>
         <div class="relative grid grid-cols-1 lg:grid-cols-2">
           <div class="p-6 sm:p-12 lg:p-14">
-            <p class="eyebrow">Visítanos</p>
+            <p class="eyebrow">Contacto</p>
             <h2 class="mt-4 text-3xl leading-[1.1] font-bold sm:text-4xl lg:text-5xl">
               Agenda hoy y <span class="script-neon text-[1.3em] font-normal">sonríe</span> mañana
             </h2>
@@ -192,7 +351,15 @@ const heroImage = '';
               <HoursList><h3 class="flex items-center gap-2 font-display font-semibold"><Icon name="clock" size={20} class="text-lime" /> Horario</h3></HoursList>
             </div>
 
-            <WhatsAppButton size="lg" class="mt-8 w-full sm:w-auto" cta="final-whatsapp" />
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <WhatsAppButton size="lg" cta="final-whatsapp" />
+              <a href={`tel:${site.phone.tel}`} class="btn btn-ghost btn-lg"><Icon name="phone" size={18} /> Llamar</a>
+            </div>
+            <div class="mt-6 flex items-center gap-3 text-sm text-mute">
+              Síguenos:
+              <a href={site.social.instagram.url} target="_blank" rel="noopener" class="grid size-11 place-items-center rounded-full border border-line text-snow transition-colors hover:border-lime hover:text-lime" aria-label={`Instagram ${site.social.instagram.handle}`}><Icon name="instagram" size={19} /></a>
+              <a href={site.social.facebook.url} target="_blank" rel="noopener" class="grid size-11 place-items-center rounded-full border border-line text-snow transition-colors hover:border-lime hover:text-lime" aria-label="Facebook Dental MX"><Icon name="facebook" size={19} /></a>
+            </div>
           </div>
           <MapEmbed class="min-h-[22rem] rounded-none border-0 border-t border-line lg:min-h-full lg:border-t-0 lg:border-l" />
         </div>

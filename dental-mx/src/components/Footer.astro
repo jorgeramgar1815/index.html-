@@ -33,7 +33,7 @@ const year = new Date().getFullYear();
       </div>
 
       <nav aria-label="Enlaces rápidos" class="lg:col-span-2">
-        <h2 class="font-display text-sm font-semibold text-white">Sitio</h2>
+        <h2 class="font-display text-sm font-semibold text-white">Secciones</h2>
         <ul class="mt-4 space-y-3">
           {nav.map((item) => <li><a href={item.href} class="text-mute transition-colors hover:text-lime">{item.label}</a></li>)}
         </ul>
@@ -42,7 +42,7 @@ const year = new Date().getFullYear();
       <nav aria-label="Servicios" class="lg:col-span-3">
         <h2 class="font-display text-sm font-semibold text-white">Servicios</h2>
         <ul class="mt-4 space-y-3">
-          {services.map((s) => <li><a href={`/servicios/#${s.slug}`} class="text-mute transition-colors hover:text-lime">{s.name}</a></li>)}
+          {services.map((s) => <li><a href={`/#${s.slug}`} class="text-mute transition-colors hover:text-lime">{s.name}</a></li>)}
         </ul>
       </nav>
 
@@ -60,7 +60,7 @@ const year = new Date().getFullYear();
       <p>© {year} {site.name}. Todos los derechos reservados.</p>
       <div class="flex gap-6">
         <a href="/aviso-de-privacidad/" class="transition-colors hover:text-lime">Aviso de privacidad</a>
-        <a href="/contacto/" class="transition-colors hover:text-lime">Contacto</a>
+        <a href="/#contacto" class="transition-colors hover:text-lime">Contacto</a>
       </div>
     </div>
   </div>

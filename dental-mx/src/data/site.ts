@@ -112,11 +112,13 @@ export function waLink(message: string = site.whatsapp.defaultMessage): string {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
+/** Navegación de la landing: anclas a cada sección de la página de inicio. */
 export const nav = [
-  { href: '/', label: 'Inicio' },
-  { href: '/servicios/', label: 'Servicios' },
-  { href: '/nosotros/', label: 'Nosotros' },
-  { href: '/contacto/', label: 'Contacto' },
+  { href: '/#servicios', id: 'servicios', label: 'Servicios' },
+  { href: '/#nosotros', id: 'nosotros', label: 'Nosotros' },
+  { href: '/#testimonios', id: 'testimonios', label: 'Testimonios' },
+  { href: '/#preguntas', id: 'preguntas', label: 'Preguntas' },
+  { href: '/#contacto', id: 'contacto', label: 'Contacto' },
 ];
 
 // ─── Servicios ───────────────────────────────────────────────────────────────
@@ -130,8 +132,6 @@ export type Service = {
   waMessage: string;
   /** PLACEHOLDER: promociones vistas en Facebook; pueden estar vencidas. */
   promo?: { label: string; was?: string; now: string; note?: string };
-  /** Ruta a foto real (vacío = ilustración neón de marca). */
-  image?: string;
 };
 
 export const services: Service[] = [

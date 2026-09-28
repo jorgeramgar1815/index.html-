@@ -70,6 +70,27 @@ document.addEventListener('keydown', (e) => {
 });
 window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => e.matches && setMenu(false));
 
+// ── Scrollspy: resalta en el menú la sección visible ────────────────────────
+const spyLinks = document.querySelectorAll<HTMLElement>('[data-spy]');
+const spySections = [...new Set(Array.from(spyLinks, (l) => l.dataset.spy!))]
+  .map((id) => document.getElementById(id))
+  .filter((el): el is HTMLElement => el !== null);
+if (spySections.length && 'IntersectionObserver' in window) {
+  const setActive = (id: string | null) =>
+    spyLinks.forEach((l) => (l.dataset.spy === id ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current')));
+  const visible = new Set<string>();
+  const so = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id)));
+      // La última sección (en orden del documento) que cruza la franja central gana.
+      const current = spySections.filter((s) => visible.has(s.id)).pop();
+      setActive(current?.id ?? null);
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  spySections.forEach((s) => so.observe(s));
+}
+
 // ── Scroll reveal ───────────────────────────────────────────────────────────
 const revealables = document.querySelectorAll<HTMLElement>('[data-reveal]');
 if ('IntersectionObserver' in window && !reduceMotion) {
