@@ -1,0 +1,50 @@
+---
+/**
+ * Letrero de neón del diente (elemento distintivo de la marca).
+ * Capas: halo lima difuso → tubo blanco-lima → núcleo blanco.
+ */
+interface Props {
+  class?: string;
+  /** Anima el encendido tipo letrero al cargar. */
+  flicker?: boolean;
+}
+const { class: className = '', flicker = false } = Astro.props;
+const TOOTH =
+  'M60 24C39 24 28 40 28 62c0 21 8 37 13.6 58.4C46.4 140.8 49.6 164 60.8 164c10.4 0 12.8-20.8 17.6-36.8 3.2-10.4 9.6-16.8 17.6-16.8s14.4 6.4 17.6 16.8c4.8 16 7.2 36.8 17.6 36.8 11.2 0 14.4-23.2 19.2-43.6C156 99 164 83 164 62c0-22-11-38-32-38-15.2 0-24 8-36 8s-20.8-8-36-8Z';
+const id = `nt-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg viewBox="0 0 192 200" class:list={['overflow-visible', className]} role="img" aria-label="Letrero de neón con el diente de Dental MX">
+  <defs>
+    <filter id={`${id}-halo`} x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" />
+    </filter>
+    <filter id={`${id}-soft`} x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.2" />
+    </filter>
+  </defs>
+
+  <!-- Soportes del letrero -->
+  <g stroke="#6b716b" stroke-width="1.2" fill="#2a2e2a" opacity=".9">
+    <circle cx="60" cy="34" r="3" />
+    <circle cx="132" cy="34" r="3" />
+    <circle cx="96" cy="150" r="3" />
+  </g>
+  <!-- Cable -->
+  <path d="M96 153c0 18 6 26 14 34" fill="none" stroke="#2f332f" stroke-width="2" stroke-linecap="round" />
+
+  <g class:list={[flicker && 'neon-on']}>
+    <path d={TOOTH} fill="none" stroke="#b5ee3a" stroke-width="14" opacity=".38" filter={`url(#${id}-halo)`} />
+    <path d={TOOTH} fill="none" stroke="#d9ffa0" stroke-width="7" opacity=".55" filter={`url(#${id}-soft)`} />
+    <path d={TOOTH} fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round" />
+    <!-- destello -->
+    <path
+      d="M150 8c1 7 3.6 9.6 10.6 10.6-7 1-9.6 3.6-10.6 10.6-1-7-3.6-9.6-10.6-10.6 7-1 9.6-3.6 10.6-10.6Z"
+      fill="none"
+      stroke="#b5ee3a"
+      stroke-width="2.2"
+      stroke-linejoin="round"
+      style="filter:drop-shadow(0 0 6px rgb(181 238 58 / .9))"
+    />
+  </g>
+</svg>

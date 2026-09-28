@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import NeonTooth from '../components/NeonTooth.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import TrustBar from '../components/TrustBar.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import TipCard from '../components/TipCard.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import Photo from '../components/Photo.astro';
+import MapEmbed from '../components/MapEmbed.astro';
+import HoursList from '../components/HoursList.astro';
+import { reasons, services, site, testimonials, tips } from '../data/site';
+
+// PLACEHOLDER: ruta a foto/video real del consultorio para el fondo del hero (vacío = escena de marca).
+const heroImage = '';
+---
+
+<BaseLayout>
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-28 sm:pt-32 sm:pb-36">
+    <div class="absolute inset-0 -z-10" aria-hidden="true">
+      <div class="absolute -inset-x-0 -top-[10%] h-[120%] will-change-transform" data-parallax="0.22">
+        {
+          heroImage ? (
+            <img src={heroImage} alt="" class="size-full object-cover" fetchpriority="high" />
+          ) : (
+            <div class="size-full wood-slats opacity-80" />
+          )
+        }
+      </div>
+      <!-- overlay oscuro + luz cálida + glow verde -->
+      <div class="absolute inset-0 bg-[linear-gradient(100deg,rgb(14_16_14/0.97)_0%,rgb(14_16_14/0.88)_45%,rgb(14_16_14/0.55)_100%)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_0%,rgb(255_184_112/0.18),transparent_55%)]"></div>
+      <div class="absolute top-1/2 right-[8%] size-[34rem] -translate-y-1/2 rounded-full bg-lime/20 blur-[140px] max-lg:top-[18%] max-lg:right-[-30%] max-lg:size-[22rem]"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent"></div>
+      <div class="grain absolute inset-0"></div>
+    </div>
+
+    <div class="container-x grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="relative">
+        <p class="eyebrow hero-in" style="--i:0">Clínica dental · Torreón</p>
+        <h1 class="hero-in mt-6 text-[2.6rem] leading-[1.02] font-extrabold tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+          Tu sonrisa<br class="sm:hidden" /> en manos
+          <span class="script-neon mt-1 block pr-2 text-[3.6rem] leading-[1.05] sm:text-[5.2rem] lg:text-[6.2rem]">profesionales</span>
+        </h1>
+        <p class="hero-in mt-6 max-w-xl text-lg leading-relaxed text-snow/80 sm:text-xl" style="--i:2">
+          Cuidado dental integral para toda la familia. Tecnología, trato cercano y precios accesibles, a un mensaje de distancia.
+        </p>
+        <div class="hero-in mt-9 flex flex-col gap-3 sm:flex-row" style="--i:3">
+          <WhatsAppButton size="lg" message="Hola, me gustaría agendar una cita en Dental MX." cta="hero-whatsapp" />
+          <a href="/servicios/" class="btn btn-ghost btn-lg">
+            Ver servicios <Icon name="arrow-right" size={18} />
+          </a>
+        </div>
+        <p class="hero-in mt-8 flex items-center gap-2 text-sm text-mute" style="--i:4">
+          <Icon name="pin" size={16} class="text-lime" />
+          {site.address.street} · {site.address.neighborhood}
+        </p>
+      </div>
+
+      <div class="pointer-events-none absolute top-24 -right-10 w-44 opacity-35 sm:w-56 lg:pointer-events-auto lg:relative lg:top-auto lg:right-auto lg:w-auto lg:opacity-100" aria-hidden="true">
+        <NeonTooth flicker class="mx-auto w-full max-w-[22rem]" />
+      </div>
+    </div>
+  </section>
+
+  <TrustBar />
+
+  <!-- ═══════════════ SERVICIOS ═══════════════ -->
+  <section class="section" id="servicios">
+    <div class="container-x">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <SectionHeading
+          eyebrow="Servicios"
+          title='Todo lo que tu sonrisa necesita, <span class="text-neon">en un solo lugar</span>'
+          intro="Desde una limpieza hasta un implante: tratamientos completos para cada etapa de la vida, con un plan claro desde la primera cita."
+        />
+        <a href="/servicios/" class="btn btn-ghost w-fit shrink-0" data-reveal>Todos los servicios <Icon name="arrow-right" size={18} /></a>
+      </div>
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s, i) => <ServiceCard service={s} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ POR QUÉ ELEGIRNOS ═══════════════ -->
+  <section class="on-light section bg-paper text-ink">
+    <div class="container-x grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-20">
+      <div class="relative" data-reveal>
+        <Photo scene="chair" alt="Sillón dental del consultorio Dental MX" class="aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]" />
+        <div class="absolute -right-3 -bottom-6 max-w-[15rem] rounded-2xl bg-ink p-5 text-snow shadow-[var(--shadow-lift)] sm:-right-6">
+          <p class="font-display text-sm font-semibold text-lime">{site.values.join(' · ')}</p>
+          <p class="mt-2 text-sm text-mute">Un consultorio pensado para que te sientas en confianza.</p>
+        </div>
+      </div>
+      <div>
+        <SectionHeading
+          eyebrow="Por qué elegirnos"
+          title="Profesionalismo de especialista, trato de familia"
+          intro="Nos importa tanto tu salud bucal como que salgas tranquilo de cada cita."
+        />
+        <div class="mt-12 grid gap-5 sm:grid-cols-2">
+          {
+            reasons.map((r, i) => (
+              <div class="card p-6" data-reveal style={`--i:${i}`}>
+                <span class="icon-tube"><Icon name={r.icon} size={24} /></span>
+                <h3 class="mt-5 text-lg font-bold">{r.title}</h3>
+                <p class="mt-2 leading-relaxed text-slate">{r.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ANTES / DESPUÉS ═══════════════ -->
+  <section class="section relative overflow-hidden">
+    <div class="pointer-events-none absolute -left-40 top-1/3 size-[30rem] rounded-full bg-lime/10 blur-[130px]" aria-hidden="true"></div>
+    <div class="container-x relative grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <SectionHeading
+        eyebrow="Antes y después"
+        title="Resultados que se notan desde la primera sonrisa"
+        intro="Cada tratamiento se diseña a tu medida. Así se ve el cambio que buscamos lograr contigo."
+      >
+        <div class="mt-8">
+          <WhatsAppButton label="Quiero mi valoración" message="Hola, quiero agendar una valoración para ver qué tratamiento me conviene." cta="before-after" />
+        </div>
+      </SectionHeading>
+      <BeforeAfter />
+    </div>
+  </section>
+
+  <!-- ═══════════════ TESTIMONIOS ═══════════════ -->
+  <section class="section bg-ink-2">
+    <div class="container-x">
+      <SectionHeading
+        align="center"
+        eyebrow="Testimonios"
+        title='Sonrisas que <span class="text-neon">hablan por nosotros</span>'
+        intro="Lo que dicen las familias que ya se atienden en Dental MX."
+      />
+      {/* PLACEHOLDER: testimonios de ejemplo — reemplazar en src/data/site.ts (estructura lista para 3–6). */}
+      <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {testimonials.map((t, i) => <TestimonialCard testimonial={t} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TIPS ═══════════════ -->
+  <section class="section">
+    <div class="container-x">
+      <SectionHeading
+        eyebrow="Tips Dental MX"
+        title="Pequeños hábitos, sonrisas más sanas"
+        intro="Consejos prácticos de nuestro consultorio para cuidar tus tratamientos en casa."
+      />
+      <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {tips.map((t, i) => <TipCard tip={t} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CTA FINAL + MAPA ═══════════════ -->
+  <section class="section pt-8 sm:pt-8 lg:pt-8" id="visitanos">
+    <div class="container-x">
+      <div class="grain relative overflow-hidden rounded-[2rem] border border-lime/20 bg-surface" data-reveal>
+        <div class="pointer-events-none absolute -top-40 -left-24 size-[26rem] rounded-full bg-lime/15 blur-[120px]" aria-hidden="true"></div>
+        <div class="relative grid grid-cols-1 lg:grid-cols-2">
+          <div class="p-6 sm:p-12 lg:p-14">
+            <p class="eyebrow">Visítanos</p>
+            <h2 class="mt-4 text-3xl leading-[1.1] font-bold sm:text-4xl lg:text-5xl">
+              Agenda hoy y <span class="script-neon text-[1.3em] font-normal">sonríe</span> mañana
+            </h2>
+            <p class="mt-5 text-lg text-mute">Escríbenos por WhatsApp y te confirmamos tu cita. Así de fácil.</p>
+
+            <address class="mt-8 space-y-4 not-italic">
+              <p class="flex gap-3">
+                <Icon name="pin" size={22} class="mt-0.5 shrink-0 text-lime" />
+                <span>{site.address.street}<br /><span class="text-mute">{site.address.neighborhood}, {site.address.postalCode} {site.address.city}, Coah.</span></span>
+              </p>
+              <p class="flex items-center gap-3">
+                <Icon name="phone" size={22} class="shrink-0 text-lime" />
+                <a href={`tel:${site.phone.tel}`} class="underline-offset-4 hover:text-lime hover:underline">{site.phone.display}</a>
+              </p>
+            </address>
+
+            <div class="mt-8 rounded-2xl border border-line bg-ink/40 p-5">
+              <HoursList><h3 class="flex items-center gap-2 font-display font-semibold"><Icon name="clock" size={20} class="text-lime" /> Horario</h3></HoursList>
+            </div>
+
+            <WhatsAppButton size="lg" class="mt-8 w-full sm:w-auto" cta="final-whatsapp" />
+          </div>
+          <MapEmbed class="min-h-[22rem] rounded-none border-0 border-t border-line lg:min-h-full lg:border-t-0 lg:border-l" />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

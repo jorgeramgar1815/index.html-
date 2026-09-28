@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Photo from '../components/Photo.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTASection from '../components/CTASection.astro';
+import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import Icon from '../components/Icon.astro';
+import { flags, site } from '../data/site';
+
+const values = [
+  {
+    icon: 'tooth',
+    title: 'Salud bucal',
+    text: 'Prevenir antes que curar. Revisiones completas y tratamientos que cuidan tus dientes a largo plazo.',
+  },
+  {
+    icon: 'shield',
+    title: 'Confianza',
+    text: 'Diagnósticos honestos, presupuestos claros y la tranquilidad de saber qué se hace y por qué.',
+  },
+  {
+    icon: 'leaf',
+    title: 'Bienestar',
+    text: 'Un espacio cálido y un trato amable para que cada visita sea cómoda, también para los más pequeños.',
+  },
+];
+
+// PLACEHOLDER: fotos del consultorio. Agregar `src: '/img/...'` cuando el cliente las entregue (pregunta #4).
+const gallery = [
+  { scene: 'reception' as const, alt: 'Recepción de Dental MX con letrero de neón', label: 'Recepción', src: '' },
+  { scene: 'chair' as const, alt: 'Área de tratamiento con sillón dental', label: 'Consultorio', src: '' },
+  { scene: 'lounge' as const, alt: 'Sala de espera con iluminación cálida', label: 'Sala de espera', src: '' },
+];
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Nosotros', item: new URL('/nosotros/', Astro.site).href },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Nosotros | Dental MX — Clínica dental familiar en Torreón"
+  description="Conoce Dental MX: una clínica dental cercana y familiar en Torreón Residencial. Salud bucal, confianza y bienestar para toda la familia."
+  schema={schema}
+>
+  <PageHeader
+    crumb="Nosotros"
+    eyebrow="Sobre Dental MX"
+    title='Una clínica de barrio con estándares <span class="text-neon">de especialista</span>'
+    intro="Nacimos para que cuidar tu sonrisa sea algo cercano, claro y accesible, sin renunciar a la calidad profesional."
+  />
+
+  <!-- Historia -->
+  <section class="pb-20 sm:pb-28">
+    <div class="container-x grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <Photo scene="reception" alt="Recepción del consultorio Dental MX" label="Recepción" class="aspect-[4/3]" />
+      <div data-reveal>
+        <div class="flex items-center gap-3">
+          <p class="eyebrow">Nuestra historia</p>
+          <PlaceholderBadge label="Texto provisional" />
+        </div>
+        {/* PLACEHOLDER: historia de la clínica — reemplazar con la versión del cliente. */}
+        <h2 class="mt-4 text-3xl font-bold sm:text-4xl">Tu dentista de confianza, a la vuelta de casa</h2>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-snow/80">
+          <p>
+            Dental MX abrió sus puertas en Torreón Residencial con una idea sencilla: que las familias de la zona tuvieran un consultorio moderno, cómodo y
+            honesto, donde les expliquen cada tratamiento con palabras claras y precios justos.
+          </p>
+          <p>
+            Hoy atendemos a niños, jóvenes y adultos con el mismo cuidado: desde la primera limpieza hasta tratamientos de ortodoncia, implantes y estética
+            dental. Y seguimos creyendo que la mejor recomendación es un paciente que sale sonriendo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Doctor -->
+  <section class="section overflow-hidden bg-ink-2" aria-labelledby="doctor-title">
+    <div class="container-x grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+      <div class="relative mx-auto w-full max-w-md" data-reveal>
+        <div class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-lime/15 blur-3xl" aria-hidden="true"></div>
+        {/* PLACEHOLDER: foto del doctor — definir `site.doctor.photo` en src/data/site.ts */}
+        <Photo scene="portrait" src={site.doctor.photo} alt={flags.showDoctorName ? `Retrato de ${site.doctor.name}` : 'Retrato del director clínico'} label="Foto del doctor" class="relative aspect-[4/5]" />
+      </div>
+      <div data-reveal style="--i:1">
+        <div class="flex flex-wrap items-center gap-3">
+          <p class="eyebrow">Quién te atiende</p>
+          <PlaceholderBadge label="Nombre y bio por confirmar" />
+        </div>
+        <h2 id="doctor-title" class="mt-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
+          {flags.showDoctorName ? site.doctor.name : 'Nuestro director clínico'}
+        </h2>
+        <p class="mt-2 font-display font-semibold text-lime">{site.doctor.role}</p>
+        <p class="mt-1 text-sm text-mute">{site.doctor.license}</p>
+        <div class="mt-6 space-y-5 text-lg leading-relaxed text-snow/80">
+          {site.doctor.bio.map((p) => <p>{p}</p>)}
+        </div>
+        <blockquote class="mt-8 border-l-2 border-lime pl-5">
+          <p class="font-script text-3xl leading-snug text-lime sm:text-4xl">“Tu sonrisa en manos profesionales.”</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Valores -->
+  <section class="on-light section bg-paper text-ink">
+    <div class="container-x">
+      <SectionHeading align="center" eyebrow="Lo que nos mueve" title="Salud bucal · Confianza · Bienestar" intro="Tres palabras que guían cada cita, cada diagnóstico y cada sonrisa." />
+      <div class="mt-14 grid gap-5 md:grid-cols-3">
+        {
+          values.map((v, i) => (
+            <div class="card card-hover p-8" data-reveal style={`--i:${i}`}>
+              <span class="icon-tube size-14"><Icon name={v.icon} size={28} /></span>
+              <h3 class="mt-6 text-2xl font-bold">{v.title}</h3>
+              <p class="mt-3 leading-relaxed text-slate">{v.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería del consultorio -->
+  <section class="section">
+    <div class="container-x">
+      <SectionHeading eyebrow="El consultorio" title="Un espacio pensado para que te sientas en calma" intro="Luz cálida, madera y plantas: un consultorio boutique donde la visita al dentista se siente distinta." />
+      <div class="mt-14 grid gap-5 md:grid-cols-6">
+        {
+          gallery.map((g, i) => (
+            <div class:list={['reveal-wrap', i === 0 ? 'md:col-span-4' : 'md:col-span-2', i === 2 && 'md:col-span-6 lg:col-span-6']} data-reveal style={`--i:${i}`}>
+              <Photo scene={g.scene} src={g.src} alt={g.alt} label={g.label} class:list={['h-full', i === 2 ? 'aspect-[16/9] md:aspect-[21/9]' : 'aspect-[4/3] md:aspect-auto md:min-h-[22rem]']} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CTASection title='Conócenos en persona. <span class="text-neon">Tu primera cita empieza aquí.</span>' cta="about-cta" />
+</BaseLayout>

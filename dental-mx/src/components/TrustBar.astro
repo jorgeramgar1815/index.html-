@@ -1,0 +1,43 @@
+---
+import Icon from './Icon.astro';
+import PlaceholderBadge from './PlaceholderBadge.astro';
+import { trust } from '../data/site';
+---
+
+<section aria-label="Por qué confiar en nosotros" class="relative z-10 -mt-10 sm:-mt-14">
+  <div class="container-x">
+    <ul class="grid grid-cols-2 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface/90 shadow-[var(--shadow-lift)] backdrop-blur-xl lg:grid-cols-4">
+      {
+        trust.map((t, i) => (
+          <li
+            class:list={[
+              'relative flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:gap-4 sm:p-7',
+              i % 2 === 1 && 'border-l border-line',
+              i >= 2 && 'border-t border-line lg:border-t-0',
+              i === 2 && 'lg:border-l',
+            ]}
+            data-reveal
+            style={`--i:${i}`}
+          >
+            <span class="icon-tube size-11"><Icon name={t.icon} size={22} /></span>
+            <span class="min-w-0">
+              {t.value !== undefined ? (
+                <>
+                  <span class="block font-display text-2xl leading-none font-extrabold text-white sm:text-3xl">
+                    {/* PLACEHOLDER: cifra por confirmar con el cliente */}
+                    <span data-count={t.value}>{t.value.toLocaleString('es-MX')}</span>
+                    {t.suffix}
+                  </span>
+                  <span class="mt-1.5 block text-sm text-mute">{t.label}</span>
+                </>
+              ) : (
+                <span class="block font-display text-[0.95rem] leading-snug font-semibold text-white sm:text-base">{t.label}</span>
+              )}
+            </span>
+            {t.placeholder && <PlaceholderBadge label="Cifra por confirmar" class="absolute top-2 right-2 scale-[0.82] origin-top-right" />}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

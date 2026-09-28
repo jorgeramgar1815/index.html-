@@ -1,0 +1,24 @@
+---
+/** Encabezado de página interior con breadcrumb (y su JSON-LD en el layout). */
+import Icon from './Icon.astro';
+interface Props { title: string; eyebrow?: string; intro?: string; crumb: string }
+const { title, eyebrow, intro, crumb } = Astro.props;
+---
+
+<section class="relative overflow-hidden pt-32 pb-16 sm:pt-40 sm:pb-20">
+  <div class="pointer-events-none absolute inset-0 grid-fade" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -top-32 left-1/2 h-72 w-[44rem] -translate-x-1/2 rounded-full bg-lime/15 blur-[110px]" aria-hidden="true"></div>
+  <div class="container-x relative">
+    <nav aria-label="Ruta de navegación" class="hero-in" style="--i:0">
+      <ol class="flex items-center gap-2 text-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-lime">Inicio</a></li>
+        <li aria-hidden="true"><Icon name="chevron" size={14} /></li>
+        <li aria-current="page" class="text-snow">{crumb}</li>
+      </ol>
+    </nav>
+    {eyebrow && <p class="eyebrow hero-in mt-8" style="--i:1">{eyebrow}</p>}
+    <h1 class="hero-in mt-4 max-w-4xl text-4xl leading-[1.05] font-extrabold sm:text-5xl lg:text-6xl" style="--i:2" set:html={title} />
+    {intro && <p class="hero-in mt-6 max-w-2xl text-lg leading-relaxed text-mute" style="--i:3">{intro}</p>}
+    <slot />
+  </div>
+</section>

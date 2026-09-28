@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+interface Props { class?: string }
+const { class: className = '' } = Astro.props;
+const q = encodeURIComponent(site.maps.query);
+---
+
+<div class:list={['relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface', className]}>
+  {/* Mapa embebido de Google (sin API key). Filtro CSS para integrarlo al tema oscuro. */}
+  <iframe
+    title={`Mapa: ${site.name}, ${site.address.full}`}
+    src={`https://www.google.com/maps?q=${q}&hl=es&z=16&output=embed`}
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    class="map-dark absolute inset-0 size-full border-0"
+    allowfullscreen
+  ></iframe>
+  <div class="pointer-events-none absolute inset-0 ring-1 ring-lime/10 ring-inset"></div>
+  <a
+    href={`https://www.google.com/maps/dir/?api=1&destination=${q}`}
+    target="_blank"
+    rel="noopener"
+    class="btn btn-primary absolute bottom-4 left-4 min-h-11 px-5 text-sm"
+  >
+    <Icon name="pin" size={18} /> Cómo llegar
+  </a>
+</div>
+
+<style>
+  .map-dark {
+    filter: invert(0.92) hue-rotate(180deg) saturate(0.55) brightness(0.95) contrast(0.9);
+  }
+</style>

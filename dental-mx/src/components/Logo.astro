@@ -1,0 +1,26 @@
+---
+/** Logotipo: diente en línea blanca tipo neón + wordmark "DENTAL" blanco / "MX" lima. */
+interface Props {
+  class?: string;
+  /** Tono del wordmark: 'dark' para fondos oscuros, 'light' para fondos claros. */
+  tone?: 'dark' | 'light';
+}
+const { class: className = '', tone = 'dark' } = Astro.props;
+const TOOTH =
+  'M7.5 3C4.9 3 3.5 5 3.5 7.8c0 2.6 1 4.6 1.7 7.3.6 2.5 1 5.4 2.4 5.4 1.3 0 1.6-2.6 2.2-4.6.4-1.3 1.2-2.1 2.2-2.1s1.8.8 2.2 2.1c.6 2 .9 4.6 2.2 4.6 1.4 0 1.8-2.9 2.4-5.4.7-2.7 1.7-4.7 1.7-7.3C20.5 5 19.1 3 16.5 3c-1.9 0-3 1-4.5 1S9.4 3 7.5 3Z';
+---
+
+<span class:list={['inline-flex items-center gap-2.5', className]}>
+  <svg viewBox="0 0 24 24" class="size-8 shrink-0 overflow-visible" aria-hidden="true">
+    <path d={TOOTH} fill="none" stroke="#b5ee3a" stroke-width="2.6" opacity=".35" style="filter:blur(2.5px)" />
+    <path d={TOOTH} fill="none" stroke={tone === 'dark' ? '#fff' : '#0e100e'} stroke-width="1.5" stroke-linejoin="round" />
+  </svg>
+  <span
+    class:list={[
+      'font-display text-[1.15rem] leading-none font-extrabold tracking-[0.04em]',
+      tone === 'dark' ? 'text-white' : 'text-ink',
+    ]}
+  >
+    DENTAL<span class:list={[' ml-1', tone === 'dark' ? 'text-lime' : 'text-lime-ink']}>MX</span>
+  </span>
+</span>

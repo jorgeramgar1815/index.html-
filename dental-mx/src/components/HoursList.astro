@@ -1,0 +1,22 @@
+---
+import PlaceholderBadge from './PlaceholderBadge.astro';
+import { site } from '../data/site';
+---
+
+<div>
+  <div class="flex items-center justify-between gap-3">
+    <slot />
+    <PlaceholderBadge label="Horario por confirmar" />
+  </div>
+  {/* PLACEHOLDER: horario de atención por confirmar con el cliente (editar en src/data/site.ts) */}
+  <dl class="mt-4 divide-y divide-line">
+    {
+      site.hours.map((h) => (
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-mute">{h.days}</dt>
+          <dd class="text-right font-medium text-snow tabular-nums">{h.time}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>

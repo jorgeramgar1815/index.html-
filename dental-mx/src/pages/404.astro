@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NeonTooth from '../components/NeonTooth.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+---
+
+<BaseLayout title="Página no encontrada | Dental MX" description="La página que buscas no existe.">
+  <section class="relative flex min-h-[80svh] items-center pt-28 pb-16">
+    <div class="container-x text-center">
+      <NeonTooth flicker class="mx-auto w-32" />
+      <p class="eyebrow mt-10 justify-center">Error 404</p>
+      <h1 class="mt-4 text-4xl font-extrabold sm:text-5xl">Esta página se nos escapó</h1>
+      <p class="mx-auto mt-4 max-w-md text-lg text-mute">Puede que el enlace haya cambiado. Vuelve al inicio o escríbenos directamente.</p>
+      <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/" class="btn btn-ghost btn-lg">Ir al inicio</a>
+        <WhatsAppButton size="lg" cta="404" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import SmileIllustration from './SmileIllustration.astro';
+import { beforeAfter } from '../data/site';
+---
+
+<div class="before-after" data-reveal>
+  <div role="tablist" aria-label="Casos de ejemplo" class="mb-6 flex flex-wrap gap-2">
+    {
+      beforeAfter.map((c, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`ba-tab-${c.id}`}
+          aria-controls={`ba-panel-${c.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          class="min-h-11 rounded-full border border-line px-5 text-sm font-semibold text-snow/75 transition-colors hover:text-white aria-selected:border-lime aria-selected:bg-lime aria-selected:text-ink"
+        >
+          {c.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    beforeAfter.map((c, i) => (
+      <div role="tabpanel" id={`ba-panel-${c.id}`} aria-labelledby={`ba-tab-${c.id}`} hidden={i !== 0}>
+        <div class="ba-frame relative aspect-[5/3] overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface select-none" style="--pos: 50%">
+          {/* PLACEHOLDER: reemplazar ilustraciones por fotos reales (antes/después) con autorización del paciente. */}
+          <SmileIllustration variant={c.variant} state="after" class="absolute inset-0 size-full" />
+          <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--pos)) 0 0)">
+            <SmileIllustration variant={c.variant} state="before" class="absolute inset-0 size-full" />
+          </div>
+
+          <span class="absolute top-4 left-4 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold tracking-wide text-snow uppercase backdrop-blur">Antes</span>
+          <span class="absolute top-4 right-4 rounded-full bg-lime px-3 py-1 text-xs font-semibold tracking-wide text-ink uppercase">Después</span>
+          <span class="absolute right-4 bottom-4 rounded-full border border-white/15 bg-ink/80 px-3 py-1 text-[0.7rem] font-medium text-snow/80 backdrop-blur">Imagen ilustrativa</span>
+
+          <div class="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-lime shadow-[0_0_14px_rgb(181_238_58/0.9)]" style="left: var(--pos)" aria-hidden="true">
+            <span class="absolute top-1/2 left-1/2 grid size-11 -translate-1/2 place-items-center rounded-full bg-lime text-ink shadow-[0_0_24px_rgb(181_238_58/0.7)]">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6" /></svg>
+            </span>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            class="ba-range absolute inset-0 size-full cursor-ew-resize opacity-0"
+            aria-label={`Comparar antes y después: ${c.label}`}
+          />
+        </div>
+      </div>
+    ))
+  }
+  <p class="mt-4 text-sm text-mute">Arrastra el control para comparar. Las imágenes son ilustrativas; los resultados varían en cada paciente.</p>
+</div>
+
+<style>
+  .ba-frame:has(.ba-range:focus-visible) {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 3px;
+  }
+</style>
