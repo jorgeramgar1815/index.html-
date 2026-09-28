@@ -1,6 +1,7 @@
 import { fullAddress, site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 import { ClockIcon, MailIcon, PhoneIcon, PinIcon } from "./Icons";
+import { Aurora } from "./Decor";
 import { Lotus } from "./Lotus";
 import { Reveal } from "./Motion";
 import { Branch, Sparkles } from "./Section";
@@ -10,21 +11,21 @@ import { WhatsAppButton } from "./WhatsAppButton";
 export function CTASection({ withMap = true }: { withMap?: boolean }) {
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&z=16&output=embed`;
   return (
-    <section id="contacto" aria-labelledby="contacto-titulo" className="relative overflow-hidden bg-cream-100 pb-40 pt-20 sm:pt-28 lg:pb-48">
+    <section id="contacto" aria-labelledby="contacto-titulo" className="relative isolate overflow-hidden bg-cream-100 pb-40 pt-20 sm:pt-28 lg:pb-48">
+      <Aurora />
       <Branch className="pointer-events-none absolute -right-10 -top-6 w-56 rotate-90 text-jade-ink/20 sm:w-72" />
       <Sparkles />
       <div className="relative mx-auto grid max-w-7xl gap-12 px-5 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16 lg:px-10">
         <Reveal>
-          <Lotus className="h-12 w-12 text-jade-ink" />
+          <Lotus className="h-14 w-14 text-jade-ink" />
           <p className="script mt-5 text-5xl text-jade-ink sm:text-6xl" aria-hidden>
             Este es tu momento
           </p>
           <h2 id="contacto-titulo" className="mt-2 text-[2.4rem] leading-[1.08] text-navy sm:text-5xl">
-            Reserva tu espacio y florece desde adentro
+            Reserva tu espacio
           </h2>
-          <p className="mt-5 max-w-lg text-[1.02rem] leading-relaxed text-stone">
-            Escríbenos por WhatsApp y te ayudamos a elegir el tratamiento ideal para ti. Respondemos en horario de
-            atención.
+          <p className="mt-5 max-w-lg text-[1.05rem] leading-relaxed text-stone">
+            Escríbenos y te ayudamos a elegir tu tratamiento ideal.
           </p>
           <WhatsAppButton message={waMessages.closing} size="lg" className="mt-8 w-full sm:w-auto">
             Agenda tu cita por WhatsApp

@@ -31,8 +31,7 @@ export const site = {
 
   // Búsqueda por dirección para el mapa embebido (no requiere API key).
   // PLACEHOLDER: reemplazar por el embed del perfil de Google Business cuando exista.
-  mapQuery:
-    "Cerrada División del Norte 285, Hacienda Residencial, 27276 Torreón, Coahuila",
+  mapQuery: "Cerrada División del Norte 285, Hacienda Residencial, 27276 Torreón, Coahuila",
 
   // PLACEHOLDER: confirmar horario real con la clienta (Facebook no lo muestra).
   hours: [
@@ -58,32 +57,28 @@ export const brandValues = [
     title: "Bienestar",
     phrase: "que se siente",
     icon: "drop",
-    body:
-      "Cada tratamiento empieza por cómo te sientes. Un espacio sereno, aromas suaves y tiempo solo para ti, para que el cuerpo y la mente bajen el ritmo.",
+    body: "Un espacio sereno y tiempo solo para ti.",
   },
   {
     key: "belleza",
     title: "Belleza",
     phrase: "que te acompaña",
     icon: "sparkle",
-    body:
-      "Resultados visibles que se sostienen en el tiempo. Te acompañamos con un plan pensado para tu piel y tu cuerpo, sesión tras sesión.",
+    body: "Resultados visibles, con un plan a tu medida.",
   },
   {
     key: "conexion",
     title: "Conexión",
     phrase: "contigo",
     icon: "heart",
-    body:
-      "Escuchamos antes de recomendar. Queremos que salgas de aquí más en paz contigo misma, no solo con un tratamiento más.",
+    body: "Te escuchamos antes de recomendar.",
   },
   {
     key: "version",
     title: "Tu mejor",
     phrase: "versión",
     icon: "lotus",
-    body:
-      "Florecer desde adentro: confianza, luminosidad y energía renovada. Esa es la versión de ti que queremos ver salir por la puerta.",
+    body: "Confianza, luz y energía renovada.",
   },
 ] as const;
 

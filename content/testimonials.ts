@@ -17,39 +17,35 @@ export const testimonials: Testimonial[] = [
     name: "Mariana G.",
     detail: "Hydrafacial",
     quote:
-      "Salí con la piel luminosa y sintiéndome ligera. El lugar es tranquilo, huele delicioso y te atienden con muchísimo cariño.",
+      "Salí con la piel luminosa y sintiéndome ligera. Te atienden con muchísimo cariño.",
     rating: 5,
     isExample: true,
   },
   {
     name: "Daniela R.",
     detail: "Bubble Oxygen Facial",
-    quote:
-      "Me explicaron todo el proceso antes de empezar. Se nota que saben lo que hacen y que les importa cómo te sientes.",
+    quote: "Me explicaron todo antes de empezar. Se nota que saben lo que hacen.",
     rating: 5,
     isExample: true,
   },
   {
     name: "Paola V.",
     detail: "Microneedling",
-    quote:
-      "Llevo tres sesiones y la textura de mi piel cambió muchísimo. Es mi hora favorita del mes, de verdad.",
+    quote: "Tres sesiones y la textura de mi piel cambió muchísimo.",
     rating: 5,
     isExample: true,
   },
   {
     name: "Karla M.",
     detail: "Pedicure spa",
-    quote:
-      "Un ratito para mí sin prisas. Todo muy limpio y bonito, y agendar por WhatsApp fue facilísimo.",
+    quote: "Un ratito para mí, sin prisas. Agendar por WhatsApp fue facilísimo.",
     rating: 5,
     isExample: true,
   },
   {
     name: "Sofía L.",
     detail: "Hidralips",
-    quote:
-      "Resultado súper natural, justo lo que buscaba. Me encantó que no se sintiera clínico, sino como un spa de verdad.",
+    quote: "Resultado súper natural. Se siente como un spa de verdad, nada clínico.",
     rating: 5,
     isExample: true,
   },

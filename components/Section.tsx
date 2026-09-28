@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { GrowLine, WordsReveal } from "./Effects";
 import { Reveal } from "./Motion";
 
 type SectionHeadingProps = {
@@ -14,28 +15,35 @@ type SectionHeadingProps = {
 
 export function SectionHeading({ eyebrow, title, script, intro, align = "center", dark = false, id }: SectionHeadingProps) {
   const center = align === "center";
+  const line = dark ? "bg-gold/60" : "bg-gold";
   return (
-    <Reveal className={`${center ? "mx-auto text-center" : ""} max-w-2xl`}>
-      <p className={`eyebrow flex items-center gap-3 ${center ? "justify-center" : ""} ${dark ? "text-gold" : "text-gold-ink"}`}>
-        <span className={`h-px w-8 ${dark ? "bg-gold/60" : "bg-gold"}`} aria-hidden />
-        {eyebrow}
-        {center && <span className={`h-px w-8 ${dark ? "bg-gold/60" : "bg-gold"}`} aria-hidden />}
-      </p>
-      {script && (
-        <p className={`script mt-4 text-[2.6rem] sm:text-5xl ${dark ? "text-gold" : "text-jade-ink"}`} aria-hidden>
-          {script}
+    <div className={`${center ? "mx-auto text-center" : ""} max-w-2xl`}>
+      <Reveal>
+        <p className={`eyebrow flex items-center gap-3 ${center ? "justify-center" : ""} ${dark ? "text-gold" : "text-gold-ink"}`}>
+          <GrowLine className={`w-8 ${line}`} origin="right" />
+          {eyebrow}
+          {center && <GrowLine className={`w-8 ${line}`} />}
         </p>
+      </Reveal>
+      {script && (
+        <Reveal delay={0.1}>
+          <p className={`script mt-4 text-[2.6rem] sm:text-5xl ${dark ? "text-gold" : "text-jade-ink"}`} aria-hidden>
+            {script}
+          </p>
+        </Reveal>
       )}
       <h2
         id={id}
         className={`${script ? "mt-1" : "mt-4"} text-[2.35rem] leading-[1.08] sm:text-5xl ${dark ? "text-cream" : "text-navy"}`}
       >
-        {title}
+        {typeof title === "string" ? <WordsReveal text={title} delay={0.1} /> : title}
       </h2>
       {intro && (
-        <p className={`mt-5 text-[1.02rem] leading-relaxed ${dark ? "text-cream/80" : "text-stone"}`}>{intro}</p>
+        <Reveal delay={0.25}>
+          <p className={`mt-5 text-[1.05rem] leading-relaxed ${dark ? "text-cream/80" : "text-stone"}`}>{intro}</p>
+        </Reveal>
       )}
-    </Reveal>
+    </div>
   );
 }
 

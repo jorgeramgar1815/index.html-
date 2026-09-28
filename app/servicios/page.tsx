@@ -3,6 +3,7 @@ import { ArtFrame } from "@/components/ArtFrame";
 import { TreatmentCard } from "@/components/Cards";
 import { CategoryTabs } from "@/components/CategoryTabs";
 import { CTASection } from "@/components/CTASection";
+import { WordsReveal } from "@/components/Effects";
 import { Reveal, Stagger, StaggerItem } from "@/components/Motion";
 import { PageHeader } from "@/components/PageHeader";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -25,7 +26,7 @@ export default function ServiciosPage() {
         eyebrow="Catálogo completo"
         script="Florece desde adentro"
         title="Nuestros servicios"
-        intro="Elige tu ritual. Cada tratamiento incluye una valoración previa para adaptarlo a tu piel, tu cuerpo y tus objetivos."
+        intro="Elige tu ritual. Cada tratamiento incluye una valoración previa."
       />
 
       <div className="bg-cream-50">
@@ -45,18 +46,22 @@ export default function ServiciosPage() {
                     variant={c.art}
                     src={c.image}
                     alt={`${c.name} en Reduzen`}
-                    className="aspect-[16/10] w-full rounded-[28px] shadow-soft lg:aspect-[4/5] lg:rounded-[999px_999px_28px_28px]"
+                    className="aspect-[16/10] w-full rounded-[28px] shadow-lift lg:aspect-[4/5] lg:rounded-[999px_999px_28px_28px]"
                   />
                 </Reveal>
                 <div>
-                  <Reveal>
-                    <p className="eyebrow text-gold-ink">
-                      {String(idx + 1).padStart(2, "0")} · {c.treatments.length} tratamientos
-                    </p>
-                    <h2 id={`${c.slug}-titulo`} className="mt-3 text-[2.3rem] leading-tight text-navy sm:text-5xl">
-                      {c.name}
+                  <Reveal className="relative">
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -top-10 right-0 select-none font-serif text-[7rem] leading-none text-transparent [-webkit-text-stroke:1px_rgba(201,162,75,.45)] sm:text-[9rem]"
+                    >
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <p className="eyebrow relative text-gold-ink">{c.treatments.length} tratamientos</p>
+                    <h2 id={`${c.slug}-titulo`} className="relative mt-3 text-[2.3rem] leading-tight text-navy sm:text-5xl">
+                      <WordsReveal text={c.name} />
                     </h2>
-                    <p className="mt-4 max-w-xl text-[1.02rem] leading-relaxed text-stone">{c.intro}</p>
+                    <p className="relative mt-3 max-w-xl text-[1.05rem] text-stone">{c.intro}</p>
                   </Reveal>
                   <Stagger className="mt-8 grid gap-5 sm:grid-cols-2">
                     {c.treatments.map((t) => (

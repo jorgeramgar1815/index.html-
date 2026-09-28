@@ -45,6 +45,10 @@
   --animate-wave-drift: wave-drift 18s linear infinite;
   --animate-float: float 9s ease-in-out infinite;
   --animate-twinkle: twinkle 4s ease-in-out infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-spin-slow: spin 28s linear infinite;
+  --animate-aurora: aurora 18s ease-in-out infinite alternate;
+  --animate-float-tilt: float-tilt 10s ease-in-out infinite;
 }
 
 @keyframes pulse-soft {
@@ -70,6 +74,38 @@
 @keyframes page-fade {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes aurora {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, -4%, 0) scale(1.12); }
+  100% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+}
+@keyframes float-tilt {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-16px) rotate(calc(var(--r, 0deg) * 0.6)); }
+}
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  12% { opacity: var(--o, 0.7); }
+  85% { opacity: var(--o, 0.7); }
+  100% { transform: translateY(-110vh) scale(1.05); opacity: 0; }
+}
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes text-shine {
+  from { background-position: 200% 50%; }
+  to { background-position: -50% 50%; }
+}
+@keyframes scroll-dot {
+  0% { transform: translateY(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(14px); opacity: 0; }
 }
 @keyframes shimmer {
   from { transform: translateX(-120%) skewX(-20deg); }
@@ -140,6 +176,28 @@
   /* Entrada del hero en CSS puro: no espera a la hidratación (mejor LCP) */
   .rise { animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0s); }
   .page-fade { animation: page-fade 0.6s ease-out both; }
+  /* Trazo que se dibuja (paths con pathLength=1) */
+  .draw path, .draw circle { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards; animation-delay: var(--d, 0s); }
+  /* Texto dorado con brillo que recorre la palabra (solo titulares grandes) */
+  .text-shine {
+    background: linear-gradient(110deg, #7a5c17 0%, #9c7a2a 35%, #e7cf8e 48%, #9c7a2a 60%, #7a5c17 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shine 7s ease-in-out infinite;
+  }
+  .bubble {
+    position: absolute;
+    bottom: -40px;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.85) 0 8%, rgb(255 255 255 / 0.08) 22%, transparent 60%);
+    animation: bubble-rise var(--t, 16s) linear infinite;
+    animation-delay: var(--d, 0s);
+    will-change: transform;
+  }
+  .mask-fade-x { mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
   .no-scrollbar { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
 }

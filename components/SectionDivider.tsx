@@ -19,7 +19,7 @@ export function SectionDivider({ fill, accent, flip = false, animated = false, c
   return (
     <div
       aria-hidden
-      className={`pointer-events-none relative -mb-px h-14 w-full overflow-hidden sm:h-20 lg:h-24 ${flip ? "rotate-180" : ""} ${className}`}
+      className={`pointer-events-none ${/\babsolute\b/.test(className) ? "" : "relative"} -mb-px h-14 w-full overflow-hidden sm:h-20 lg:h-24 ${flip ? "rotate-180" : ""} ${className}`}
     >
       {accent && (
         <svg

@@ -36,7 +36,7 @@ export default function NosotrosPage() {
         eyebrow="Nuestra historia"
         script="Te mereces este espacio"
         title="Un lugar para volver a ti"
-        intro="Somos un spa boutique en Torreón donde la técnica y el bienestar se encuentran."
+        intro="Un spa boutique en Torreón donde la técnica y el bienestar se encuentran."
       />
 
       {/* ============ HISTORIA ============ */}
@@ -53,12 +53,15 @@ export default function NosotrosPage() {
             </Parallax>
           </Reveal>
           <div>
-            <SectionHeading id="historia-titulo" align="left" eyebrow="Quiénes somos" title="Bienestar que se siente, belleza que te acompaña" />
+            <SectionHeading id="historia-titulo" align="left" eyebrow="Quiénes somos" title="Belleza con alma de spa" />
             {/* PLACEHOLDER: historia editable en content/team.ts */}
             <Reveal className="mt-6 space-y-5 text-[1.02rem] leading-relaxed text-stone">
               {story.map((p) => (
                 <p key={p.slice(0, 20)}>{p}</p>
               ))}
+            </Reveal>
+            <Reveal delay={0.2} className="mt-8 border-l-2 border-gold pl-5">
+              <p className="script text-4xl text-jade-ink sm:text-5xl">Te mereces este espacio</p>
             </Reveal>
           </div>
         </div>
@@ -72,7 +75,7 @@ export default function NosotrosPage() {
             eyebrow="Nuestros valores"
             script="Florece"
             title="Lo que nos mueve"
-            intro="Cuatro ideas que guían cada cita, desde que nos escribes hasta que te despedimos."
+            intro="Cuatro ideas que guían cada cita."
           />
           <Stagger as="ul" className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {brandValues.map((v) => {
@@ -81,9 +84,9 @@ export default function NosotrosPage() {
                 <StaggerItem
                   as="li"
                   key={v.key}
-                  className="rounded-[24px] bg-cream-50 p-7 ring-1 ring-navy/8 transition-all duration-500 hover:-translate-y-1 hover:shadow-lift hover:ring-gold/50"
+                  className="group rounded-[24px] bg-cream-50 p-7 ring-1 ring-navy/8 transition-all duration-500 hover:-translate-y-1 hover:shadow-lift hover:ring-gold/50"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream text-jade-ink ring-1 ring-gold/35">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream text-jade-ink ring-1 ring-gold/35 transition-all duration-500 group-hover:rotate-12 group-hover:bg-jade-ink group-hover:text-cream">
                     <Icon size={26} />
                   </span>
                   <h3 className="mt-5 text-2xl text-navy">
@@ -104,19 +107,21 @@ export default function NosotrosPage() {
             id="equipo-titulo"
             eyebrow="Nuestro equipo"
             title="Manos expertas, trato cercano"
-            intro="Especialistas certificadas que te acompañan en cada paso."
+            intro="Especialistas que te acompañan en cada paso."
           />
           {/* PLACEHOLDER: fotos, nombres y bios reales en content/team.ts */}
           <Stagger className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
               <StaggerItem key={i} className="text-center" >
                 <div data-placeholder="especialista">
-                  <ArtFrame
-                    variant="team"
-                    src={member.image}
-                    alt={`Foto de ${member.name}`}
-                    className="mx-auto aspect-[4/5] w-full max-w-xs rounded-[999px_999px_24px_24px]"
-                  />
+                  <div className="group mx-auto max-w-xs overflow-hidden rounded-[999px_999px_24px_24px] shadow-soft">
+                    <ArtFrame
+                      variant="team"
+                      src={member.image}
+                      alt={`Foto de ${member.name}`}
+                      className="aspect-[4/5] w-full transition-transform duration-[1.2s] group-hover:scale-105"
+                    />
+                  </div>
                   <h3 className="mt-6 text-2xl text-navy">{member.name}</h3>
                   <p className="eyebrow mt-2 text-gold-ink">{member.role}</p>
                   <p className="mx-auto mt-3 max-w-xs text-[0.95rem] leading-relaxed text-stone">{member.bio}</p>
@@ -134,12 +139,21 @@ export default function NosotrosPage() {
             id="espacio-titulo"
             eyebrow="Nuestro espacio"
             title="Diseñado para que desconectes"
-            intro="Luz cálida, aromas suaves y cabinas privadas en Col. Hacienda Residencial."
+            intro="Luz cálida y cabinas privadas en Col. Hacienda Residencial."
           />
           <Stagger className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5">
             {gallery.map((g) => (
               <StaggerItem key={g.alt} className={g.className}>
-                <ArtFrame variant={g.variant} alt={g.alt} className="h-full min-h-full w-full rounded-[24px]" />
+                <figure className="group relative h-full overflow-hidden rounded-[24px] shadow-soft">
+                  <ArtFrame
+                    variant={g.variant}
+                    alt={g.alt}
+                    className="h-full min-h-full w-full transition-transform duration-[1.2s] ease-out group-hover:scale-110"
+                  />
+                  <figcaption className="absolute inset-x-3 bottom-3 translate-y-2 rounded-full bg-cream/90 px-4 py-2 text-center text-xs uppercase tracking-[0.18em] text-navy opacity-0 backdrop-blur transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                    {g.alt}
+                  </figcaption>
+                </figure>
               </StaggerItem>
             ))}
           </Stagger>
