@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import { DM_Serif_Display, Montserrat } from "next/font/google";
 import type { ReactNode } from "react";
 import { ScrollProgress } from "@/components/Effects";
 import { Footer } from "@/components/Footer";
@@ -10,14 +10,14 @@ import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 import "./globals.css";
 
-const display = Instrument_Serif({
+const display = DM_Serif_Display({
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
-const body = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body", display: "swap" });
+const body = Montserrat({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f2ede4",
+  themeColor: "#f7f3ec",
   width: "device-width",
   initialScale: 1,
 };

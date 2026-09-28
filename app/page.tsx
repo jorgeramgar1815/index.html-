@@ -12,7 +12,7 @@ import { ServiceIndex } from "@/components/ServiceIndex";
 import { TestimonialSlider } from "@/components/TestimonialSlider";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { categories, signatureTreatments } from "@/content/services";
-import { brandValues, site } from "@/content/site";
+import { brandValues } from "@/content/site";
 import { testimonials } from "@/content/testimonials";
 import { waMessages } from "@/lib/whatsapp";
 
@@ -31,7 +31,7 @@ export default function Home() {
           {tickerItems.map((t, i) => (
             <span
               key={t}
-              className={`display flex items-center gap-10 pr-10 text-6xl sm:text-8xl ${i % 2 ? "outline-text text-ink" : "text-ink"}`}
+              className={`display flex items-center gap-10 pr-10 text-5xl sm:text-7xl ${i % 2 ? "outline-text text-ink" : "text-ink"}`}
             >
               {t}
               <Star className="h-6 w-6 shrink-0 text-gold" />
@@ -51,9 +51,9 @@ export default function Home() {
               </h2>
             </div>
             <ScrollText
-              className="display text-[2.6rem] leading-[1.02] text-ink sm:text-6xl lg:col-span-9 lg:text-[5.2rem]"
-              text={`${site.message}`}
-              emphasis={["florece", "adentro", "espacio"]}
+              className="display text-[2.4rem] leading-[1.05] text-ink sm:text-6xl lg:col-span-9 lg:text-[4.6rem]"
+              text="Desconecta, renueva tu energía y florece desde adentro."
+              emphasis={["florece", "adentro"]}
             />
           </div>
 
@@ -73,7 +73,6 @@ export default function Home() {
                   <h3 className="mt-8 font-serif text-3xl leading-none text-ink sm:text-4xl">
                     {v.title} <em className="text-jade-ink">{v.phrase}</em>
                   </h3>
-                  <p className="mt-3 text-stone">{v.body}</p>
                 </StaggerItem>
               );
             })}
@@ -83,7 +82,7 @@ export default function Home() {
 
       {/* 03 — PORTADA DEL MES (único spread oscuro) */}
       <section id="tratamientos" aria-labelledby="tratamientos-titulo" className="on-dark relative isolate overflow-hidden bg-night py-24 sm:py-32">
-        <Bubbles count={8} />
+        <Bubbles count={8} light />
         <div className="relative mx-auto max-w-[88rem] px-5 sm:px-8">
           <SectionHead
             id="tratamientos-titulo"
@@ -91,7 +90,6 @@ export default function Home() {
             number="03"
             label="Tratamientos insignia"
             title="Lo más pedido."
-            intro="Tecnología para limpiar, oxigenar e hidratar tu piel. Resultados desde la primera sesión."
           />
           <div className="mt-20">
             <CoverStory lead={lead} others={others} />
@@ -109,7 +107,6 @@ export default function Home() {
             number="04"
             label="Servicios"
             title="Todo para sentirte tú."
-            intro="Del rostro a los pies, con técnica profesional y trato cercano."
           />
           <div className="mt-16">
             <ServiceIndex items={categories} />
@@ -125,7 +122,7 @@ export default function Home() {
             number="05"
             label="Resultados"
             title="Cambios que se ven."
-            intro="Desliza para comparar. Pronto, casos reales con autorización."
+            intro="Desliza para comparar."
             aside={
               <WhatsAppButton message={waMessages.results} variant="outline" className="mt-6">
                 Quiero una valoración

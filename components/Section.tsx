@@ -12,13 +12,15 @@ type SectionHeadProps = {
   id?: string;
   /** Contenido a la derecha del titular (p. ej. un enlace). */
   aside?: ReactNode;
+  /** Sobre bloque turquesa: folio en marino. */
+  tone?: "jade";
 };
 
 /** Encabezado editorial: folio + filete + titular grande alineado a la izquierda. */
-export function SectionHead({ number, label, title, intro, dark = false, id, aside }: SectionHeadProps) {
+export function SectionHead({ number, label, title, intro, dark = false, id, aside, tone }: SectionHeadProps) {
   return (
     <header>
-      <div className={`flex items-center gap-4 ${dark ? "text-gold-pale" : "text-gold-ink"}`}>
+      <div className={`flex items-center gap-4 ${dark ? "text-gold-pale" : tone === "jade" ? "text-ink" : "text-gold-ink"}`}>
         <span className="eyebrow">{number}</span>
         <Rule dark={dark} className="flex-1" />
         <span className="eyebrow">{label}</span>
@@ -26,7 +28,7 @@ export function SectionHead({ number, label, title, intro, dark = false, id, asi
       <div className="mt-8 grid gap-6 lg:grid-cols-12 lg:items-end">
         <h2
           id={id}
-          className={`display text-[3.2rem] sm:text-7xl lg:col-span-8 lg:text-[6.5rem] ${dark ? "!text-cream" : ""}`}
+          className={`display text-[2.9rem] sm:text-6xl lg:col-span-8 lg:text-[5.4rem] ${dark ? "!text-cream" : ""}`}
         >
           <WordsReveal text={title} />
         </h2>

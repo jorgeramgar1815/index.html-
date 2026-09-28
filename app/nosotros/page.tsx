@@ -36,7 +36,7 @@ export default function NosotrosPage() {
         eyebrow="Nuestra historia"
         title="Un lugar para"
         accent="volver a ti."
-        intro="Un spa boutique en Torreón donde la técnica y el bienestar se encuentran."
+        intro="Técnica y bienestar en un mismo lugar."
       />
 
       {/* 01 — HISTORIA */}
@@ -58,9 +58,7 @@ export default function NosotrosPage() {
             </h2>
             {/* PLACEHOLDER: historia editable en content/team.ts */}
             <Reveal className="mt-8 space-y-5 text-lg leading-relaxed text-stone first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:leading-[0.8] first-letter:text-jade-ink">
-              {story.map((p) => (
-                <p key={p.slice(0, 20)}>{p}</p>
-              ))}
+              <p>{story[0]}</p>
             </Reveal>
             <Reveal delay={0.2} className="mt-10 border-l-2 border-gold pl-6">
               <p className="display text-4xl text-ink sm:text-5xl">“Te mereces este espacio.”</p>
@@ -70,22 +68,21 @@ export default function NosotrosPage() {
       </section>
 
       {/* 02 — VALORES */}
-      <section aria-labelledby="valores-titulo" className="bg-jade-ink py-24 text-cream sm:py-32">
+      <section aria-labelledby="valores-titulo" className="bg-jade py-24 text-ink sm:py-32">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
-          <SectionHead id="valores-titulo" dark number="02" label="Valores" title="Lo que nos mueve." />
-          <Stagger as="ul" className="mt-16 grid border-t border-cream/20 sm:grid-cols-2 lg:grid-cols-4">
+          <SectionHead id="valores-titulo" number="02" label="Valores" title="Lo que nos mueve." tone="jade" />
+          <Stagger as="ul" className="mt-16 grid border-t border-ink/25 sm:grid-cols-2 lg:grid-cols-4">
             {brandValues.map((v, i) => {
               const Icon = valueIcons[v.icon];
               return (
-                <StaggerItem as="li" key={v.key} className="border-b border-cream/20 py-10 sm:pr-6 lg:border-b-0 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0">
+                <StaggerItem as="li" key={v.key} className="border-b border-ink/25 py-10 sm:pr-6 lg:border-b-0 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0">
                   <div className="flex items-center justify-between">
-                    <span className="eyebrow text-gold-pale">{String(i + 1).padStart(2, "0")}</span>
-                    <Icon size={26} className="text-gold-pale" />
+                    <span className="eyebrow text-ink">{String(i + 1).padStart(2, "0")}</span>
+                    <Icon size={28} className="text-ink" />
                   </div>
-                  <h3 className="mt-10 font-serif text-4xl leading-none !text-cream">
-                    {v.title} <em className="text-gold-pale">{v.phrase}</em>
+                  <h3 className="mt-10 font-serif text-4xl leading-tight text-ink">
+                    {v.title} <em>{v.phrase}</em>
                   </h3>
-                  <p className="mt-3 text-cream/80">{v.body}</p>
                 </StaggerItem>
               );
             })}
@@ -96,7 +93,7 @@ export default function NosotrosPage() {
       {/* 03 — EQUIPO */}
       <section aria-labelledby="equipo-titulo" className="bg-cream py-24 sm:py-32">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
-          <SectionHead id="equipo-titulo" number="03" label="Equipo" title="Manos expertas." intro="Especialistas que te acompañan en cada paso." />
+          <SectionHead id="equipo-titulo" number="03" label="Equipo" title="Manos expertas." />
           {/* PLACEHOLDER: fotos, nombres y bios reales en content/team.ts */}
           <Stagger className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
@@ -113,7 +110,6 @@ export default function NosotrosPage() {
                   <figcaption className="mt-4 border-b border-ink/15 pb-4">
                     <span className="eyebrow text-gold-ink">{member.role}</span>
                     <h3 className="mt-2 font-serif text-3xl text-ink">{member.name}</h3>
-                    <p className="mt-1 text-stone">{member.bio}</p>
                   </figcaption>
                 </figure>
               </StaggerItem>
@@ -130,7 +126,6 @@ export default function NosotrosPage() {
             number="04"
             label="Espacio"
             title="Hecho para desconectar."
-            intro="Luz cálida y cabinas privadas en Col. Hacienda Residencial."
             aside={
               <WhatsAppButton message={waMessages.about} variant="outline" className="mt-6">
                 Agenda una visita

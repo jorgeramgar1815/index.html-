@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =========================================================
-   Sistema de diseño Reduzen — "Editorial"
+   Sistema de diseño Reduzen — "Editorial" con la paleta de marca
    Revista de belleza: tipografía display gigante, retícula
    asimétrica, filetes finos, esquinas rectas, secciones
    numeradas. Base papel claro; un solo "spread" oscuro.
@@ -9,36 +9,34 @@
    pequeño sobre papel.
    ========================================================= */
 @theme {
-  /* — Papel (base) — */
-  --color-cream: #f2ede4;        /* papel */
-  --color-cream-50: #faf7f1;     /* papel claro */
-  --color-cream-100: #e9e2d6;    /* papel sombra */
-  --color-sand: #ddd1bd;
-  --color-blush: #e8d2c3;
+  /* — Paleta principal de la marca (PRD §2.1) — */
+  --color-cream: #f7f3ec;        /* fondo primario */
+  --color-cream-50: #fbf8f2;     /* fondo claro */
+  --color-cream-100: #efe8dc;
+  --color-sand: #e3d6c1;
+  --color-blush: #ecd5c5;
 
-  /* — Tinta — */
-  --color-ink: #121a2c;          /* titulares (15:1) */
-  --color-navy: #1b2a4a;         /* texto (12:1) */
-  --color-navy-deep: #16213e;
-  --color-stone: #625b51;        /* texto secundario (5.9:1) */
+  --color-ink: #1b2a4a;          /* azul marino: titulares y texto (12.9:1) */
+  --color-navy: #1b2a4a;
+  --color-navy-deep: #16213e;    /* detalle decorativo */
+  --color-stone: #665f55;        /* gris cálido para texto secundario (5.7:1) */
   --color-stone-soft: #8a8378;   /* solo decorativo */
 
-  /* — Acentos de marca — */
-  --color-gold: #c9a24b;         /* filetes, números grandes */
+  --color-gold: #c9a24b;         /* acento primario (decorativo / elementos grandes) */
   --color-gold-soft: #d4b36a;
-  --color-gold-ink: #7a5c14;     /* texto pequeño dorado sobre papel (5.3:1) */
-  --color-gold-pale: #f3e3bb;    /* dorado claro sobre bloques jade (4.6:1) */
-  --color-jade: #3aa6a0;
-  --color-jade-500: #2e8b8b;
-  --color-jade-ink: #1f6f6c;     /* bloques de color y CTAs (5.3:1) */
+  --color-gold-ink: #7a5c14;     /* texto pequeño dorado sobre crema (5.6:1) */
+  --color-gold-pale: #f3e3bb;    /* dorado claro sobre jade profundo (4.6:1) */
+  --color-jade: #3aa6a0;         /* turquesa: bloques con texto marino (4.8:1) */
+  --color-jade-500: #2e8b8b;     /* turquesa para texto grande (3.7:1) */
+  --color-jade-ink: #1f6f6c;     /* botones y texto pequeño (5.3:1) */
 
-  /* — Spread oscuro — */
+  /* — Registro oscuro premium — */
   --color-night: #0e1730;
   --color-night-3: #1a2544;
 
   /* — Tipografía — */
-  --font-serif: var(--font-display), "Instrument Serif", Georgia, serif;
-  --font-sans: var(--font-body), "Instrument Sans", system-ui, sans-serif;
+  --font-serif: var(--font-display), "DM Serif Display", Georgia, serif;
+  --font-sans: var(--font-body), "Montserrat", system-ui, sans-serif;
 
   --ease-editorial: cubic-bezier(0.76, 0, 0.24, 1);
 
@@ -97,6 +95,7 @@
     background: var(--color-cream);
     color: var(--color-navy);
     font-family: var(--font-sans);
+    font-size: 1.0625rem;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -104,7 +103,7 @@
     font-family: var(--font-serif);
     font-weight: 400;
     color: var(--color-ink);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   p { text-wrap: pretty; }
@@ -120,16 +119,16 @@
   /* Etiqueta corta en mayúsculas (folio de revista) */
   .eyebrow {
     font-family: var(--font-sans);
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
   }
   /* Titular display gigante */
   .display {
     font-family: var(--font-serif);
-    line-height: 0.88;
-    letter-spacing: -0.035em;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
   }
   /* Texto en contorno (números y cintas) */
   .outline-text {
@@ -167,7 +166,7 @@
     position: absolute;
     bottom: -40px;
     border-radius: 999px;
-    border: 1px solid rgb(247 243 236 / 0.25);
+    border: 1px solid rgb(58 166 160 / 0.35);
     background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.5) 0 8%, transparent 50%);
     animation: bubble-rise var(--t, 16s) linear infinite;
     animation-delay: var(--d, 0s);

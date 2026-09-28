@@ -27,7 +27,7 @@ export default function ServiciosPage() {
         eyebrow="Catálogo completo"
         title="Nuestros"
         accent="servicios."
-        intro="Elige tu ritual. Cada tratamiento incluye una valoración previa."
+        intro="Cada tratamiento incluye una valoración previa."
       >
         <p className="eyebrow mt-6 text-gold-ink">
           {categories.length} categorías · {total} tratamientos
@@ -53,9 +53,6 @@ export default function ServiciosPage() {
                 <h2 id={`${c.slug}-titulo`} className="display -mt-4 text-5xl sm:text-6xl">
                   <WordsReveal text={c.name} />
                 </h2>
-                <Reveal delay={0.15}>
-                  <p className="mt-4 max-w-xs text-lg text-stone">{c.intro}</p>
-                </Reveal>
                 <ClipReveal className="mt-8 hidden aspect-[4/3] lg:block">
                   <ArtFrame variant={c.art} src={c.image} alt={`${c.name} en Reduzen`} className="h-full w-full" />
                 </ClipReveal>

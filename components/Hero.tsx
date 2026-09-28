@@ -1,117 +1,79 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { categories } from "@/content/services";
-import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 import { ArtFrame } from "./ArtFrame";
+import { Bubbles } from "./Decor";
 import { ArrowIcon } from "./Icons";
 import { Lotus } from "./Lotus";
 import { WhatsAppButton } from "./WhatsAppButton";
 
-// PLACEHOLDER: foto real de portada (retrato spa, luz cálida, formato vertical)
-const HERO_IMAGE: string | null = null;
+// PLACEHOLDER: fotos reales para los marcos laterales del inicio (retrato spa / tratamiento)
+const HERO_LEFT: string | null = null;
+const HERO_RIGHT: string | null = null;
 
 const d = (s: number) => ({ "--d": `${s}s` }) as CSSProperties;
 
-/** Sello circular con texto que gira y loto que se dibuja. */
-function Seal() {
+/** Marco lateral con pie de foto (solo desktop). */
+function SideFrame({ side, src, fig, caption }: { side: "left" | "right"; src: string | null; fig: string; caption: string }) {
   return (
-    <div className="relative h-28 w-28 sm:h-36 sm:w-36" aria-hidden>
-      <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full animate-spin-slow text-ink">
-        <defs>
-          <path id="sello" d="M100 100m-80 0a80 80 0 1 1 160 0a80 80 0 1 1-160 0" />
-        </defs>
-        <text fontSize="14" fill="currentColor" style={{ fontFamily: "var(--font-body)", fontWeight: 600 }}>
-          <textPath href="#sello" textLength="496" lengthAdjust="spacing">
-            TE MERECES ESTE ESPACIO ✦ REDUZEN ✦
-          </textPath>
-        </text>
-      </svg>
-      <div className="absolute inset-[24%] flex items-center justify-center rounded-full bg-gold">
-        <Lotus draw className="w-[64%] text-ink" accent="var(--color-cream-50)" strokeWidth={1.7} />
+    <figure
+      className={`absolute top-1/2 hidden w-[15vw] max-w-60 -translate-y-1/2 xl:block ${side === "left" ? "left-8 2xl:left-16" : "right-8 2xl:right-16"}`}
+    >
+      <div className="curtain" style={d(side === "left" ? 0.5 : 0.65)}>
+        <ArtFrame variant={side === "left" ? "facial" : "portrait"} src={src} alt={caption} className="aspect-[3/4] w-full" />
       </div>
-    </div>
+      <figcaption className="rise mt-2 flex justify-between border-b border-ink/15 pb-2" style={d(0.9)}>
+        <span className="eyebrow text-gold-ink">{fig}</span>
+        <span className="eyebrow text-stone">{caption}</span>
+      </figcaption>
+    </figure>
   );
 }
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero-titulo" className="relative overflow-hidden bg-cream pt-24 sm:pt-28">
-      <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
-        {/* Folio superior */}
-        <div className="rise flex items-center justify-between border-b border-ink/15 pb-3 text-stone" style={d(0)}>
-          <span className="eyebrow">Mesoterapia &amp; Spa</span>
-          <span className="eyebrow hidden sm:block">{site.address.neighborhood}</span>
-          <span className="eyebrow">{site.address.city}, Coah.</span>
+    <section aria-labelledby="hero-titulo" className="relative isolate overflow-hidden bg-cream">
+      <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center px-5 pb-16 pt-28 text-center">
+        <Bubbles count={9} />
+
+        {/* Anillos dorados detrás del nombre */}
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2">
+          <div className="rise h-[34rem] w-[34rem] rounded-full border border-gold/30 sm:h-[44rem] sm:w-[44rem]" style={d(0.2)} />
+          <div className="rise absolute inset-12 rounded-full border border-jade/25 sm:inset-16" style={d(0.3)} />
         </div>
 
-        <div className="grid gap-10 pb-12 pt-8 lg:grid-cols-12 lg:gap-8 lg:pb-16 lg:pt-10">
-          <div className="lg:col-span-7">
-            <p className="rise eyebrow text-jade-ink" style={d(0.1)}>
-              — Este es tu momento
-            </p>
-            <h1 id="hero-titulo" className="display mt-5 text-[5.3rem] sm:text-[8rem] lg:text-[8.5rem] xl:text-[9.5rem]">
-              <span className="line">
-                <span style={d(0.15)}>Florece</span>
-              </span>
-              <span className="line">
-                <span style={d(0.25)} className="pl-[12%]">
-                  desde
-                </span>
-              </span>
-              <span className="line">
-                <span style={d(0.35)}>
-                  <em className="text-jade-ink">adentro.</em>
-                </span>
-              </span>
-              <span className="sr-only"> Reduzen, mesoterapia y spa en Torreón</span>
-            </h1>
+        <SideFrame side="left" src={HERO_LEFT} fig="Fig. 01" caption="Faciales" />
+        <SideFrame side="right" src={HERO_RIGHT} fig="Fig. 02" caption="Bienestar" />
 
-            <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end lg:max-w-2xl">
-              <p className="rise max-w-sm text-lg leading-relaxed text-stone" style={d(0.5)}>
-                Faciales, corporales, uñas, pedicure y láser con la calma de un spa boutique.
-              </p>
-              <div className="rise hidden sm:block lg:hidden" style={d(0.6)}>
-                <Seal />
-              </div>
-            </div>
-            <div className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8" style={d(0.65)}>
-              <WhatsAppButton message={waMessages.hero} size="lg">
-                Agenda tu cita
-              </WhatsAppButton>
-              <Link href="#servicios" className="group inline-flex min-h-12 items-center gap-2 self-start text-sm font-medium tracking-wide text-ink sm:self-auto">
-                <span className="link-draw">Ver servicios</span>
-                <ArrowIcon size={18} className="rotate-90 transition-transform duration-500 group-hover:translate-y-1" />
-              </Link>
-            </div>
-          </div>
-
-          <figure className="relative lg:col-span-5 lg:pt-8">
-            <div className="curtain relative" style={d(0.3)}>
-              <ArtFrame
-                variant="portrait"
-                src={HERO_IMAGE}
-                priority
-                alt="Mujer relajada con piel luminosa durante un tratamiento facial en Reduzen"
-                className="aspect-[4/5] w-full"
-              />
-              <span className="eyebrow absolute left-4 top-4 bg-cream-50 px-3 py-1.5 text-ink">Tratamiento estrella</span>
-            </div>
-            <figcaption className="rise mt-3 flex items-baseline justify-between gap-4 border-b border-ink/15 pb-3" style={d(0.8)}>
-              <span className="eyebrow shrink-0 text-gold-ink">Fig. 01</span>
-              <span className="font-serif text-xl italic text-ink">Hydrafacial — piel luminosa en una sesión</span>
-            </figcaption>
-            <div className="absolute -left-16 top-1/2 hidden -translate-y-1/2 lg:block">
-              <div className="rise" style={d(0.9)}>
-                <Seal />
-              </div>
-            </div>
-          </figure>
+        <p className="rise eyebrow text-jade-ink" style={d(0)}>
+          Mesoterapia &amp; Spa · Torreón
+        </p>
+        <div className="rise mt-6" style={d(0.05)}>
+          <Lotus draw className="mx-auto h-16 w-16 text-jade-ink sm:h-20 sm:w-20" strokeWidth={1.6} />
+        </div>
+        <h1 id="hero-titulo" className="display mt-4 text-[clamp(3.4rem,15.5vw,11rem)] uppercase leading-[0.9] tracking-[0.06em]">
+          <span className="line">
+            <span style={d(0.15)}>Reduzen</span>
+          </span>
+          <span className="sr-only"> — Mesoterapia y spa en Torreón</span>
+        </h1>
+        <p className="rise mt-4 font-serif text-3xl italic text-jade-500 sm:text-5xl" style={d(0.3)}>
+          Florece desde adentro
+        </p>
+        <div className="rise mt-10 flex w-full flex-col items-stretch justify-center gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-8" style={d(0.45)}>
+          <WhatsAppButton message={waMessages.hero} size="lg">
+            Agenda tu cita
+          </WhatsAppButton>
+          <Link href="#servicios" className="group inline-flex min-h-12 items-center justify-center gap-2 text-sm font-semibold tracking-wide text-ink">
+            <span className="link-draw">Ver servicios</span>
+            <ArrowIcon size={18} className="rotate-90 transition-transform duration-500 group-hover:translate-y-1" />
+          </Link>
         </div>
       </div>
 
-      {/* Índice: las 5 categorías como tabla de contenidos */}
-      <nav aria-label="Categorías" className="rise border-y border-ink/15 bg-cream-50" style={d(0.9)}>
+      {/* Índice de categorías */}
+      <nav aria-label="Categorías" className="rise border-y border-ink/15 bg-cream-50" style={d(0.7)}>
         <ol className="no-scrollbar mx-auto flex max-w-[88rem] overflow-x-auto sm:grid sm:grid-cols-5">
           {categories.map((c, i) => (
             <li key={c.slug} className="shrink-0 border-r border-ink/10 last:border-r-0">

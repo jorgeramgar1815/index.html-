@@ -57,9 +57,7 @@ export function ServiceIndex({ items }: { items: Category[] }) {
                 </span>
                 <span className="relative col-span-3 col-start-2 row-start-2 flex items-center gap-3 text-stone sm:col-span-1 sm:col-start-3 sm:row-start-1">
                   <Icon size={22} className="hidden shrink-0 text-jade-ink sm:block" />
-                  <span>
-                    {c.intro} <span className="text-gold-ink">· {c.treatments.length} tratamientos</span>
-                  </span>
+                  <span className="eyebrow text-gold-ink">{c.treatments.length} tratamientos</span>
                 </span>
                 <span className="relative col-start-3 row-start-1 flex h-12 w-12 items-center justify-center border border-ink/20 transition-all duration-500 group-hover:border-jade-ink group-hover:bg-jade-ink group-hover:text-cream sm:col-start-4">
                   <ArrowIcon size={20} className="-rotate-45 transition-transform duration-500 group-hover:rotate-0" />

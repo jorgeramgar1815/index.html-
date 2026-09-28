@@ -23,9 +23,9 @@ export function Method() {
           <StaggerItem
             as="li"
             key={s.title}
-            className="group relative border-b border-ink/15 py-10 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
+            className="group relative border-b border-ink/15 py-8 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
           >
-            <span aria-hidden className="outline-text display block text-[7rem] text-gold transition-colors duration-700 group-hover:text-jade-ink sm:text-[9rem]">
+            <span aria-hidden className="outline-text display block text-[4.5rem] text-gold transition-colors duration-700 group-hover:text-jade-ink sm:text-[9rem]">
               {i + 1}
             </span>
             <div className="mt-4 flex items-center gap-3">
@@ -37,14 +37,13 @@ export function Method() {
         ))}
       </Stagger>
 
-      <div className="mt-20 bg-jade-ink p-8 text-cream sm:p-12">
-        <p className="eyebrow text-gold-pale">Por qué Reduzen</p>
-        <Stagger as="ul" className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-20 bg-jade p-8 text-ink sm:p-12">
+        <p className="eyebrow text-ink">Por qué Reduzen</p>
+        <Stagger as="ul" className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4">
           {reasons.map((r) => (
-            <StaggerItem as="li" key={r.title} className="border-t border-cream/25 pt-6">
-              <r.icon size={26} className="text-gold-pale" />
-              <h3 className="mt-4 font-serif text-3xl !text-cream">{r.title}</h3>
-              <p className="mt-1 text-cream/80">{r.body}</p>
+            <StaggerItem as="li" key={r.title} className="border-t border-ink/25 pt-6">
+              <r.icon size={28} className="text-ink" />
+              <h3 className="mt-4 font-serif text-2xl text-ink sm:text-3xl">{r.title}</h3>
             </StaggerItem>
           ))}
         </Stagger>

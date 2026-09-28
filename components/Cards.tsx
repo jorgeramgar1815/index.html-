@@ -41,14 +41,14 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
           </div>
           <figcaption className="mt-3 flex items-baseline justify-between gap-4 border-b border-cream/15 pb-3">
             <span className="eyebrow text-gold">Fig. 02</span>
-            <span className="font-serif text-lg italic text-cream/80">Limpieza, exfoliación e hidratación</span>
+            <span className="eyebrow text-cream/70">{lead.name}</span>
           </figcaption>
         </figure>
 
         <div className="flex flex-col justify-end lg:col-span-6 lg:pl-6">
           <Reveal>
             <p className="eyebrow text-gold">Portada del mes</p>
-            <h3 className="display mt-4 text-[4.2rem] !text-cream sm:text-8xl xl:text-[9rem]">{lead.name}</h3>
+            <h3 className="display mt-4 text-[3.4rem] !text-cream sm:text-7xl xl:text-[6.8rem]">{lead.name}</h3>
             <p className="mt-6 max-w-md text-xl leading-relaxed text-cream/80">{lead.summary}</p>
             <div className="mt-6">
               <Chips items={lead.highlights} dark />
@@ -71,7 +71,6 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
             >
               <span className="eyebrow text-gold">{String(i + 2).padStart(2, "0")}</span>
               <span className="font-serif text-4xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
-              <span className="text-cream/75">{t.summary}</span>
               <Chips items={t.highlights?.slice(0, 3)} dark />
               <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium text-gold">
                 <WhatsAppIcon size={17} />

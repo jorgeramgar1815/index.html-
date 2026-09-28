@@ -46,7 +46,7 @@ export function TestimonialSlider({ items }: { items: Testimonial[] }) {
               transition={{ duration: 0.7, ease }}
               data-placeholder={t.isExample ? "testimonio-de-ejemplo" : undefined}
             >
-              <blockquote className="display text-[2.4rem] leading-[1.05] text-ink sm:text-6xl">{t.quote}</blockquote>
+              <blockquote className="display text-[2.1rem] leading-[1.1] text-ink sm:text-5xl">{t.quote}</blockquote>
               <figcaption className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className="flex gap-0.5 text-gold" role="img" aria-label={`${t.rating} de 5 estrellas`}>
                   {Array.from({ length: t.rating }).map((_, k) => (
