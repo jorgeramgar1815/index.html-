@@ -61,7 +61,7 @@ Mientras no haya fotos reales, cada espacio de imagen muestra una **composición
 - **Estilo editorial de revista** con la **paleta principal de la marca** (PRD §2.1): crema `#F7F3EC`,
   azul marino `#1B2A4A`, dorado `#C9A24B` y turquesa `#2E8B8B` / `#3AA6A0`. Un solo bloque oscuro
   ("Portada del mes") y bloques turquesa con texto marino como acento.
-- **Tipografía legible**: DM Serif Display (titulares, trazo grueso) + Montserrat (texto, 16 px base).
+- **Tipografía legible**: DM Serif Display (titulares, trazo grueso) + Montserrat (texto, 15 px base).
 - **Inicio centrado** con el nombre "REDUZEN", el loto, el lema en turquesa y el CTA.
 - Contraste AA: `gold-ink #7A5C14` (5.6:1) y `stone #665F55` (5.7:1) sobre crema; marino sobre
   turquesa `#3AA6A0` (4.8:1); dorado `#C9A24B` sobre azul marino (7.4:1).

@@ -53,15 +53,15 @@ export default function NosotrosPage() {
           </figure>
           <div className="lg:col-span-6 lg:col-start-7 lg:pt-10">
             <p className="eyebrow text-gold-ink">01 — Quiénes somos</p>
-            <h2 id="historia-titulo" className="display mt-6 text-4xl sm:text-6xl">
+            <h2 id="historia-titulo" className="display mt-6 text-3xl sm:text-5xl">
               Belleza con <em className="text-jade-ink">alma de spa.</em>
             </h2>
             {/* PLACEHOLDER: historia editable en content/team.ts */}
-            <Reveal className="mt-8 space-y-5 text-base leading-relaxed text-stone first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:leading-[0.8] first-letter:text-jade-ink">
+            <Reveal className="mt-8 space-y-5 text-[0.95rem] leading-relaxed text-stone first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:leading-[0.8] first-letter:text-jade-ink">
               <p>{story[0]}</p>
             </Reveal>
             <Reveal delay={0.2} className="mt-10 border-l-2 border-gold pl-6">
-              <p className="display text-3xl text-ink sm:text-4xl">“Te mereces este espacio.”</p>
+              <p className="display text-2xl text-ink sm:text-3xl">“Te mereces este espacio.”</p>
             </Reveal>
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function NosotrosPage() {
                     <span className="eyebrow text-ink">{String(i + 1).padStart(2, "0")}</span>
                     <Icon size={28} className="text-ink" />
                   </div>
-                  <h3 className="mt-6 font-serif text-2xl leading-tight text-ink sm:text-3xl">
+                  <h3 className="mt-5 font-serif text-xl leading-tight text-ink sm:text-2xl">
                     {v.title} <em>{v.phrase}</em>
                   </h3>
                 </StaggerItem>
@@ -109,7 +109,7 @@ export default function NosotrosPage() {
                   </div>
                   <figcaption className="mt-4 border-b border-ink/15 pb-4">
                     <span className="eyebrow text-gold-ink">{member.role}</span>
-                    <h3 className="mt-2 font-serif text-2xl text-ink">{member.name}</h3>
+                    <h3 className="mt-2 font-serif text-xl text-ink">{member.name}</h3>
                   </figcaption>
                 </figure>
               </StaggerItem>

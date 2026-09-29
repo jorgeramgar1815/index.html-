@@ -24,7 +24,7 @@ type WhatsAppButtonProps = {
 
 /** CTA rectangular de WhatsApp con mensaje prellenado contextual. */
 export function WhatsAppButton({ message, children, variant = "solid", size = "md", className = "" }: WhatsAppButtonProps) {
-  const sizes = size === "lg" ? "min-h-16 px-6 text-base sm:px-8" : "min-h-13 px-5 text-sm sm:px-6";
+  const sizes = size === "lg" ? "min-h-14 px-6 text-[0.95rem] sm:px-7" : "min-h-12 px-5 text-sm sm:px-6";
   const v = styles[variant];
   return (
     <a

@@ -28,7 +28,7 @@ export default function Home() {
           {tickerItems.map((t, i) => (
             <span
               key={t}
-              className={`display flex items-center gap-7 pr-7 text-3xl sm:text-5xl ${i % 2 ? "outline-text text-ink" : "text-ink"}`}
+              className={`display flex items-center gap-6 pr-6 text-2xl sm:text-4xl ${i % 2 ? "outline-text text-ink" : "text-ink"}`}
             >
               {t}
               <Star className="h-4 w-4 shrink-0 text-gold" />
@@ -48,7 +48,7 @@ export default function Home() {
               </h2>
             </div>
             <ScrollText
-              className="display text-[2rem] leading-[1.08] text-ink sm:text-5xl lg:col-span-9 lg:text-[3.6rem]"
+              className="display text-[1.75rem] leading-[1.1] text-ink sm:text-4xl lg:col-span-9 lg:text-[2.9rem]"
               text="Desconecta, renueva tu energía y florece desde adentro."
               emphasis={["florece", "adentro"]}
             />
@@ -67,7 +67,7 @@ export default function Home() {
                     <span className="eyebrow text-gold-ink">{String(i + 1).padStart(2, "0")}</span>
                     <Icon size={20} className="text-jade-ink transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110" />
                   </div>
-                  <h3 className="mt-4 font-serif text-xl leading-tight text-ink sm:text-2xl">
+                  <h3 className="mt-3 font-serif text-lg leading-tight text-ink sm:text-xl">
                     {v.title} <em className="text-jade-ink">{v.phrase}</em>
                   </h3>
                 </StaggerItem>

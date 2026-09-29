@@ -28,7 +28,7 @@ export function SectionHead({ number, label, title, intro, dark = false, id, asi
       <div className="mt-6 grid gap-5 lg:grid-cols-12 lg:items-end">
         <h2
           id={id}
-          className={`display text-[2.3rem] sm:text-5xl lg:col-span-8 lg:text-[4.2rem] ${dark ? "!text-cream" : ""}`}
+          className={`display text-[2rem] sm:text-4xl lg:col-span-8 lg:text-[3.4rem] ${dark ? "!text-cream" : ""}`}
         >
           <WordsReveal text={title} />
         </h2>

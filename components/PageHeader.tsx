@@ -48,7 +48,7 @@ export function PageHeader({
             <p className="rise eyebrow text-jade-ink" style={d(0.1)}>
               — {eyebrow}
             </p>
-            <h1 className="display mt-5 text-[2.7rem] sm:text-6xl xl:text-[5.8rem]">
+            <h1 className="display mt-5 text-[2.3rem] sm:text-5xl xl:text-[4.6rem]">
               <span className="line">
                 <span style={d(0.15)}>{title}</span>
               </span>

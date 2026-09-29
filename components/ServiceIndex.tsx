@@ -29,7 +29,7 @@ export function ServiceIndex({ items }: { items: Category[] }) {
               {/* Barra de color que se desliza al hover */}
               <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-cream-50 transition-transform duration-700 [transition-timing-function:var(--ease-editorial)] group-hover:scale-y-100" />
               <span className="eyebrow relative text-gold-ink">{String(i + 1).padStart(2, "0")}</span>
-              <span className="relative font-serif text-3xl leading-none text-ink transition-transform duration-700 [transition-timing-function:var(--ease-editorial)] group-hover:translate-x-3 sm:text-4xl lg:text-5xl">
+              <span className="relative font-serif text-2xl leading-none text-ink transition-transform duration-700 [transition-timing-function:var(--ease-editorial)] group-hover:translate-x-3 sm:text-3xl lg:text-4xl">
                 {c.short}
               </span>
               <span className="relative col-span-3 col-start-2 row-start-2 flex items-center gap-3 text-stone sm:col-span-1 sm:col-start-3 sm:row-start-1">

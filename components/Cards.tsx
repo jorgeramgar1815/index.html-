@@ -26,15 +26,15 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
         <figure className="lg:col-span-6">
           <div className="relative">
-            <ClipReveal className="aspect-[4/5]">
+            <ClipReveal className="aspect-[4/5] lg:aspect-square">
               <ArtFrame variant="facial" alt={`${lead.name}: tratamiento facial en Reduzen`} className="h-full w-full" />
             </ClipReveal>
             {lead.price && (
               // PLACEHOLDER: precio a confirmar con la clienta (content/services.ts)
               <Reveal delay={0.6} className="absolute -right-2 -top-6 sm:-right-8">
-                <span className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-gold text-center text-night sm:h-40 sm:w-40">
+                <span className="flex h-28 w-28 flex-col items-center justify-center rounded-full bg-gold text-center text-night sm:h-32 sm:w-32">
                   <span className="eyebrow !text-[0.6rem]">{lead.price.label}</span>
-                  <span className="font-serif text-5xl leading-none sm:text-6xl">{lead.price.amount}</span>
+                  <span className="font-serif text-4xl leading-none sm:text-5xl">{lead.price.amount}</span>
                 </span>
               </Reveal>
             )}
@@ -48,8 +48,8 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
         <div className="flex flex-col justify-end lg:col-span-6 lg:pl-6">
           <Reveal>
             <p className="eyebrow text-gold">Portada del mes</p>
-            <h3 className="display mt-4 text-[2.7rem] !text-cream sm:text-6xl xl:text-[5rem]">{lead.name}</h3>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-cream/80">{lead.summary}</p>
+            <h3 className="display mt-4 text-[2.3rem] !text-cream sm:text-5xl xl:text-[4rem]">{lead.name}</h3>
+            <p className="mt-4 max-w-md text-base leading-relaxed text-cream/80">{lead.summary}</p>
             <div className="mt-6">
               <Chips items={lead.highlights} dark />
             </div>
@@ -70,7 +70,7 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
               className={`group flex h-full flex-col gap-4 py-8 transition-colors duration-500 hover:bg-cream/[0.04] ${i === 0 ? "md:pr-8" : "md:px-8"}`}
             >
               <span className="eyebrow text-gold">{String(i + 2).padStart(2, "0")}</span>
-              <span className="font-serif text-3xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
+              <span className="font-serif text-2xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
               <Chips items={t.highlights?.slice(0, 3)} dark />
               <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium text-gold">
                 <WhatsAppIcon size={17} />
@@ -95,10 +95,10 @@ export function TreatmentRow({ treatment, index }: { treatment: Treatment; index
     >
       <span className="eyebrow pt-2 text-gold-ink">{String(index + 1).padStart(2, "0")}</span>
       <div>
-        <h3 className="font-serif text-3xl leading-none text-ink transition-transform duration-500 group-hover:translate-x-1.5 sm:text-4xl">
+        <h3 className="font-serif text-2xl leading-none text-ink transition-transform duration-500 group-hover:translate-x-1.5 sm:text-3xl">
           {treatment.name}
         </h3>
-        <p className="mt-3 text-base text-stone">{treatment.summary}</p>
+        <p className="mt-2 text-[0.95rem] text-stone">{treatment.summary}</p>
         <div className="mt-4">
           <Chips items={treatment.highlights} />
         </div>
@@ -109,7 +109,7 @@ export function TreatmentRow({ treatment, index }: { treatment: Treatment; index
             // PLACEHOLDER: precio a confirmar
             <span className="text-right">
               <span className="eyebrow block text-gold-ink">{treatment.price.label}</span>
-              <span className="font-serif text-3xl leading-none text-ink">{treatment.price.amount}</span>
+              <span className="font-serif text-2xl leading-none text-ink">{treatment.price.amount}</span>
             </span>
           )}
           {/* PLACEHOLDER: duración estimada */}

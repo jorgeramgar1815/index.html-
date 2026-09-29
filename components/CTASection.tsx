@@ -42,7 +42,7 @@ export function CTASection({ withMap = true, number = "08" }: { withMap?: boolea
               {rows.map((r) => (
                 <li
                   key={r.label}
-                  className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-4 border-b border-ink/15 py-4 text-base text-ink sm:grid-cols-[8rem_minmax(0,1fr)]"
+                  className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-4 border-b border-ink/15 py-4 text-[0.95rem] text-ink sm:grid-cols-[8rem_minmax(0,1fr)]"
                   data-placeholder={r.placeholder ? "horario-por-confirmar" : undefined}
                 >
                   <span className="eyebrow pt-1 text-gold-ink">{r.label}</span>
