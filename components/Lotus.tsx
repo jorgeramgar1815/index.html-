@@ -40,7 +40,7 @@ export function Wordmark({ className = "", light = false }: { className?: string
   return (
     <span className={`flex items-center gap-3 ${className}`}>
       <Lotus className={`h-8 w-8 shrink-0 ${light ? "text-jade" : "text-jade-ink"}`} strokeWidth={1.6} />
-      <span className={`font-serif text-[1.9rem] leading-none tracking-[-0.02em] ${light ? "text-cream" : "text-ink"}`}>Reduzen</span>
+      <span className={`font-serif text-[1.7rem] leading-none tracking-[-0.02em] ${light ? "text-cream" : "text-ink"}`}>Reduzen</span>
       <span className={`hidden h-6 w-px sm:block ${light ? "bg-cream/30" : "bg-ink/20"}`} aria-hidden />
       <span className={`eyebrow hidden !text-[0.6rem] leading-tight sm:block ${light ? "text-cream/70" : "text-stone"}`}>
         Mesoterapia

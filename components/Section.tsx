@@ -25,16 +25,16 @@ export function SectionHead({ number, label, title, intro, dark = false, id, asi
         <Rule dark={dark} className="flex-1" />
         <span className="eyebrow">{label}</span>
       </div>
-      <div className="mt-8 grid gap-6 lg:grid-cols-12 lg:items-end">
+      <div className="mt-6 grid gap-5 lg:grid-cols-12 lg:items-end">
         <h2
           id={id}
-          className={`display text-[2.9rem] sm:text-6xl lg:col-span-8 lg:text-[5.4rem] ${dark ? "!text-cream" : ""}`}
+          className={`display text-[2.3rem] sm:text-5xl lg:col-span-8 lg:text-[4.2rem] ${dark ? "!text-cream" : ""}`}
         >
           <WordsReveal text={title} />
         </h2>
         {(intro || aside) && (
           <Reveal delay={0.2} className="lg:col-span-4 lg:pb-3">
-            {intro && <p className={`max-w-sm text-[1.05rem] leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
+            {intro && <p className={`max-w-sm text-base leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
             {aside}
           </Reveal>
         )}

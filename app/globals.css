@@ -95,7 +95,7 @@
     background: var(--color-cream);
     color: var(--color-navy);
     font-family: var(--font-sans);
-    font-size: 1.0625rem;
+    font-size: 1rem;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }

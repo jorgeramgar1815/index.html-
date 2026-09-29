@@ -47,10 +47,10 @@ export default function ServiciosPage() {
             {/* Columna fija con número gigante, título e imagen */}
             <div className="lg:col-span-4">
               <div className="lg:sticky lg:top-36">
-                <span aria-hidden className="outline-text display block text-[7rem] text-gold sm:text-[9rem]">
+                <span aria-hidden className="outline-text display block text-[5rem] text-gold sm:text-[6.5rem]">
                   {String(idx + 1).padStart(2, "0")}
                 </span>
-                <h2 id={`${c.slug}-titulo`} className="display -mt-4 text-5xl sm:text-6xl">
+                <h2 id={`${c.slug}-titulo`} className="display -mt-2 text-4xl sm:text-5xl">
                   <WordsReveal text={c.name} />
                 </h2>
                 <ClipReveal className="mt-8 hidden aspect-[4/3] lg:block">

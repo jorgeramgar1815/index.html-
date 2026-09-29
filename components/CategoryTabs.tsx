@@ -35,7 +35,7 @@ export function CategoryTabs({ items }: { items: Pick<Category, "slug" | "short"
                 className={`relative flex min-h-14 items-center gap-2 px-4 text-sm transition-colors duration-300 first:pl-0 ${isActive ? "text-ink" : "text-stone hover:text-ink"}`}
               >
                 <span className="eyebrow text-gold-ink">{String(i + 1).padStart(2, "0")}</span>
-                <span className="font-serif text-xl">{c.short}</span>
+                <span className="font-serif text-lg">{c.short}</span>
                 <span
                   aria-hidden
                   className={`absolute inset-x-4 bottom-0 h-[2px] origin-left bg-jade-ink transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0"}`}

@@ -48,8 +48,8 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
         <div className="flex flex-col justify-end lg:col-span-6 lg:pl-6">
           <Reveal>
             <p className="eyebrow text-gold">Portada del mes</p>
-            <h3 className="display mt-4 text-[3.4rem] !text-cream sm:text-7xl xl:text-[6.8rem]">{lead.name}</h3>
-            <p className="mt-6 max-w-md text-xl leading-relaxed text-cream/80">{lead.summary}</p>
+            <h3 className="display mt-4 text-[2.7rem] !text-cream sm:text-6xl xl:text-[5rem]">{lead.name}</h3>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-cream/80">{lead.summary}</p>
             <div className="mt-6">
               <Chips items={lead.highlights} dark />
             </div>
@@ -60,7 +60,7 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
         </div>
       </div>
 
-      <Stagger as="ul" className="mt-20 grid border-t border-cream/15 md:grid-cols-3">
+      <Stagger as="ul" className="mt-16 grid border-t border-cream/15 md:grid-cols-3">
         {others.map((t, i) => (
           <StaggerItem as="li" key={t.slug} className="border-b border-cream/15 md:border-b-0 md:border-r md:last:border-r-0">
             <a
@@ -70,7 +70,7 @@ export function CoverStory({ lead, others }: { lead: Treatment; others: Treatmen
               className={`group flex h-full flex-col gap-4 py-8 transition-colors duration-500 hover:bg-cream/[0.04] ${i === 0 ? "md:pr-8" : "md:px-8"}`}
             >
               <span className="eyebrow text-gold">{String(i + 2).padStart(2, "0")}</span>
-              <span className="font-serif text-4xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
+              <span className="font-serif text-3xl leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">{t.name}</span>
               <Chips items={t.highlights?.slice(0, 3)} dark />
               <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-medium text-gold">
                 <WhatsAppIcon size={17} />
@@ -95,10 +95,10 @@ export function TreatmentRow({ treatment, index }: { treatment: Treatment; index
     >
       <span className="eyebrow pt-2 text-gold-ink">{String(index + 1).padStart(2, "0")}</span>
       <div>
-        <h3 className="font-serif text-4xl leading-none text-ink transition-transform duration-500 group-hover:translate-x-1.5 sm:text-5xl">
+        <h3 className="font-serif text-3xl leading-none text-ink transition-transform duration-500 group-hover:translate-x-1.5 sm:text-4xl">
           {treatment.name}
         </h3>
-        <p className="mt-3 text-[1.05rem] text-stone">{treatment.summary}</p>
+        <p className="mt-3 text-base text-stone">{treatment.summary}</p>
         <div className="mt-4">
           <Chips items={treatment.highlights} />
         </div>
@@ -109,7 +109,7 @@ export function TreatmentRow({ treatment, index }: { treatment: Treatment; index
             // PLACEHOLDER: precio a confirmar
             <span className="text-right">
               <span className="eyebrow block text-gold-ink">{treatment.price.label}</span>
-              <span className="font-serif text-4xl leading-none text-ink">{treatment.price.amount}</span>
+              <span className="font-serif text-3xl leading-none text-ink">{treatment.price.amount}</span>
             </span>
           )}
           {/* PLACEHOLDER: duración estimada */}

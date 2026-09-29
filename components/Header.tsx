@@ -128,7 +128,7 @@ export function Header() {
                     <m.div initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ duration: 0.7, ease, delay: 0.15 + i * 0.05 }}>
                       <Link href={l.href} onClick={() => setOpen(false)} className="group flex items-baseline gap-5 py-3.5">
                         <span className="eyebrow w-6 text-gold-pale">{String(i + 1).padStart(2, "0")}</span>
-                        <span className="font-serif text-[2.4rem] leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">
+                        <span className="font-serif text-[2rem] leading-none text-cream transition-transform duration-500 group-hover:translate-x-2">
                           {l.label}
                         </span>
                         <ArrowIcon size={22} className="ml-auto -rotate-45 text-gold-pale opacity-70" />
