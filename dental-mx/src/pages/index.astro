@@ -19,6 +19,8 @@ import fotoSillon from '../assets/img/consultorio-sillon.jpg';
 import fotoRecepcion from '../assets/img/recepcion.jpg';
 import fotoConsultorio from '../assets/img/consultorio.jpg';
 import fotoSala from '../assets/img/sala-de-espera.jpg';
+// PLACEHOLDER: retrato ilustrativo; reemplazar por la foto real del doctor (site.doctor.photo).
+import fotoEquipo from '../assets/img/equipo-clinico.jpg';
 import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink } from '../data/site';
 
 // Fondo de la portada: importar una foto aquí para usarla (null = escena de marca con listones de madera).
@@ -257,8 +259,19 @@ const schema = [
         <div class="relative mx-auto w-full max-w-md">
           <div class="pointer-events-none absolute -inset-6 rounded-[2rem] bg-lime/15 blur-3xl" aria-hidden="true"></div>
           <div data-reveal="clip">
-            {/* PLACEHOLDER: foto del doctor — definir `site.doctor.photo` en src/data/site.ts */}
-            <Photo scene="portrait" src={site.doctor.photo} alt={flags.showDoctorName ? `Retrato de ${site.doctor.name}` : 'Retrato del director clínico'} label="Foto del doctor" class="relative aspect-[4/5]" />
+            {/* PLACEHOLDER: foto del doctor — definir `site.doctor.photo` en src/data/site.ts; mientras tanto, retrato ilustrativo */}
+            <Photo
+              scene="portrait"
+              src={site.doctor.photo || fotoEquipo}
+              sizes="(min-width: 1024px) 448px, 100vw"
+              alt={site.doctor.photo && flags.showDoctorName ? `Retrato de ${site.doctor.name}` : 'Imagen ilustrativa de una dentista sonriendo en el consultorio'}
+              label="Foto del doctor"
+              class="relative aspect-[4/5]"
+            >
+              {!site.doctor.photo && (
+                <span class="absolute right-4 bottom-4 rounded-full border border-white/15 bg-ink/80 px-3 py-1 text-[0.7rem] font-medium text-snow/80 backdrop-blur">Imagen ilustrativa</span>
+              )}
+            </Photo>
           </div>
         </div>
         <div>
@@ -266,10 +279,10 @@ const schema = [
 
           <div class="card mt-8 p-6" data-reveal>
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-              <p class="font-display text-xl font-bold text-white">{flags.showDoctorName ? site.doctor.name : 'Nuestro director clínico'}</p>
-              <p class="text-sm text-mute">{site.doctor.license}</p>
+              <p class="font-display text-xl font-bold text-white">{flags.showDoctorName ? site.doctor.name : 'Nuestro equipo clínico'}</p>
+              {flags.showDoctorName && <p class="text-sm text-mute">{site.doctor.license}</p>}
             </div>
-            <p class="mt-1 font-display text-sm font-semibold text-lime">{site.doctor.role}</p>
+            <p class="mt-1 font-display text-sm font-semibold text-lime">{flags.showDoctorName ? site.doctor.role : 'Cirujanos dentistas · Atención integral'}</p>
           </div>
 
           <ul class="mt-6 flex flex-wrap gap-3" data-reveal>

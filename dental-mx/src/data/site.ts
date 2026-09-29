@@ -36,7 +36,8 @@ export const flags = {
   // PLACEHOLDER: confirmar con el cliente si los precios de Facebook siguen vigentes (pregunta #3).
   showPrices: true,
   // PLACEHOLDER: confirmar nombre del doctor antes de publicar (pregunta #1).
-  showDoctorName: true,
+  // En `false` la sección Nosotros muestra "Nuestro equipo clínico" y un retrato ilustrativo.
+  showDoctorName: false,
 };
 
 // ─── NAP (Name · Address · Phone) — debe coincidir con Facebook / Google ─────

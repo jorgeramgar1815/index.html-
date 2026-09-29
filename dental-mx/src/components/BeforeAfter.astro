@@ -1,6 +1,23 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import SmileIllustration from './SmileIllustration.astro';
 import { beforeAfter } from '../data/site';
+// PLACEHOLDER: fotos ilustrativas; reemplazar por casos reales con autorización por escrito del paciente.
+import blanqueamientoAntes from '../assets/img/blanqueamiento-antes.jpg';
+import blanqueamientoDespues from '../assets/img/blanqueamiento-despues.jpg';
+import ortodonciaAntes from '../assets/img/ortodoncia-antes.jpg';
+import ortodonciaDespues from '../assets/img/ortodoncia-despues.jpg';
+import resinasAntes from '../assets/img/resinas-antes.jpg';
+import resinasDespues from '../assets/img/resinas-despues.jpg';
+
+// Fotos por caso (id de `beforeAfter`). Un caso sin fotos muestra la ilustración de respaldo.
+const photos: Record<string, { before: ImageMetadata; after: ImageMetadata }> = {
+  blanqueamiento: { before: blanqueamientoAntes, after: blanqueamientoDespues },
+  ortodoncia: { before: ortodonciaAntes, after: ortodonciaDespues },
+  resinas: { before: resinasAntes, after: resinasDespues },
+};
+const imgProps = { widths: [640, 1024], sizes: '(min-width: 1024px) 768px, 100vw', format: 'webp' as const, quality: 80, class: 'absolute inset-0 size-full object-cover', draggable: false };
 ---
 
 <div class="before-after" data-reveal>
@@ -26,11 +43,21 @@ import { beforeAfter } from '../data/site';
     beforeAfter.map((c, i) => (
       <div role="tabpanel" id={`ba-panel-${c.id}`} aria-labelledby={`ba-tab-${c.id}`} hidden={i !== 0}>
         <div class="ba-frame relative aspect-[5/3] overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface select-none" style="--pos: 50%">
-          {/* PLACEHOLDER: reemplazar ilustraciones por fotos reales (antes/después) con autorización del paciente. */}
-          <SmileIllustration variant={c.variant} state="after" class="absolute inset-0 size-full" />
-          <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--pos)) 0 0)">
-            <SmileIllustration variant={c.variant} state="before" class="absolute inset-0 size-full" />
-          </div>
+          {photos[c.id] ? (
+            <>
+              <Image src={photos[c.id].after} alt={`${c.label}: después del tratamiento (imagen ilustrativa)`} loading="lazy" {...imgProps} />
+              <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--pos)) 0 0)">
+                <Image src={photos[c.id].before} alt={`${c.label}: antes del tratamiento (imagen ilustrativa)`} loading="lazy" {...imgProps} />
+              </div>
+            </>
+          ) : (
+            <>
+              <SmileIllustration variant={c.variant} state="after" class="absolute inset-0 size-full" />
+              <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--pos)) 0 0)">
+                <SmileIllustration variant={c.variant} state="before" class="absolute inset-0 size-full" />
+              </div>
+            </>
+          )}
 
           <span class="absolute top-4 left-4 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold tracking-wide text-snow uppercase backdrop-blur">Antes</span>
           <span class="absolute top-4 right-4 rounded-full bg-lime px-3 py-1 text-xs font-semibold tracking-wide text-ink uppercase">Después</span>

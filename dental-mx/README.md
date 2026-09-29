@@ -73,22 +73,25 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 
 | Pendiente | Dónde se cambia |
 |---|---|
-| Nombre, cédula y foto del doctor | `site.doctor` en `src/data/site.ts` (`flags.showDoctorName` lo oculta) |
+| Nombre, cédula y foto del doctor | `site.doctor` en `src/data/site.ts`. Hoy `flags.showDoctorName = false`: Nosotros muestra "Nuestro equipo clínico" con un retrato ilustrativo (`equipo-clinico.jpg`) |
 | Horario de atención | `site.hours` y `site.openingHoursSpec` |
 | Precios promocionales (brackets $499, blanqueamiento $1,200) | `promo` de cada servicio (`flags.showPrices` los oculta) |
 | Testimonios reales (3–6) | `testimonials` |
 | URL exacta de Facebook | `site.social.facebook.url` |
-| Casos antes/después reales | `src/components/BeforeAfter.astro` (hoy son ilustraciones) |
+| Casos antes/después reales | `photos` en `src/components/BeforeAfter.astro` (hoy son fotos ilustrativas) |
 | Historia de la clínica | Sección Nosotros en `src/pages/index.astro` |
 | Aviso de privacidad integral | `src/pages/aviso-de-privacidad.astro` |
 | Dominio (hoy: dental-mx-three.vercel.app) | `astro.config.mjs` y `public/robots.txt` |
 
 ### Fotos
 
-Ya colocadas (en `src/assets/img/`): sillón en "Por qué elegirnos" (`consultorio-sillon.jpg`) y la galería de Nosotros (`recepcion.jpg`, `consultorio.jpg`, `sala-de-espera.jpg`).
+Ya colocadas (en `src/assets/img/`):
+
+- Sillón en "Por qué elegirnos" (`consultorio-sillon.jpg`) y galería de Nosotros (`recepcion.jpg`, `consultorio.jpg`, `sala-de-espera.jpg`).
+- **Ilustrativas** (con la etiqueta "Imagen ilustrativa"): retrato de Nosotros (`equipo-clinico.jpg`) y los tres casos de antes/después (`blanqueamiento-*`, `ortodoncia-*`, `resinas-*`).
 
 Para agregar o cambiar una foto:
 
 1. Copia la imagen (JPG/PNG, idealmente de 1600 px de ancho o más) a `src/assets/img/`.
 2. Impórtala en `src/pages/index.astro` (`import foto from '../assets/img/archivo.jpg'`) y pásala como `src` al componente `Photo`. Mientras `src` esté vacío, `Photo` muestra la ilustración de marca de respaldo.
-3. Pendientes: el retrato del doctor (`site.doctor.photo`) y los casos reales de antes/después.
+3. Pendientes: la foto real del doctor (impórtala y asígnala en `site.doctor.photo`, luego pon `flags.showDoctorName = true`) y casos reales de antes/después con autorización por escrito del paciente.
