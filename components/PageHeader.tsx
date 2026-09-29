@@ -48,7 +48,7 @@ export function PageHeader({
             <p className="rise eyebrow text-jade-ink" style={d(0.1)}>
               — {eyebrow}
             </p>
-            <h1 className="display mt-5 text-[2.3rem] sm:text-5xl xl:text-[4.6rem]">
+            <h1 className="display mt-5 text-[2rem] sm:text-4xl xl:text-[3.8rem]">
               <span className="line">
                 <span style={d(0.15)}>{title}</span>
               </span>
@@ -62,7 +62,7 @@ export function PageHeader({
             </h1>
           </div>
           <div className="rise lg:col-span-4 lg:pb-4" style={d(0.4)}>
-            <p className="max-w-sm text-base leading-relaxed text-stone">{intro}</p>
+            <p className="max-w-sm text-[0.95rem] leading-relaxed text-stone">{intro}</p>
             {children}
           </div>
         </div>

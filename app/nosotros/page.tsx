@@ -53,7 +53,7 @@ export default function NosotrosPage() {
           </figure>
           <div className="lg:col-span-6 lg:col-start-7 lg:pt-10">
             <p className="eyebrow text-gold-ink">01 — Quiénes somos</p>
-            <h2 id="historia-titulo" className="display mt-6 text-3xl sm:text-5xl">
+            <h2 id="historia-titulo" className="display mt-6 text-2xl sm:text-4xl">
               Belleza con <em className="text-jade-ink">alma de spa.</em>
             </h2>
             {/* PLACEHOLDER: historia editable en content/team.ts */}
@@ -61,7 +61,7 @@ export default function NosotrosPage() {
               <p>{story[0]}</p>
             </Reveal>
             <Reveal delay={0.2} className="mt-10 border-l-2 border-gold pl-6">
-              <p className="display text-2xl text-ink sm:text-3xl">“Te mereces este espacio.”</p>
+              <p className="display text-xl text-ink sm:text-2xl">“Te mereces este espacio.”</p>
             </Reveal>
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function NosotrosPage() {
                     <span className="eyebrow text-ink">{String(i + 1).padStart(2, "0")}</span>
                     <Icon size={28} className="text-ink" />
                   </div>
-                  <h3 className="mt-5 font-serif text-xl leading-tight text-ink sm:text-2xl">
+                  <h3 className="mt-5 font-serif text-lg leading-tight text-ink sm:text-xl">
                     {v.title} <em>{v.phrase}</em>
                   </h3>
                 </StaggerItem>
@@ -109,7 +109,7 @@ export default function NosotrosPage() {
                   </div>
                   <figcaption className="mt-4 border-b border-ink/15 pb-4">
                     <span className="eyebrow text-gold-ink">{member.role}</span>
-                    <h3 className="mt-2 font-serif text-xl text-ink">{member.name}</h3>
+                    <h3 className="mt-2 font-serif text-lg text-ink">{member.name}</h3>
                   </figcaption>
                 </figure>
               </StaggerItem>

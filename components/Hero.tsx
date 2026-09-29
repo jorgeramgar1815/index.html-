@@ -27,13 +27,13 @@ export function Hero() {
         <div className="rise mt-5" style={d(0.05)}>
           <Lotus draw className="mx-auto h-14 w-14 text-jade-ink sm:h-16 sm:w-16" strokeWidth={1.6} />
         </div>
-        <h1 id="hero-titulo" className="display mt-3 text-[clamp(2.6rem,11vw,7rem)] uppercase leading-[0.9] tracking-[0.06em]">
+        <h1 id="hero-titulo" className="display mt-3 text-[clamp(2.3rem,10vw,6rem)] uppercase leading-[0.9] tracking-[0.06em]">
           <span className="line">
             <span style={d(0.15)}>Reduzen</span>
           </span>
           <span className="sr-only"> — Mesoterapia y spa en Torreón</span>
         </h1>
-        <p className="rise mt-3 font-serif text-xl italic text-jade-500 sm:text-3xl" style={d(0.3)}>
+        <p className="rise mt-3 font-serif text-lg italic text-jade-500 sm:text-2xl" style={d(0.3)}>
           Florece desde adentro
         </p>
         <div className="rise mt-9 flex w-full flex-col items-stretch justify-center gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-8" style={d(0.45)}>

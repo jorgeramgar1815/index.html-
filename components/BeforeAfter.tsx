@@ -72,7 +72,7 @@ export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSr
       <figcaption className="mt-3 flex items-baseline justify-between gap-3 border-b border-ink/15 pb-3">
         <span className="flex items-baseline gap-3">
           <span className="eyebrow text-gold-ink">{figure}</span>
-          <span className="font-serif text-lg text-ink">{title}</span>
+          <span className="font-serif text-base text-ink">{title}</span>
         </span>
         <span className="eyebrow text-stone">{sessions}</span>
       </figcaption>
