@@ -13,10 +13,17 @@ import Photo from '../components/Photo.astro';
 import MapEmbed from '../components/MapEmbed.astro';
 import HoursList from '../components/HoursList.astro';
 import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import fotoPasillo from '../assets/img/pasillo.jpg';
+import fotoSillon from '../assets/img/consultorio-sillon.jpg';
+import fotoRecepcion from '../assets/img/recepcion.jpg';
+import fotoConsultorio from '../assets/img/consultorio.jpg';
+import fotoSala from '../assets/img/sala-de-espera.jpg';
 import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink } from '../data/site';
 
-// PLACEHOLDER: ruta a foto/video real del consultorio para el fondo del hero (vacío = escena de marca).
-const heroImage = '';
+// Fondo de la portada (null = escena de marca con listones de madera).
+const heroImage: ImageMetadata | null = fotoPasillo;
 
 const promos = services.filter((s) => s.promo);
 // Banda de servicios: la valoración abre la lista, igual que en la cuadrícula.
@@ -28,11 +35,11 @@ const values = [
   { icon: 'leaf', title: 'Bienestar' },
 ];
 
-// PLACEHOLDER: fotos del consultorio. Agregar `src: '/img/...'` cuando el cliente las entregue (pregunta #4).
+// Galería del consultorio (fotos en src/assets/img/).
 const gallery = [
-  { scene: 'reception' as const, alt: 'Recepción de Dental MX con letrero de neón', label: 'Recepción', src: '' },
-  { scene: 'chair' as const, alt: 'Área de tratamiento con sillón dental', label: 'Consultorio', src: '' },
-  { scene: 'lounge' as const, alt: 'Sala de espera con iluminación cálida', label: 'Sala de espera', src: '' },
+  { scene: 'reception' as const, alt: 'Recepción de Dental MX con mostrador de madera y letrero de neón en forma de diente', label: 'Recepción', src: fotoRecepcion },
+  { scene: 'chair' as const, alt: 'Consultorio con sillón dental, monitor y letrero de neón', label: 'Consultorio', src: fotoConsultorio },
+  { scene: 'lounge' as const, alt: 'Sala de espera con sofá, lámpara de luz cálida y plantas', label: 'Sala de espera', src: fotoSala },
 ];
 
 const schema = [
@@ -57,7 +64,13 @@ const schema = [
   <section data-hero data-live class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-28 pb-28 text-center sm:pt-32">
     <div class="absolute inset-0 -z-10" aria-hidden="true">
       <div class="absolute inset-x-0 -top-[10%] h-[120%] will-change-transform" data-parallax="0.3">
-        {heroImage ? <img src={heroImage} alt="" class="size-full object-cover" fetchpriority="high" /> : <div class="wood-slats size-full opacity-45" />}
+        {
+          heroImage ? (
+            <Image src={heroImage} alt="" widths={[640, 1024]} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" class="size-full object-cover opacity-70" />
+          ) : (
+            <div class="wood-slats size-full opacity-45" />
+          )
+        }
       </div>
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgb(14_16_14/0.55)_0%,rgb(14_16_14/0.93)_62%,#0e100e_100%)]"></div>
       <div class="aurora absolute inset-0" data-live>
@@ -205,7 +218,7 @@ const schema = [
     <div class="container-x grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-20">
       <div class="relative">
         <div data-reveal="clip">
-          <Photo scene="chair" alt="Sillón dental del consultorio Dental MX" class="aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]" />
+          <Photo scene="chair" src={fotoSillon} alt="Sillón dental de Dental MX con lámpara, muro de madera y letrero de neón en forma de diente" class="aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]" />
         </div>
       </div>
       <div>
@@ -277,7 +290,7 @@ const schema = [
         {
           gallery.map((g, i) => (
             <div data-reveal="clip" style={`--i:${i}`}>
-              <Photo scene={g.scene} src={g.src} alt={g.alt} label={g.label} class="aspect-[4/3]" />
+              <Photo scene={g.scene} src={g.src} alt={g.alt} label={g.label} sizes="(min-width: 640px) 33vw, 100vw" class="aspect-[4/3]" />
             </div>
           ))
         }

@@ -43,7 +43,8 @@ src/
   components/           ← Header, Footer, ServiceCard, TestimonialCard, TipCard, WhatsAppButton,
                           WhatsAppFab, CTASection, BeforeAfter, Photo, MapEmbed, TrustBar, …
   pages/                ← index (landing completa), aviso-de-privacidad, 404
-public/                 ← favicon, íconos, og.png, manifest, img/ (fotos reales)
+src/assets/img/         ← fotos del consultorio (Astro las optimiza a WebP con varios tamaños)
+public/                 ← favicon, íconos, og.png, manifest
 scripts/generate-images.mjs ← regenera favicon PNG, íconos PWA y og.png
 ```
 
@@ -77,13 +78,17 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 | Precios promocionales (brackets $499, blanqueamiento $1,200) | `promo` de cada servicio (`flags.showPrices` los oculta) |
 | Testimonios reales (3–6) | `testimonials` |
 | URL exacta de Facebook | `site.social.facebook.url` |
-| Fotos del consultorio | `gallery` y `heroImage` en `src/pages/index.astro` |
 | Casos antes/después reales | `src/components/BeforeAfter.astro` (hoy son ilustraciones) |
 | Historia de la clínica | Sección Nosotros en `src/pages/index.astro` |
 | Aviso de privacidad integral | `src/pages/aviso-de-privacidad.astro` |
 | Dominio (hoy: dental-mx-three.vercel.app) | `astro.config.mjs` y `public/robots.txt` |
 
-### Cómo reemplazar fotos
+### Fotos
 
-1. Copia la imagen optimizada (JPG/WebP, máximo ~1600 px de ancho) a `public/img/`.
-2. Pasa la ruta al componente, por ejemplo `src: '/img/recepcion.jpg'`. Mientras la ruta esté vacía, el componente `Photo` muestra la ilustración de marca de respaldo.
+Ya colocadas (en `src/assets/img/`): fondo de la portada (`pasillo.jpg`), sillón en "Por qué elegirnos" (`consultorio-sillon.jpg`) y la galería de Nosotros (`recepcion.jpg`, `consultorio.jpg`, `sala-de-espera.jpg`).
+
+Para agregar o cambiar una foto:
+
+1. Copia la imagen (JPG/PNG, idealmente de 1600 px de ancho o más) a `src/assets/img/`.
+2. Impórtala en `src/pages/index.astro` (`import foto from '../assets/img/archivo.jpg'`) y pásala como `src` al componente `Photo`. Mientras `src` esté vacío, `Photo` muestra la ilustración de marca de respaldo.
+3. Pendientes: el retrato del doctor (`site.doctor.photo`) y los casos reales de antes/después.

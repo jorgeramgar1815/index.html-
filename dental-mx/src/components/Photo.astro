@@ -5,25 +5,41 @@
  * - Si está vacío: muestra una ilustración de marca (line-art neón sobre muro
  *   de madera) con etiqueta PLACEHOLDER, hasta recibir fotografía del cliente.
  *
- * Para reemplazar: coloca la imagen en /public/img/ y pasa `src="/img/archivo.jpg"`.
+ * Para reemplazar: coloca la imagen en src/assets/img/, impórtala y pásala en `src`
+ * (Astro la optimiza a WebP con varios tamaños). También acepta una ruta de /public.
  */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { flags } from '../data/site';
 
 interface Props {
-  src?: string;
+  src?: ImageMetadata | string;
+  /** Tamaños para el navegador (atributo `sizes`). */
+  sizes?: string;
   alt: string;
   scene?: 'chair' | 'reception' | 'lounge' | 'portrait';
   label?: string;
   class?: string;
   eager?: boolean;
 }
-const { src, alt, scene = 'chair', label = 'Foto del consultorio', class: className = '', eager = false } = Astro.props;
+const { src, alt, scene = 'chair', label = 'Foto del consultorio', class: className = '', eager = false, sizes = '(min-width: 1024px) 50vw, 100vw' } = Astro.props;
 const uid = `ph-${Math.random().toString(36).slice(2, 8)}`;
 ---
 
 <div class:list={['relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface', className]}>
   {
-    src ? (
+    src && typeof src === 'object' ? (
+      <Image
+        src={src}
+        alt={alt}
+        widths={[400, 640, 960, src.width].filter((w) => w <= src.width)}
+        sizes={sizes}
+        format="webp"
+        quality={80}
+        loading={eager ? 'eager' : 'lazy'}
+        class="absolute inset-0 size-full object-cover"
+      />
+    ) : src ? (
       <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" class="absolute inset-0 size-full object-cover" />
     ) : (
       <>
