@@ -6,7 +6,7 @@ Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su secc
 
 - **Stack:** [Astro](https://astro.build) (genera HTML estático, sin JS de framework en el cliente) + Tailwind CSS v4 + fuentes auto-hospedadas (Sora, Inter y Yellowtail vía Fontsource).
 - **Animaciones y efectos:** CSS y un script pequeño en TypeScript (`src/scripts/main.ts`):
-  - Hero centrado con letrero de neón que se dibuja, aurora de luz, rejilla en perspectiva, luz que sigue al cursor y tarjetas flotantes con profundidad.
+  - Hero centrado con letrero de neón que se dibuja, aurora de luz y luz que sigue al cursor.
   - Titulares que aparecen palabra por palabra (`data-split`), scroll reveal con stagger (`data-reveal`) y fotos con revelado tipo cortina (`data-reveal="clip"`).
   - Tarjetas con inclinación 3D y brillo bajo el cursor (`data-tilt`), botones magnéticos (`data-magnetic`) y destello en botones principales.
   - Bandas y carrusel de testimonios en movimiento continuo, borde de neón giratorio, contadores y transiciones de página nativas.
@@ -72,10 +72,9 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 
 | Pendiente | Dónde se cambia |
 |---|---|
-| Nombre, cédula, bio y foto del doctor | `site.doctor` en `src/data/site.ts` (`flags.showDoctorName` lo oculta) |
+| Nombre, cédula y foto del doctor | `site.doctor` en `src/data/site.ts` (`flags.showDoctorName` lo oculta) |
 | Horario de atención | `site.hours` y `site.openingHoursSpec` |
 | Precios promocionales (brackets $499, blanqueamiento $1,200) | `promo` de cada servicio (`flags.showPrices` los oculta) |
-| Años de experiencia y pacientes atendidos | `trust` |
 | Testimonios reales (3–6) | `testimonials` |
 | URL exacta de Facebook | `site.social.facebook.url` |
 | Fotos del consultorio | `gallery` y `heroImage` en `src/pages/index.astro` |

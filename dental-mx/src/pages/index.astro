@@ -4,7 +4,6 @@ import Icon from '../components/Icon.astro';
 import NeonTooth from '../components/NeonTooth.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import Marquee from '../components/Marquee.astro';
-import TrustBar from '../components/TrustBar.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import TestimonialCard from '../components/TestimonialCard.astro';
@@ -20,15 +19,8 @@ import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink
 const heroImage = '';
 
 const promos = services.filter((s) => s.promo);
-const byslug = Object.fromEntries(services.map((s) => [s.slug, s]));
-
-// Tarjetas flotantes del hero (sólo escritorio)
-const heroChips = [
-  { pos: 'left-[4%] top-[24%]', depth: 26, float: 'float-a', icon: 'braces', title: 'Ortodoncia', sub: flags.showPrices ? byslug.ortodoncia.promo?.now : 'Brackets y alineadores' },
-  { pos: 'right-[4%] top-[20%]', depth: 34, float: 'float-b', icon: 'shine', title: 'Blanqueamiento', sub: flags.showPrices ? byslug.blanqueamientos.promo?.now : 'En una sesión' },
-  { pos: 'left-[8%] bottom-[18%]', depth: 18, float: 'float-b', icon: 'implant', title: 'Implantes', sub: 'Solución fija' },
-  { pos: 'right-[7%] bottom-[22%]', depth: 22, float: 'float-a', icon: 'family', title: 'Toda la familia', sub: 'Niños y adultos' },
-];
+// Banda de servicios: la valoración abre la lista, igual que en la cuadrícula.
+const bandItems = services.map((s) => (s.featured ? 'Valoración' : s.name));
 
 const values = [
   { icon: 'tooth', title: 'Salud bucal' },
@@ -74,27 +66,10 @@ const schema = [
         <div class="absolute right-[4%] bottom-[12%] size-[24rem] rounded-full bg-lime/10 blur-[130px]"></div>
       </div>
       <div class="absolute inset-0 bg-[radial-gradient(520px_circle_at_var(--sx,50%)_var(--sy,38%),rgb(181_238_58/0.09),transparent_62%)]"></div>
-      <div class="grid-floor absolute inset-x-[-40%] bottom-[-10%] h-[40%] opacity-30"><i></i></div>
       <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent"></div>
       <div class="grain absolute inset-0"></div>
     </div>
 
-    <!-- Tarjetas flotantes -->
-    {
-      heroChips.map((c, i) => (
-        <div class:list={['pointer-events-none absolute z-0 hidden xl:block', c.pos]} data-depth={c.depth} aria-hidden="true">
-          <div class="hero-in" style={`--i:${i + 5}`}>
-            <div class:list={['glass flex items-center gap-3 rounded-2xl py-3 pr-5 pl-3 text-left', c.float]}>
-              <span class="icon-tube size-11"><Icon name={c.icon} size={22} /></span>
-              <span>
-                <span class="block font-display text-sm font-semibold text-white">{c.title}</span>
-                <span class="block text-sm text-lime">{c.sub}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      ))
-    }
 
     <div class="container-x relative flex flex-col items-center">
       <div class="relative">
@@ -102,12 +77,7 @@ const schema = [
         <NeonTooth draw class="relative w-24 sm:w-32" />
       </div>
 
-      <p class="hero-in mt-7 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-sm font-medium text-snow/90" style="--i:1">
-        <span class="live-dot" aria-hidden="true"></span>
-        Clínica dental en Torreón Residencial
-      </p>
-
-      <h1 class="mt-6 text-[3.6rem] leading-[0.92] font-extrabold tracking-[-0.03em] sm:text-8xl lg:text-[10rem] xl:text-[11.5rem]" data-split>
+      <h1 class="mt-8 text-[3.6rem] leading-[0.92] font-extrabold tracking-[-0.03em] sm:text-8xl lg:text-[10rem] xl:text-[11.5rem]" data-split>
         DENTAL{' '}
         <span
           class="hero-in inline-block text-lime [text-shadow:0_0_10px_rgb(181_238_58/0.6),0_0_34px_rgb(181_238_58/0.45),0_0_80px_rgb(181_238_58/0.3)]"
@@ -124,12 +94,6 @@ const schema = [
         <WhatsAppButton size="lg" message="Hola, me gustaría agendar una cita en Dental MX." cta="hero-whatsapp" />
         <a href="#servicios" class="btn btn-ghost btn-lg" data-magnetic>Ver servicios <Icon name="arrow-right" size={18} /></a>
       </div>
-
-      <ul class="hero-in mt-9 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-mute" style="--i:7">
-        {['Toda la familia', 'Citas por WhatsApp', 'Precios accesibles'].map((t) => (
-          <li class="flex items-center gap-2"><Icon name="check" size={16} strokeWidth={2.4} class="text-lime" />{t}</li>
-        ))}
-      </ul>
     </div>
 
     <a href="#servicios" class="scroll-cue absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex" aria-label="Bajar a servicios">
@@ -138,19 +102,19 @@ const schema = [
   </section>
 
   <!-- ═══════════════ BANDA EN MOVIMIENTO ═══════════════ -->
-  <div class="relative overflow-hidden py-8">
-    <Marquee variant="dark" reverse speed={60} items={services.map((s) => s.name)} class="absolute top-1/2 left-1/2 w-[110vw] -translate-1/2 rotate-2" />
-    <Marquee items={services.map((s) => s.name)} speed={45} class="relative left-1/2 w-[110vw] -translate-x-1/2 -rotate-2 shadow-[0_0_60px_-10px_rgb(181_238_58/0.5)]" />
-  </div>
+  <Marquee items={bandItems} speed={45} class="shadow-[0_0_60px_-10px_rgb(181_238_58/0.5)]" />
 
-  <TrustBar />
-
-  <!-- ═══════════════ SERVICIOS (bento) ═══════════════ -->
-  <section class="section pt-10 sm:pt-12 lg:pt-16" id="servicios">
+  <!-- ═══════════════ SERVICIOS ═══════════════ -->
+  <section class="section" id="servicios">
     <div class="container-x">
-      <SectionHeading eyebrow="Servicios" title='Todo para tu sonrisa, <span class="text-neon">en un solo lugar</span>' />
-      <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {services.map((s, i) => <ServiceCard service={s} index={i} size={i === 0 ? 'wide' : i === services.length - 1 ? 'full' : 'normal'} />)}
+      <SectionHeading
+        align="center"
+        eyebrow="Servicios"
+        title='Todo para tu sonrisa, <span class="text-neon">en un solo lugar</span>'
+        intro="Empieza con una valoración y elige el tratamiento que necesitas."
+      />
+      <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {services.map((s, i) => <ServiceCard service={s} index={i} />)}
       </div>
     </div>
   </section>
@@ -243,9 +207,6 @@ const schema = [
         <div data-reveal="clip">
           <Photo scene="chair" alt="Sillón dental del consultorio Dental MX" class="aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]" />
         </div>
-        <div class="absolute -right-3 -bottom-6 rounded-2xl bg-ink px-5 py-4 text-snow shadow-[var(--shadow-lift)] sm:-right-6" data-reveal style="--i:3">
-          <p class="font-display text-sm font-semibold text-lime">{site.values.join(' · ')}</p>
-        </div>
       </div>
       <div>
         <SectionHeading eyebrow="Por qué elegirnos" title="Nivel de especialista, trato de familia" />
@@ -289,13 +250,7 @@ const schema = [
           </div>
         </div>
         <div>
-          <SectionHeading eyebrow="Nosotros" title='Una clínica de barrio con estándares <span class="text-neon">de especialista</span>'>
-            <PlaceholderBadge label="Textos por confirmar" class="mt-5" />
-          </SectionHeading>
-          {/* PLACEHOLDER: historia de la clínica — reemplazar con la versión del cliente. */}
-          <p class="mt-5 text-lg leading-relaxed text-snow/80" data-reveal>
-            Un consultorio moderno y honesto en Torreón Residencial: explicaciones claras y precios justos para toda la familia.
-          </p>
+          <SectionHeading eyebrow="Nosotros" title='Una clínica de barrio con estándares <span class="text-neon">de especialista</span>' />
 
           <div class="card mt-8 p-6" data-reveal>
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -303,7 +258,6 @@ const schema = [
               <p class="text-sm text-mute">{site.doctor.license}</p>
             </div>
             <p class="mt-1 font-display text-sm font-semibold text-lime">{site.doctor.role}</p>
-            <p class="mt-3 leading-relaxed text-snow/80">{site.doctor.bio[0]}</p>
           </div>
 
           <ul class="mt-6 flex flex-wrap gap-3" data-reveal>

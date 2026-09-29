@@ -97,10 +97,6 @@ export const site = {
     role: 'Cirujano dentista · Director clínico',
     // PLACEHOLDER: cédula profesional por confirmar.
     license: 'Céd. Prof. por confirmar',
-    // PLACEHOLDER: bio provisional, reemplazar con la del doctor.
-    bio: [
-      'Combina precisión clínica con trato cercano: explica cada paso y diseña planes a la medida de cada paciente y presupuesto.',
-    ],
     // PLACEHOLDER: ruta a foto real, p. ej. '/img/doctor.jpg' (vacío = marco provisional).
     photo: '',
   },
@@ -125,6 +121,10 @@ export type Service = {
   slug: string;
   name: string;
   icon: IconName;
+  /** Categoría que se muestra en la tarjeta (Valoración, Estética…). */
+  category: string;
+  /** Punto de partida recomendado: tarjeta resaltada y botón "Agendar valoración". */
+  featured?: boolean;
   /** Una línea: qué es. */
   short: string;
   /** Descripción ampliada (datos estructurados / SEO). */
@@ -138,7 +138,20 @@ export type Service = {
 
 export const services: Service[] = [
   {
+    slug: 'atencion-personalizada',
+    category: 'Valoración',
+    featured: true,
+    name: 'Atención personalizada',
+    icon: 'heart',
+    short: 'Valoración integral y un plan claro, a tu ritmo y a tu presupuesto.',
+    description:
+      'Revisamos tu salud bucal completa, te explicamos opciones y costos sin letras chiquitas, y diseñamos un plan a tu ritmo y a tu presupuesto. Para toda la familia.',
+    forWho: ['Primera visita', 'Toda la familia', 'Miedo al dentista'],
+    waMessage: 'Hola, quiero agendar una valoración general.',
+  },
+  {
     slug: 'ortodoncia',
+    category: 'Alineación',
     name: 'Ortodoncia',
     icon: 'braces',
     short: 'Brackets y alineadores para una sonrisa alineada, a cualquier edad.',
@@ -151,6 +164,7 @@ export const services: Service[] = [
   },
   {
     slug: 'blanqueamientos',
+    category: 'Estética',
     name: 'Blanqueamientos',
     icon: 'shine',
     short: 'Varios tonos más blanca en una sola sesión, con supervisión profesional.',
@@ -162,17 +176,8 @@ export const services: Service[] = [
     promo: { label: 'Promoción', was: '$3,000', now: '$1,200', note: 'En una sola sesión' },
   },
   {
-    slug: 'implantes',
-    name: 'Implantes',
-    icon: 'implant',
-    short: 'La solución fija y duradera para reemplazar dientes perdidos.',
-    description:
-      'Un implante sustituye la raíz del diente y sostiene una corona fija: no se mueve, no afecta a los dientes vecinos y se cuida como un diente natural.',
-    forWho: ['Diente perdido', 'Adiós a la prótesis removible'],
-    waMessage: 'Hola, quiero información sobre implantes dentales.',
-  },
-  {
     slug: 'resinas-esteticas',
+    category: 'Estética',
     name: 'Resinas estéticas',
     icon: 'sparkle',
     short: 'Restauraciones del color de tu diente, en una sola cita.',
@@ -182,7 +187,19 @@ export const services: Service[] = [
     waMessage: 'Hola, quiero información sobre resinas estéticas.',
   },
   {
+    slug: 'implantes',
+    category: 'Rehabilitación',
+    name: 'Implantes',
+    icon: 'implant',
+    short: 'La solución fija y duradera para reemplazar dientes perdidos.',
+    description:
+      'Un implante sustituye la raíz del diente y sostiene una corona fija: no se mueve, no afecta a los dientes vecinos y se cuida como un diente natural.',
+    forWho: ['Diente perdido', 'Adiós a la prótesis removible'],
+    waMessage: 'Hola, quiero información sobre implantes dentales.',
+  },
+  {
     slug: 'piezas-dentales',
+    category: 'Rehabilitación',
     name: 'Piezas dentales',
     icon: 'tooth',
     short: 'Coronas, puentes y prótesis que se ven y se sienten naturales.',
@@ -191,28 +208,6 @@ export const services: Service[] = [
     forWho: ['Piezas perdidas', 'Dientes desgastados', 'Prótesis que no ajusta'],
     waMessage: 'Hola, quiero información sobre piezas dentales / prótesis.',
   },
-  {
-    slug: 'atencion-personalizada',
-    name: 'Atención personalizada',
-    icon: 'heart',
-    short: 'Valoración integral y un plan claro, a tu ritmo y a tu presupuesto.',
-    description:
-      'Revisamos tu salud bucal completa, te explicamos opciones y costos sin letras chiquitas, y diseñamos un plan a tu ritmo y a tu presupuesto. Para toda la familia.',
-    forWho: ['Primera visita', 'Toda la familia', 'Miedo al dentista'],
-    waMessage: 'Hola, quiero agendar una valoración general.',
-  },
-];
-
-// ─── Cifras / confianza ──────────────────────────────────────────────────────
-type TrustItem = { icon: IconName; label: string; value?: number; suffix?: string; text?: string; placeholder?: boolean };
-
-export const trust: TrustItem[] = [
-  // PLACEHOLDER: años de experiencia por confirmar.
-  { icon: 'award', label: 'Años de experiencia', value: 10, suffix: '+', placeholder: true },
-  // PLACEHOLDER: número de pacientes atendidos por confirmar.
-  { icon: 'users', label: 'Pacientes atendidos', value: 2500, suffix: '+', placeholder: true },
-  { icon: 'tooth', label: 'Servicios integrales', value: 6 },
-  { icon: 'family', label: 'Para toda la familia', text: 'Niños y adultos' },
 ];
 
 // ─── Cómo funciona ───────────────────────────────────────────────────────────

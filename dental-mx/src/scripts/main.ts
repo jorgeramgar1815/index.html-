@@ -254,10 +254,9 @@ if (finePointer && !reduceMotion) {
     });
   });
 
-  // Hero: luz que sigue al cursor + profundidad en elementos flotantes
+  // Hero: luz que sigue al cursor
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (hero) {
-    const layers = hero.querySelectorAll<HTMLElement>('[data-depth]');
     let raf = 0;
     hero.addEventListener('pointermove', (e) => {
       cancelAnimationFrame(raf);
@@ -267,10 +266,6 @@ if (finePointer && !reduceMotion) {
         const y = (e.clientY - r.top) / r.height;
         hero.style.setProperty('--sx', `${x * 100}%`);
         hero.style.setProperty('--sy', `${y * 100}%`);
-        layers.forEach((l) => {
-          const d = Number(l.dataset.depth) || 10;
-          l.style.transform = `translate3d(${(x - 0.5) * -d}px, ${(y - 0.5) * -d}px, 0)`;
-        });
       });
     });
   }
