@@ -15,15 +15,14 @@ import HoursList from '../components/HoursList.astro';
 import PlaceholderBadge from '../components/PlaceholderBadge.astro';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import fotoPasillo from '../assets/img/pasillo.jpg';
 import fotoSillon from '../assets/img/consultorio-sillon.jpg';
 import fotoRecepcion from '../assets/img/recepcion.jpg';
 import fotoConsultorio from '../assets/img/consultorio.jpg';
 import fotoSala from '../assets/img/sala-de-espera.jpg';
 import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink } from '../data/site';
 
-// Fondo de la portada (null = escena de marca con listones de madera).
-const heroImage: ImageMetadata | null = fotoPasillo;
+// Fondo de la portada: importar una foto aquí para usarla (null = escena de marca con listones de madera).
+const heroImage: ImageMetadata | null = null;
 
 const promos = services.filter((s) => s.promo);
 // Banda de servicios: la valoración abre la lista, igual que en la cuadrícula.

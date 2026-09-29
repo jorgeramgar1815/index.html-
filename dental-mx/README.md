@@ -85,7 +85,7 @@ En el sitio también se ven etiquetas punteadas ("Por confirmar", "Ejemplo", "Pl
 
 ### Fotos
 
-Ya colocadas (en `src/assets/img/`): fondo de la portada (`pasillo.jpg`), sillón en "Por qué elegirnos" (`consultorio-sillon.jpg`) y la galería de Nosotros (`recepcion.jpg`, `consultorio.jpg`, `sala-de-espera.jpg`).
+Ya colocadas (en `src/assets/img/`): sillón en "Por qué elegirnos" (`consultorio-sillon.jpg`) y la galería de Nosotros (`recepcion.jpg`, `consultorio.jpg`, `sala-de-espera.jpg`).
 
 Para agregar o cambiar una foto:
 
