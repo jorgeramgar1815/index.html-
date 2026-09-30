@@ -5,9 +5,10 @@ import { waLink, waMessages } from "@/lib/whatsapp";
 import { ArrowIcon, ClockIcon, FacebookIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "../Icons";
 import { Lotus, Wordmark } from "../Lotus";
 import { Reveal } from "../Motion";
+import { MobileMenu } from "./MobileMenu";
 
 /* =========================================================
-   Piezas de la landing (prototipo 2, estilo "spa boutique"):
+   Piezas del sitio (estilo "spa boutique"):
    botones rectangulares con letra espaciada, títulos con
    ornamento de loto, cabecera con logo al centro.
    ========================================================= */
@@ -111,14 +112,15 @@ export function SpaTitle({
   );
 }
 
+// Rutas absolutas para que funcionen desde cualquier página
 const navLeft = [
-  { href: "#menu", label: "Tratamientos" },
-  { href: "#rituales", label: "Rituales" },
-  { href: "#resultados", label: "Resultados" },
+  { href: "/#menu", label: "Tratamientos" },
+  { href: "/#rituales", label: "Rituales" },
+  { href: "/servicios/", label: "Catálogo" },
 ] as const;
 const navRight = [
-  { href: "#bienvenida", label: "Nosotros" },
-  { href: "#reserva", label: "Horario" },
+  { href: "/nosotros/", label: "Nosotros" },
+  { href: "/#reserva", label: "Horario" },
 ] as const;
 
 function NavList({ items }: { items: readonly { href: string; label: string }[] }) {
@@ -126,9 +128,9 @@ function NavList({ items }: { items: readonly { href: string; label: string }[] 
     <ul className="flex items-center gap-8">
       {items.map((l) => (
         <li key={l.href}>
-          <a href={l.href} className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink/75 transition-colors hover:text-jade-ink">
+          <Link href={l.href} className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink/75 transition-colors hover:text-jade-ink">
             {l.label}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>
@@ -136,7 +138,7 @@ function NavList({ items }: { items: readonly { href: string; label: string }[] 
 }
 
 /** Barra superior de datos + cabecera con logo al centro. */
-export function LandingHeader() {
+export function SiteHeader() {
   return (
     <>
       <div className="hidden bg-jade-ink text-[0.72rem] text-white/90 md:block">
@@ -158,10 +160,10 @@ export function LandingHeader() {
           <nav aria-label="Secciones" className="hidden lg:block">
             <NavList items={navLeft} />
           </nav>
-          <a href="#inicio" aria-label="Reduzen, ir al inicio" className="lg:justify-self-center">
+          <Link href="/" aria-label="Reduzen, ir al inicio" className="lg:justify-self-center">
             <Wordmark />
-          </a>
-          <div className="flex items-center justify-end gap-8">
+          </Link>
+          <div className="flex items-center justify-end gap-2 lg:gap-8">
             <nav aria-label="Más secciones" className="hidden lg:block">
               <NavList items={navRight} />
             </nav>
@@ -174,6 +176,7 @@ export function LandingHeader() {
               <WhatsAppIcon size={16} /> Reservar
               <span className="sr-only"> por WhatsApp (abre una pestaña nueva)</span>
             </a>
+            <MobileMenu links={[...navLeft, ...navRight]} />
           </div>
         </div>
       </header>
@@ -182,7 +185,7 @@ export function LandingHeader() {
 }
 
 /** Pie centrado. */
-export function LandingFooter() {
+export function SiteFooter() {
   return (
     <footer className="bg-night text-center text-cream/70">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">

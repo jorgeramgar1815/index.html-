@@ -23,8 +23,8 @@ export function CategoryTabs({ items }: { items: Pick<Category, "slug" | "short"
   }, [items]);
 
   return (
-    <nav aria-label="Categorías de servicio" className="sticky top-[58px] z-30 border-y border-ink/15 bg-cream/95">
-      <ol className="no-scrollbar mx-auto flex max-w-[88rem] overflow-x-auto px-5 sm:px-8">
+    <nav aria-label="Categorías de servicio" className="sticky top-[65px] z-30 sm:top-[81px] border-y border-ink/15 bg-cream/95">
+      <ol className="no-scrollbar mx-auto flex max-w-6xl overflow-x-auto px-4 sm:px-6">
         {items.map((c, i) => {
           const isActive = active === c.slug;
           return (

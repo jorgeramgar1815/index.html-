@@ -23,8 +23,8 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <section className="bg-cream pt-24 sm:pt-28">
-      <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+    <section className="bg-cream pt-12 sm:pt-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <nav aria-label="Ruta de navegación" className="rise border-b border-ink/15 pb-3" style={d(0)}>
           <ol className="flex items-center gap-3 text-stone">
             {crumbs.map((c, i) => (

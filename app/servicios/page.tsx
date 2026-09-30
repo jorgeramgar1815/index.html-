@@ -41,12 +41,12 @@ export default function ServiciosPage() {
           key={c.slug}
           id={c.slug}
           aria-labelledby={`${c.slug}-titulo`}
-          className={`scroll-mt-28 py-20 sm:py-28 ${idx % 2 ? "bg-cream-50" : "bg-cream"}`}
+          className={`scroll-mt-36 sm:scroll-mt-40 py-20 sm:py-28 ${idx % 2 ? "bg-cream-50" : "bg-cream"}`}
         >
-          <div className="mx-auto grid max-w-[88rem] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+          <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
             {/* Columna fija con número gigante, título e imagen */}
             <div className="lg:col-span-4">
-              <div className="lg:sticky lg:top-36">
+              <div className="lg:sticky lg:top-40">
                 <span aria-hidden className="outline-text display block text-[3.2rem] text-gold sm:text-[4rem]">
                   {String(idx + 1).padStart(2, "0")}
                 </span>

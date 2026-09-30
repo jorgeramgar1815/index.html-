@@ -41,7 +41,7 @@ export default function NosotrosPage() {
 
       {/* 01 — HISTORIA */}
       <section aria-labelledby="historia-titulo" className="bg-cream-50 py-24 sm:py-32">
-        <div className="mx-auto grid max-w-[88rem] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
           <figure className="lg:col-span-5">
             <ClipReveal className="aspect-[4/5]">
               <ArtFrame variant="portrait" alt="El equipo de Reduzen en el spa" className="h-full w-full" />
@@ -69,7 +69,7 @@ export default function NosotrosPage() {
 
       {/* 02 — VALORES */}
       <section aria-labelledby="valores-titulo" className="bg-jade py-24 text-ink sm:py-32">
-        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionHead id="valores-titulo" number="02" label="Valores" title="Lo que nos mueve." tone="jade" />
           <Stagger as="ul" className="mt-16 grid border-t border-ink/25 sm:grid-cols-2 lg:grid-cols-4">
             {brandValues.map((v, i) => {
@@ -92,7 +92,7 @@ export default function NosotrosPage() {
 
       {/* 03 — EQUIPO */}
       <section aria-labelledby="equipo-titulo" className="bg-cream py-24 sm:py-32">
-        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionHead id="equipo-titulo" number="03" label="Equipo" title="Manos expertas." />
           {/* PLACEHOLDER: fotos, nombres y bios reales en content/team.ts */}
           <Stagger className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -120,7 +120,7 @@ export default function NosotrosPage() {
 
       {/* 04 — ESPACIO */}
       <section aria-labelledby="espacio-titulo" className="bg-cream-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionHead
             id="espacio-titulo"
             number="04"

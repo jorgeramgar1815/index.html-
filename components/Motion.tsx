@@ -6,11 +6,9 @@ import {
   domAnimation,
   m,
   useReducedMotion,
-  useScroll,
-  useTransform,
   type Variants,
 } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 /** Proveedor global: carga diferida de features y respeto a prefers-reduced-motion. */
 export function MotionProvider({ children }: { children: ReactNode }) {
@@ -97,27 +95,6 @@ export function StaggerItem({
     <Comp className={className} variants={item}>
       {children}
     </Comp>
-  );
-}
-
-/** Parallax muy suave ligado al scroll. `speed` en px de recorrido total. */
-export function Parallax({
-  children,
-  className,
-  speed = 40,
-}: {
-  children: ReactNode;
-  className?: string;
-  speed?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-speed / 2, speed / 2]);
-  return (
-    <m.div ref={ref} className={className} style={{ y }}>
-      {children}
-    </m.div>
   );
 }
 

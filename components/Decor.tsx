@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 
 /** Burbujas que suben lentamente (CSS puro, sin JS). */
 export function Bubbles({ count = 14, light = false, className = "" }: { count?: number; light?: boolean; className?: string }) {
@@ -23,41 +23,5 @@ export function Bubbles({ count = 14, light = false, className = "" }: { count?:
         />
       ))}
     </div>
-  );
-}
-
-/** Cinta infinita horizontal. El segundo juego se oculta a lectores de pantalla. */
-export function Marquee({
-  children,
-  className = "",
-  reverse = false,
-  duration,
-}: {
-  children: ReactNode;
-  className?: string;
-  reverse?: boolean;
-  duration?: string;
-}) {
-  return (
-    <div className={`mask-fade-x group flex overflow-hidden motion-reduce:overflow-x-auto ${className}`}>
-      <div
-        className="flex w-max shrink-0 animate-marquee group-hover:[animation-play-state:paused]"
-        style={{ animationDirection: reverse ? "reverse" : undefined, animationDuration: duration }}
-      >
-        <div className="flex shrink-0 items-stretch">{children}</div>
-        <div className="flex shrink-0 items-stretch" aria-hidden>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Estrella dorada de 4 puntas. */
-export function Star({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="-10 -10 20 20" className={className} aria-hidden>
-      <path d="M0-10c1 7 3 9 10 10-7 1-9 3-10 10-1-7-3-9-10-10 7-1 9-3 10-10Z" fill="currentColor" />
-    </svg>
   );
 }

@@ -1,16 +1,9 @@
 "use client";
 
-import { m, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef, type ReactNode } from "react";
 
 const ease = [0.76, 0, 0.24, 1] as const;
-
-/** Filete de progreso de lectura (parte superior). */
-export function ScrollProgress() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
-  return <m.div aria-hidden style={{ scaleX }} className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-jade-ink" />;
-}
 
 /** Titular revelado palabra por palabra desde una máscara. */
 export function WordsReveal({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) {

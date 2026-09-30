@@ -33,7 +33,7 @@ export function CTASection({ withMap = true, number = "08" }: { withMap?: boolea
 
   return (
     <section id="contacto" aria-labelledby="contacto-titulo" className="bg-cream-50 pb-28 pt-24 sm:pt-32">
-      <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHead id="contacto-titulo" number={number} label="Contacto" title="Reserva tu espacio." />
 
         <div className={`mt-16 grid grid-cols-1 gap-12 ${withMap ? "lg:grid-cols-12" : ""}`}>

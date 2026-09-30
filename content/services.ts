@@ -210,11 +210,3 @@ export const categories: Category[] = [
     ],
   },
 ];
-
-/** Tratamientos insignia para la sección oscura "momento premium".
- *  PLACEHOLDER: confirmar prioridad con la clienta. */
-export const signatureSlugs = ["hydrafacial", "bubble-oxygen-facial", "microneedling", "hidralips"];
-
-export const signatureTreatments = signatureSlugs
-  .map((slug) => categories.flatMap((c) => c.treatments).find((t) => t.slug === slug))
-  .filter((t): t is Treatment => Boolean(t));

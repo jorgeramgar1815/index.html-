@@ -1,0 +1,3 @@
+{
+  "redirects": [{ "source": "/landing/:path*", "destination": "/", "permanent": false }]
+}

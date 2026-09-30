@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArtFrame } from "@/components/ArtFrame";
@@ -14,14 +13,6 @@ import { categories } from "@/content/services";
 import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: "Prototipo landing",
-  description: site.description,
-  // Prototipo en revisión: no indexar hasta que se apruebe
-  robots: { index: false, follow: false },
-  alternates: { canonical: "/landing/" },
-};
-
 const d = (s: string) => ({ "--d": s }) as CSSProperties;
 const total = categories.reduce((n, c) => n + c.treatments.length, 0);
 
@@ -32,7 +23,7 @@ const rituals = [
   { name: "Ritual Manos & Pies", art: "pedicure", items: ["Manicure spa", "Pedicure spa"], note: "Un rato completo para ti." },
 ] as const;
 
-export default function LandingPage() {
+export default function HomePage() {
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&z=16&output=embed`;
 
   return (
