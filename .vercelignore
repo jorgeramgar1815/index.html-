@@ -1,0 +1,6 @@
+# Archivos que no forman parte del sitio publicado
+index.html.html
+scripts/
+README.md
+netlify.toml
+fotos-originales/
