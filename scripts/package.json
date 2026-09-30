@@ -1,0 +1,12 @@
+{
+  "name": "optica-luz-herramientas",
+  "private": true,
+  "description": "Herramienta opcional para optimizar fotos. El sitio no necesita compilación.",
+  "type": "module",
+  "scripts": {
+    "fotos": "node optimizar-fotos.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.0"
+  }
+}
