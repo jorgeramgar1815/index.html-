@@ -134,6 +134,12 @@ export const MailIcon = (p: IconProps) => (
   </Base>
 );
 
+export const CheckIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </Base>
+);
+
 export const ArrowIcon = (p: IconProps) => (
   <Base {...p}>
     <path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5" />

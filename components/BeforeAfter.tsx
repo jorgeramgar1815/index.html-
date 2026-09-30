@@ -12,10 +12,12 @@ type BeforeAfterProps = {
   beforeSrc?: string | null;
   afterSrc?: string | null;
   className?: string;
+  /** Esquinas redondeadas y pie simple (landing). */
+  rounded?: boolean;
 };
 
 /** Comparador antes/después accesible (control deslizante nativo) con pista animada. */
-export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSrc = null, className = "" }: BeforeAfterProps) {
+export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSrc = null, className = "", rounded = false }: BeforeAfterProps) {
   const [pos, setPos] = useState(50);
   const id = useId();
   const ref = useRef<HTMLElement>(null);
@@ -37,13 +39,13 @@ export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSr
 
   return (
     <figure ref={ref} className={className}>
-      <div className="relative aspect-[4/5] select-none overflow-hidden">
+      <div className={`relative aspect-[4/5] select-none overflow-hidden ${rounded ? "rounded-[1.75rem]" : ""}`}>
         <ArtFrame variant="after" src={afterSrc} alt={`${title}: después (imagen ilustrativa)`} className="absolute inset-0" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
           <ArtFrame variant="before" src={beforeSrc} alt={`${title}: antes (imagen ilustrativa)`} className="absolute inset-0" />
         </div>
-        <span className="eyebrow absolute left-3 top-3 bg-ink px-2.5 py-1 text-cream">Antes</span>
-        <span className="eyebrow absolute right-3 top-3 bg-cream-50 px-2.5 py-1 text-ink">Después</span>
+        <span className={`eyebrow absolute left-3 top-3 bg-ink px-2.5 py-1 text-cream ${rounded ? "rounded-full !px-3" : ""}`}>Antes</span>
+        <span className={`eyebrow absolute right-3 top-3 bg-cream-50 px-2.5 py-1 text-ink ${rounded ? "rounded-full !px-3" : ""}`}>Después</span>
         <div className="pointer-events-none absolute inset-y-0 w-px bg-cream-50" style={{ left: `${pos}%` }}>
           <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-cream-50 text-ink shadow-lg">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
@@ -67,9 +69,9 @@ export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSr
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
         />
         {/* PLACEHOLDER: reemplazar por casos reales con autorización */}
-        <span className="eyebrow absolute bottom-3 left-3 bg-cream-50/90 px-2.5 py-1 !text-[0.58rem] text-stone">Imagen ilustrativa</span>
+        <span className={`eyebrow absolute bottom-3 left-3 bg-cream-50/90 px-2.5 py-1 !text-[0.58rem] text-stone ${rounded ? "rounded-full" : ""}`}>Imagen ilustrativa</span>
       </div>
-      <figcaption className="mt-3 flex items-baseline justify-between gap-3 border-b border-ink/15 pb-3">
+      <figcaption className={`mt-3 flex items-baseline justify-between gap-3 ${rounded ? "px-1" : "border-b border-ink/15 pb-3"}`}>
         <span className="flex items-baseline gap-3">
           <span className="eyebrow text-gold-ink">{figure}</span>
           <span className="font-serif text-base text-ink">{title}</span>
