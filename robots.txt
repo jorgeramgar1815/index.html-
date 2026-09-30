@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# TODO dominio: reemplaza https://www.example.com por el dominio real
-Sitemap: https://www.example.com/sitemap.xml
+# Si conectas un dominio propio, reemplaza https://optica-luz.vercel.app
+Sitemap: https://optica-luz.vercel.app/sitemap.xml

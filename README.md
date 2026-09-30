@@ -61,9 +61,9 @@ promocion: {
 
 > ⚠️ **TODO:** el diseño solo dice "Válido durante septiembre". Se asumió **septiembre de 2026** (por el "© 2026" del pie). Confirma la fecha real.
 
-### Dominio (TODO)
+### Dominio
 
-Cuando tengas dominio, reemplaza `https://www.example.com` por tu dominio real en:
+El sitio está publicado en **https://optica-luz.vercel.app** (proyecto `optica-luz` en Vercel). Si conectas un dominio propio, reemplaza `https://optica-luz.vercel.app` por tu dominio en:
 - `index.html`: canonical, Open Graph, Twitter y JSON-LD
 - `sitemap.xml`
 - `robots.txt`
@@ -148,7 +148,7 @@ Por cada foto, exporta los dos anchos de la tabla en AVIF, WebP y JPG, con exact
 
 ### Dominio propio
 
-En Netlify (**Domain management**) o en Vercel (**Settings → Domains**), agrega tu dominio y sigue las instrucciones de DNS. Después reemplaza `https://www.example.com` (ver "Dominio" arriba) y da de alta el `sitemap.xml` en [Google Search Console](https://search.google.com/search-console).
+En Netlify (**Domain management**) o en Vercel (**Settings → Domains**), agrega tu dominio y sigue las instrucciones de DNS. Después reemplaza `https://optica-luz.vercel.app` (ver "Dominio" arriba) y da de alta el `sitemap.xml` en [Google Search Console](https://search.google.com/search-console).
 
 ### Probar en tu computadora
 
