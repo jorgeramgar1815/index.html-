@@ -2,93 +2,95 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { site } from "@/content/site";
 import { waLink, waMessages } from "@/lib/whatsapp";
-import { ArrowIcon, CheckIcon, FacebookIcon, WhatsAppIcon } from "../Icons";
-import { Wordmark } from "../Lotus";
+import { ArrowIcon, ClockIcon, FacebookIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "../Icons";
+import { Lotus, Wordmark } from "../Lotus";
 import { Reveal } from "../Motion";
 
 /* =========================================================
-   Piezas de la landing (prototipo 2): botones píldora,
-   títulos centrados, cabecera y pie compactos.
+   Piezas de la landing (prototipo 2, estilo "spa boutique"):
+   botones rectangulares con letra espaciada, títulos con
+   ornamento de loto, cabecera con logo al centro.
    ========================================================= */
 
-type PillVariant = "jade" | "gold" | "ghost" | "light";
+type BtnVariant = "jade" | "gold" | "line" | "light";
 
-const pill: Record<PillVariant, string> = {
+const btn: Record<BtnVariant, string> = {
   // Jade profundo + blanco (5.9:1)
-  jade: "bg-jade-ink text-white shadow-[0_14px_30px_-14px_rgba(31,111,108,.8)] hover:bg-ink",
+  jade: "bg-jade-ink text-white hover:bg-ink",
   // Dorado + marino (7.4:1)
-  gold: "bg-gold text-night shadow-[0_14px_30px_-14px_rgba(201,162,75,.9)] hover:bg-gold-soft",
-  ghost: "border border-ink/20 bg-white/60 text-ink hover:border-ink hover:bg-white",
-  light: "border border-cream/30 text-cream hover:bg-cream hover:text-night",
+  gold: "bg-gold text-night hover:bg-gold-soft",
+  line: "border border-ink/40 text-ink hover:border-ink hover:bg-ink hover:text-cream-50",
+  light: "border border-cream/50 text-cream hover:bg-cream hover:text-night",
 };
 
-/** CTA píldora de WhatsApp con mensaje prellenado. */
-export function PillCTA({
+const btnBase =
+  "inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-[3px] text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-300";
+
+/** Botón de WhatsApp con mensaje prellenado. */
+export function SpaButton({
   message = waMessages.general,
   children,
   variant = "jade",
-  size = "md",
   className = "",
+  icon = true,
 }: {
   message?: string;
   children: ReactNode;
-  variant?: PillVariant;
-  size?: "sm" | "md" | "lg";
+  variant?: BtnVariant;
   className?: string;
+  icon?: boolean;
 }) {
-  const sizes = { sm: "h-10 px-4 text-[0.8rem] gap-2", md: "h-12 px-6 text-sm gap-2.5", lg: "h-14 px-7 text-[0.95rem] gap-3" }[size];
   return (
-    <a
-      href={waLink(message)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold transition-all duration-300 hover:-translate-y-0.5 ${sizes} ${pill[variant]} ${className}`}
-    >
-      <WhatsAppIcon size={size === "sm" ? 16 : 20} />
+    <a href={waLink(message)} target="_blank" rel="noopener noreferrer" className={`${btnBase} h-[3.25rem] px-7 ${btn[variant]} ${className}`}>
+      {icon && <WhatsAppIcon size={18} />}
       {children}
       <span className="sr-only"> (abre WhatsApp en una pestaña nueva)</span>
     </a>
   );
 }
 
-/** Enlace píldora interno (anclas). */
-export function PillLink({ href, children, className = "" }: { href: string; children: ReactNode; className?: string }) {
+/** Botón interno (anclas o páginas). */
+export function SpaLink({ href, children, variant = "line", className = "" }: { href: string; children: ReactNode; variant?: BtnVariant; className?: string }) {
   return (
-    <a
-      href={href}
-      className={`group inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 ${pill.ghost} ${className}`}
-    >
+    <a href={href} className={`group ${btnBase} h-[3.25rem] px-7 ${btn[variant]} ${className}`}>
       {children}
       <ArrowIcon size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
     </a>
   );
 }
 
-/** Etiqueta pequeña tipo chip. */
-export function Badge({ children, tone = "jade", className = "" }: { children: ReactNode; tone?: "jade" | "gold" | "night"; className?: string }) {
-  const tones = {
-    jade: "bg-jade/15 text-jade-ink",
-    gold: "bg-gold/20 text-gold-ink",
-    night: "bg-gold text-night",
-  }[tone];
+/** Eyebrow con filetes dorados a los lados. */
+export function Ornament({
+  children,
+  dark = false,
+  align = "center",
+  className = "",
+}: {
+  children: ReactNode;
+  dark?: boolean;
+  align?: "center" | "left";
+  className?: string;
+}) {
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] ${tones} ${className}`}>
-      {children}
-    </span>
+    <p className={`flex items-center gap-3 ${align === "center" ? "justify-center" : ""} ${dark ? "text-gold-pale" : "text-gold-ink"} ${className}`}>
+      {align === "center" && <span aria-hidden className="h-px w-8 bg-gold/70" />}
+      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.24em]">{children}</span>
+      <span aria-hidden className="h-px w-8 bg-gold/70" />
+    </p>
   );
 }
 
-/** Título de sección centrado: chip + titular + bajada corta. */
-export function Title({
+/** Título de sección con loto, eyebrow y titular serif. */
+export function SpaTitle({
   id,
-  badge,
+  eyebrow,
   title,
   intro,
   dark = false,
   align = "center",
 }: {
   id: string;
-  badge: string;
+  eyebrow: string;
   title: ReactNode;
   intro?: ReactNode;
   dark?: boolean;
@@ -97,88 +99,100 @@ export function Title({
   const center = align === "center";
   return (
     <Reveal className={center ? "mx-auto max-w-2xl text-center" : "max-w-xl"}>
-      <Badge tone={dark ? "night" : "jade"}>{badge}</Badge>
-      <h2 id={id} className={`mt-4 text-[1.75rem] leading-[1.1] sm:text-[2.35rem] ${dark ? "!text-cream" : ""}`}>
+      {center && <Lotus className={`mx-auto mb-4 h-8 w-8 ${dark ? "text-jade" : "text-jade-ink"}`} />}
+      <Ornament dark={dark} align={align}>
+        {eyebrow}
+      </Ornament>
+      <h2 id={id} className={`mt-4 text-[1.9rem] leading-[1.08] sm:text-[2.6rem] ${dark ? "!text-cream" : ""}`}>
         {title}
       </h2>
-      {intro && <p className={`mt-3 text-[0.95rem] leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
+      {intro && <p className={`mt-4 text-[0.95rem] leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
     </Reveal>
   );
 }
 
-/** Lista con palomitas. */
-export function Checks({ items, dark = false, className = "" }: { items: readonly string[]; dark?: boolean; className?: string }) {
+const navLeft = [
+  { href: "#menu", label: "Tratamientos" },
+  { href: "#rituales", label: "Rituales" },
+  { href: "#resultados", label: "Resultados" },
+] as const;
+const navRight = [
+  { href: "#bienvenida", label: "Nosotros" },
+  { href: "#reserva", label: "Horario" },
+] as const;
+
+function NavList({ items }: { items: readonly { href: string; label: string }[] }) {
   return (
-    <ul className={`space-y-2.5 ${className}`}>
-      {items.map((t) => (
-        <li key={t} className={`flex items-center gap-3 text-[0.95rem] ${dark ? "text-cream/90" : "text-ink"}`}>
-          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${dark ? "bg-gold text-night" : "bg-jade/20 text-jade-ink"}`}>
-            <CheckIcon size={14} strokeWidth={2.2} />
-          </span>
-          {t}
+    <ul className="flex items-center gap-8">
+      {items.map((l) => (
+        <li key={l.href}>
+          <a href={l.href} className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink/75 transition-colors hover:text-jade-ink">
+            {l.label}
+          </a>
         </li>
       ))}
     </ul>
   );
 }
 
-export const landingNav = [
-  { href: "#servicios", label: "Servicios" },
-  { href: "#promo", label: "Promo" },
-  { href: "#como-agendar", label: "Cómo agendar" },
-  { href: "#resultados", label: "Resultados" },
-  { href: "#preguntas", label: "Preguntas" },
-] as const;
-
-/** Barra de aviso + cabecera fija con CTA siempre visible. */
+/** Barra superior de datos + cabecera con logo al centro. */
 export function LandingHeader() {
   return (
     <>
-      {/* PLACEHOLDER: promo vista en Facebook; confirmar vigencia */}
-      <a
-        href="#promo"
-        className="block bg-night px-4 py-2 text-center text-[0.75rem] font-medium tracking-wide text-cream transition-colors hover:text-gold-soft"
-      >
-        <span className="text-gold">✦</span> Promo del mes: <strong className="font-semibold">Hydrafacial desde $499</strong>
-        <span className="hidden sm:inline"> · Cupo limitado</span> <span aria-hidden>→</span>
-      </a>
-      <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.5rem] sm:px-6">
-          <a href="#inicio" aria-label="Reduzen, ir al inicio">
+      <div className="hidden bg-jade-ink text-[0.72rem] text-white/90 md:block">
+        <div className="mx-auto flex h-9 max-w-6xl items-center justify-between px-6">
+          <span className="flex items-center gap-2">
+            <PinIcon size={14} /> {site.address.neighborhood}, {site.address.city}
+          </span>
+          {/* PLACEHOLDER: horario a confirmar con la clienta */}
+          <span className="flex items-center gap-2">
+            <ClockIcon size={14} /> {site.hours[0].days} {site.hours[0].time}
+          </span>
+          <a href={`tel:${site.phoneE164}`} className="flex items-center gap-2 hover:text-white">
+            <PhoneIcon size={14} /> {site.phoneDisplay}
+          </a>
+        </div>
+      </div>
+      <header className="sticky top-0 z-40 border-b border-gold/25 bg-cream-50/95 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+          <nav aria-label="Secciones" className="hidden lg:block">
+            <NavList items={navLeft} />
+          </nav>
+          <a href="#inicio" aria-label="Reduzen, ir al inicio" className="lg:justify-self-center">
             <Wordmark />
           </a>
-          <nav aria-label="Secciones" className="hidden lg:block">
-            <ul className="flex items-center gap-7 text-[0.85rem] font-medium text-ink/80">
-              {landingNav.map((l) => (
-                <li key={l.href}>
-                  <a href={l.href} className="transition-colors hover:text-jade-ink">
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <PillCTA message={waMessages.header} size="sm" className="sm:h-11 sm:px-5 sm:text-sm">
-            Agendar cita
-          </PillCTA>
+          <div className="flex items-center justify-end gap-8">
+            <nav aria-label="Más secciones" className="hidden lg:block">
+              <NavList items={navRight} />
+            </nav>
+            <a
+              href={waLink(waMessages.header)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${btnBase} h-10 px-4 ${btn.jade}`}
+            >
+              <WhatsAppIcon size={16} /> Reservar
+              <span className="sr-only"> por WhatsApp (abre una pestaña nueva)</span>
+            </a>
+          </div>
         </div>
       </header>
     </>
   );
 }
 
-/** Pie compacto. */
+/** Pie centrado. */
 export function LandingFooter() {
   return (
-    <footer className="bg-night text-cream/70">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6 md:flex-row md:justify-between md:text-left">
-        <div>
-          <Wordmark light />
-          <p className="mt-3 text-sm">
-            {site.address.street}, {site.address.neighborhood}, {site.address.city}
-          </p>
-        </div>
-        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+    <footer className="bg-night text-center text-cream/70">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+        <Lotus className="mx-auto h-10 w-10 text-jade" />
+        <p className="mt-3 font-serif text-3xl text-cream">Reduzen</p>
+        <p className="mt-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-gold-pale">Mesoterapia & Spa</p>
+        <p className="mx-auto mt-6 max-w-md text-sm">
+          {site.address.street}, {site.address.neighborhood}, {site.address.city}
+        </p>
+        <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
           <li>
             <Link href="/servicios/" className="hover:text-cream">Catálogo</Link>
           </li>
@@ -189,14 +203,15 @@ export function LandingFooter() {
             <Link href="/aviso-de-privacidad/" className="hover:text-cream">Aviso de privacidad</Link>
           </li>
           <li>
-            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 hover:border-cream hover:text-cream">
-              <FacebookIcon size={18} />
-              <span className="sr-only">Facebook de Reduzen</span>
+            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-cream">
+              <FacebookIcon size={16} /> Facebook
             </a>
           </li>
         </ul>
       </div>
-      <p className="border-t border-cream/10 py-5 text-center text-xs">© {new Date().getFullYear()} Reduzen — Mesoterapia & Spa · Torreón, Coahuila</p>
+      <p className="border-t border-cream/10 py-5 text-xs">© {new Date().getFullYear()} Reduzen — Mesoterapia & Spa · Torreón, Coahuila</p>
     </footer>
   );
 }
+
+export { Wordmark };

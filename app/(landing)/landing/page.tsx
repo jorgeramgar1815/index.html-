@@ -4,13 +4,15 @@ import Link from "next/link";
 import { ArtFrame } from "@/components/ArtFrame";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { Bubbles } from "@/components/Decor";
-import { ArrowIcon, categoryIcons, ChevronIcon, ClockIcon, HeartIcon, PinIcon, ShieldIcon, SparkleIcon, WhatsAppIcon } from "@/components/Icons";
-import { Badge, Checks, PillCTA, PillLink, Title } from "@/components/landing/Kit";
+import { ArrowIcon, ClockIcon, PhoneIcon, PinIcon } from "@/components/Icons";
+import { BookingForm } from "@/components/landing/BookingForm";
+import { Ornament, SpaButton, SpaLink, SpaTitle } from "@/components/landing/Kit";
+import { TreatmentMenu } from "@/components/landing/TreatmentMenu";
 import { Lotus } from "@/components/Lotus";
 import { Reveal, Stagger, StaggerItem } from "@/components/Motion";
 import { categories } from "@/content/services";
-import { fullAddress, site } from "@/content/site";
-import { waLink, waMessages } from "@/lib/whatsapp";
+import { site } from "@/content/site";
+import { waMessages } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Prototipo landing",
@@ -20,329 +22,248 @@ export const metadata: Metadata = {
   alternates: { canonical: "/landing/" },
 };
 
-const benefits = [
-  { icon: SparkleIcon, title: "Tecnología facial", body: "Hydrafacial, oxígeno y microneedling." },
-  { icon: ShieldIcon, title: "Valoración previa", body: "Un plan a la medida de tu piel." },
-  { icon: HeartIcon, title: "Trato de spa", body: "Tiempo solo para ti, sin prisas." },
-  { icon: WhatsAppIcon, title: "Agenda en 1 minuto", body: "Todo por WhatsApp." },
-];
+const d = (s: string) => ({ "--d": s }) as CSSProperties;
+const total = categories.reduce((n, c) => n + c.treatments.length, 0);
 
-const steps = [
-  { title: "Escríbenos", body: "Elige tratamiento y horario por WhatsApp." },
-  { title: "Valoración", body: "Revisamos tu caso y te proponemos un plan." },
-  { title: "Disfruta", body: "Relájate: este es tu momento." },
-];
-
-// PLACEHOLDER: respuestas a confirmar con la clienta (pagos, duración, vigencia de promo)
-const faqs = [
-  { q: "¿Cómo agendo mi cita?", a: `Escríbenos por WhatsApp al ${site.phoneDisplay} y te compartimos los horarios disponibles.` },
-  { q: "¿Necesito una valoración previa?", a: "Sí. Antes de cada tratamiento revisamos tu caso para recomendarte lo que mejor te funcione." },
-  { q: "¿Cuánto dura una sesión?", a: "Entre 30 y 90 minutos, según el tratamiento." },
-  { q: "¿La promo de Hydrafacial sigue vigente?", a: "Es la promoción del mes. Pregúntanos por WhatsApp la vigencia y los horarios con cupo." },
-  { q: "¿Qué formas de pago aceptan?", a: "Te confirmamos las formas de pago al agendar tu cita." },
-  { q: "¿Dónde están?", a: `${fullAddress}. ${site.address.between}.` },
-];
-
-const hydra = categories[0].treatments[0];
+// PLACEHOLDER: rituales (paquetes) sugeridos; confirmar combinaciones y precios con la clienta
+const rituals = [
+  { name: "Ritual Glow", art: "facial", items: ["Hydrafacial", "Hidralips"], note: "Piel luminosa y labios hidratados." },
+  { name: "Ritual Ligereza", art: "body", items: ["Mesoterapia corporal", "Drenaje linfático"], note: "Desinflama y moldea." },
+  { name: "Ritual Manos & Pies", art: "pedicure", items: ["Manicure spa", "Pedicure spa"], note: "Un rato completo para ti." },
+] as const;
 
 export default function LandingPage() {
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&z=16&output=embed`;
 
   return (
     <>
-      {/* ================= HERO ================= */}
-      <section
-        id="inicio"
-        aria-labelledby="hero-titulo"
-        className="relative overflow-hidden pb-24 pt-14 sm:pb-32 sm:pt-20"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 12% 18%, rgba(58,166,160,.22), transparent 70%), radial-gradient(55% 45% at 90% 12%, rgba(201,162,75,.22), transparent 70%), var(--color-cream)",
-        }}
-      >
-        <Bubbles count={8} />
-        <div className="relative mx-auto max-w-6xl px-4 text-center sm:px-6">
-          <div className="rise" style={{ "--d": ".05s" } as CSSProperties}>
-            <Badge>
-              <Lotus className="h-4 w-4" strokeWidth={2} /> Mesoterapia & Spa · Torreón
-            </Badge>
-          </div>
-          <h1 id="hero-titulo" className="rise mt-5 text-[clamp(3rem,12vw,5.75rem)] leading-none tracking-[-0.01em]" style={{ "--d": ".12s" } as CSSProperties}>
-            Reduzen
-            <span className="sr-only"> — Mesoterapia & Spa en Torreón</span>
-          </h1>
-          <p className="rise mx-auto mt-4 max-w-xl font-serif text-xl italic text-jade-500 sm:text-2xl" style={{ "--d": ".2s" } as CSSProperties}>
-            Florece desde adentro.
-          </p>
-          <p className="rise mx-auto mt-4 max-w-md text-[0.95rem] leading-relaxed text-stone" style={{ "--d": ".26s" } as CSSProperties}>
-            Faciales, corporales, uñas, pedicure y depilación láser con tecnología y trato de spa.
-          </p>
-          <div className="rise mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row" style={{ "--d": ".34s" } as CSSProperties}>
-            <PillCTA message={waMessages.hero} size="lg">
-              Agenda por WhatsApp
-            </PillCTA>
-            <PillLink href="#promo">Ver promo del mes</PillLink>
+      {/* ================= HERO DIVIDIDO CON ARCO ================= */}
+      <section id="inicio" aria-labelledby="hero-titulo" className="relative overflow-hidden bg-cream-50">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:min-h-[calc(100svh-7.25rem)] lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:py-16">
+          <div className="text-center lg:text-left">
+            <div className="rise" style={d(".05s")}>
+              <Ornament align="left" className="justify-center lg:justify-start">Mesoterapia & Spa · Torreón</Ornament>
+            </div>
+            <h1 id="hero-titulo" className="rise mt-6 text-[clamp(3.4rem,11vw,6.6rem)] leading-[0.95] tracking-[-0.01em]" style={d(".12s")}>
+              Reduzen
+              <span className="sr-only"> — Mesoterapia & Spa en Torreón</span>
+            </h1>
+            <p className="rise mt-3 font-serif text-2xl italic text-jade-ink sm:text-[1.9rem]" style={d(".2s")}>
+              Florece desde adentro.
+            </p>
+            <p className="rise mx-auto mt-6 max-w-md text-[0.95rem] leading-relaxed text-stone lg:mx-0" style={d(".28s")}>
+              Tratamientos faciales y corporales, uñas, pedicure y láser en un espacio pensado para desconectar.
+            </p>
+            <div className="rise mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start" style={d(".36s")}>
+              <SpaButton message={waMessages.hero}>Reservar cita</SpaButton>
+              <SpaLink href="#menu">Ver tratamientos</SpaLink>
+            </div>
+            <a href={`tel:${site.phoneE164}`} className="rise mt-7 inline-flex items-center gap-2 text-sm text-ink/80 hover:text-jade-ink" style={d(".44s")}>
+              <PhoneIcon size={16} className="text-jade-ink" /> {site.phoneDisplay}
+            </a>
           </div>
 
-          {/* Composición de tres tarjetas */}
-          <div className="rise relative mx-auto mt-14 h-[19rem] max-w-3xl sm:mt-16 sm:h-[25rem]" style={{ "--d": ".45s" } as CSSProperties}>
-            <div className="absolute left-0 top-10 w-[42%] -rotate-6 sm:left-4 sm:w-[34%]">
-              <ArtFrame variant="body" alt="Tratamiento corporal en Reduzen" className="aspect-[3/4] rounded-[1.5rem] shadow-[0_30px_60px_-30px_rgba(27,42,74,.45)]" />
-              <span className="absolute -bottom-3 left-4 rounded-full bg-white px-3 py-1.5 text-[0.7rem] font-semibold text-ink shadow">Corporales</span>
+          {/* Arco con imagen, sello giratorio y tarjeta de promo */}
+          <div className="rise relative mx-auto w-full max-w-[22rem] sm:max-w-[26rem]" style={d(".3s")}>
+            <span aria-hidden className="absolute -right-2 -top-4 bottom-8 left-6 rounded-t-full border border-gold/60 sm:-right-4" />
+            <ArtFrame variant="portrait" priority alt="Clienta relajándose en Reduzen" className="aspect-[4/5] rounded-t-full shadow-[0_40px_80px_-40px_rgba(27,42,74,.45)]" />
+            <div aria-hidden className="absolute -left-6 bottom-16 h-28 w-28 sm:-left-10 sm:h-32 sm:w-32">
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-jade-ink text-white shadow-lg">
+                <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full animate-spin-slow">
+                  <defs>
+                    <path id="sello" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0" />
+                  </defs>
+                  <text fontSize="8.4" letterSpacing="2.6" fill="currentColor" fontFamily="var(--font-body)" fontWeight="600">
+                    <textPath href="#sello">FLORECE · DESDE · ADENTRO · </textPath>
+                  </text>
+                </svg>
+                <Lotus className="h-9 w-9 text-gold-pale" accent="var(--color-gold)" />
+              </div>
             </div>
-            <div className="absolute right-0 top-10 w-[42%] rotate-6 sm:right-4 sm:w-[34%]">
-              <ArtFrame variant="nails" alt="Uñas y manicure en Reduzen" className="aspect-[3/4] rounded-[1.5rem] shadow-[0_30px_60px_-30px_rgba(27,42,74,.45)]" />
-              <span className="absolute -bottom-3 right-4 rounded-full bg-white px-3 py-1.5 text-[0.7rem] font-semibold text-ink shadow">Uñas</span>
-            </div>
-            <div className="absolute left-1/2 top-0 z-10 w-[52%] -translate-x-1/2 sm:w-[40%]">
-              <ArtFrame variant="facial" priority alt="Tratamiento facial Hydrafacial en Reduzen" className="aspect-[3/4] rounded-[1.75rem] ring-4 ring-cream-50 shadow-[0_40px_80px_-30px_rgba(14,23,48,.6)]" />
-              <a
-                href="#promo"
-                className="absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-gold px-4 py-2 text-[0.75rem] font-semibold text-night shadow-lg sm:text-sm"
-              >
-                Hydrafacial desde $499
-              </a>
-            </div>
+            {/* PLACEHOLDER: promo vista en Facebook; confirmar vigencia */}
+            <a
+              href="#menu"
+              className="absolute -bottom-6 right-0 bg-white px-5 py-3.5 text-left shadow-[0_20px_40px_-20px_rgba(27,42,74,.5)] transition-transform hover:-translate-y-1 sm:-right-6"
+              data-placeholder="precio-por-confirmar"
+            >
+              <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-gold-ink">Promo del mes</span>
+              <span className="mt-0.5 block font-serif text-xl text-ink">Hydrafacial $499</span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* ================= BENEFICIOS ================= */}
-      <section aria-label="Por qué Reduzen" className="relative z-10 -mt-12 px-4 sm:-mt-16 sm:px-6">
-        <Stagger as="ul" className="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden rounded-[1.75rem] bg-ink/10 shadow-[0_30px_60px_-40px_rgba(27,42,74,.5)] lg:grid-cols-4">
-          {benefits.map(({ icon: Icon, title, body }) => (
-            <StaggerItem as="li" key={title} className="flex flex-col items-center gap-3 bg-white px-4 py-6 text-center sm:flex-row sm:items-start sm:px-6 sm:py-7 sm:text-left">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-jade/15 text-jade-ink">
-                <Icon size={22} />
-              </span>
-              <span>
-                <span className="block text-[0.9rem] font-semibold text-ink">{title}</span>
-                <span className="mt-1 hidden text-sm text-stone sm:block">{body}</span>
-              </span>
-            </StaggerItem>
-          ))}
-        </Stagger>
+      {/* ================= BIENVENIDA ================= */}
+      <section id="bienvenida" aria-labelledby="bienvenida-titulo" className="scroll-mt-24 py-24 sm:py-32">
+        <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20">
+          <Reveal className="relative mx-auto h-[26rem] w-full max-w-md sm:h-[30rem]">
+            <span aria-hidden className="absolute left-4 top-4 h-[85%] w-[64%] rounded-t-full border border-gold/50" />
+            <ArtFrame variant="body" alt="Recepción de Reduzen" className="absolute left-0 top-0 h-[85%] w-[64%] rounded-t-full" />
+            <ArtFrame variant="facial" alt="Cabina de faciales" className="absolute bottom-0 right-0 h-[62%] w-[50%] rounded-t-full ring-8 ring-cream" />
+          </Reveal>
+          <div>
+            <SpaTitle
+              align="left"
+              id="bienvenida-titulo"
+              eyebrow="Bienvenida"
+              title={<>Un spa boutique para <em className="text-jade-ink">volver a ti.</em></>}
+              intro="Combinamos mesoterapia, tecnología facial y el cuidado de un spa para que salgas renovada, sin prisas."
+            />
+            <Stagger as="ul" className="mt-10 grid grid-cols-3 divide-x divide-gold/40 border-y border-gold/40 py-6 text-center">
+              {[
+                { n: String(categories.length), l: "Categorías" },
+                { n: String(total), l: "Tratamientos" },
+                { n: "1:1", l: "Valoración" },
+              ].map((s) => (
+                <StaggerItem as="li" key={s.l}>
+                  <span className="block font-serif text-4xl text-jade-ink">{s.n}</span>
+                  <span className="mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone">{s.l}</span>
+                </StaggerItem>
+              ))}
+            </Stagger>
+            <Reveal delay={0.1} className="mt-8 flex items-center justify-between gap-4">
+              <p className="font-serif text-xl italic text-ink">— Equipo Reduzen</p>
+              <Link href="/nosotros/" className="inline-flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-jade-ink hover:text-ink">
+                Conócenos <ArrowIcon size={14} />
+              </Link>
+            </Reveal>
+          </div>
+        </div>
       </section>
 
-      {/* ================= SERVICIOS ================= */}
-      <section id="servicios" aria-labelledby="servicios-titulo" className="scroll-mt-20 py-20 sm:py-28">
+      {/* ================= CARTA DE TRATAMIENTOS ================= */}
+      <section id="menu" aria-labelledby="menu-titulo" className="scroll-mt-24 bg-cream-100 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Title id="servicios-titulo" badge="Servicios" title={<>Todo para sentirte bien, <em className="text-jade-ink">en un solo lugar.</em></>} />
-          <p aria-hidden className="mt-8 text-center text-xs font-medium text-stone sm:hidden">Desliza para ver más →</p>
-          {/* Móvil: carrusel deslizable; tablet/escritorio: cuadrícula */}
-          <Stagger as="ul" className="no-scrollbar -mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-6 sm:mx-0 sm:mt-12 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-6">
-            {categories.map((c, i) => {
-              const Icon = categoryIcons[c.icon];
-              return (
-                <StaggerItem
-                  as="li"
-                  key={c.slug}
-                  className={`group flex w-[82%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] sm:w-auto bg-white shadow-[0_20px_50px_-35px_rgba(27,42,74,.5)] transition-shadow duration-300 hover:shadow-[0_30px_60px_-30px_rgba(27,42,74,.45)] ${i < 2 ? "lg:col-span-3" : "lg:col-span-2"}`}
-                >
-                  <ArtFrame variant={c.art} src={c.image} alt={`${c.name} en Reduzen`} className={`${i < 2 ? "aspect-[16/9]" : "aspect-[16/10]"} w-full`}>
-                    <span className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-jade-ink">
-                      <Icon size={22} />
-                    </span>
-                  </ArtFrame>
-                  <div className="flex flex-1 flex-col p-6">
-                    <h3 className="text-[1.35rem] leading-tight">{c.short}</h3>
-                    <p className="mt-1.5 text-sm text-stone">{c.intro}</p>
-                    <ul className="mt-4 flex flex-wrap gap-1.5">
-                      {c.treatments.slice(0, 3).map((t) => (
-                        <li key={t.slug} className="rounded-full bg-cream px-3 py-1 text-[0.75rem] font-medium text-ink/80">
-                          {t.name}
-                        </li>
-                      ))}
-                    </ul>
-                    <a
-                      href={waLink(waMessages.category(c.name))}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-jade-ink"
-                    >
-                      Pedir información
-                      <ArrowIcon size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                      <span className="sr-only"> sobre {c.name} (abre WhatsApp)</span>
-                    </a>
-                  </div>
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
-          <Reveal className="mt-10 text-center">
-            <Link href="/servicios/" className="inline-flex items-center gap-2 text-sm font-semibold text-ink underline decoration-gold decoration-2 underline-offset-8 hover:text-jade-ink">
-              Ver catálogo completo <ArrowIcon size={16} />
-            </Link>
+          <SpaTitle id="menu-titulo" eyebrow="Carta de tratamientos" title={<>Elige tu <em className="text-jade-ink">momento.</em></>} />
+          <Reveal className="mt-14">
+            <TreatmentMenu items={categories} />
           </Reveal>
         </div>
       </section>
 
-      {/* ================= PROMO ================= */}
-      <section id="promo" aria-labelledby="promo-titulo" className="scroll-mt-20 px-4 sm:px-6">
-        <Reveal className="relative mx-auto grid max-w-6xl items-center gap-10 overflow-hidden rounded-[2rem] bg-night p-7 sm:p-12 lg:grid-cols-2 lg:gap-14 lg:p-14">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{ background: "radial-gradient(60% 60% at 100% 0%, rgba(58,166,160,.28), transparent 70%), radial-gradient(50% 60% at 0% 100%, rgba(201,162,75,.18), transparent 70%)" }}
-          />
-          <div className="relative">
-            <Badge tone="night">Promo del mes</Badge>
-            <h2 id="promo-titulo" className="mt-5 text-[2rem] leading-none !text-cream sm:text-[2.75rem]">
-              {hydra.name}
-            </h2>
-            <p className="mt-3 max-w-sm text-[0.95rem] text-cream/75">{hydra.summary}</p>
-            <Checks dark items={hydra.highlights ?? []} className="mt-6" />
-            {/* PLACEHOLDER: precio visto en Facebook; confirmar vigencia */}
-            <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-5" data-placeholder="precio-por-confirmar">
-              <p className="text-cream">
-                <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-gold">Desde</span>
-                <span className="font-serif text-5xl leading-none">$499</span>
-                <span className="ml-1 text-sm text-cream/60">MXN</span>
-              </p>
-              <PillCTA message={waMessages.treatment(hydra.name)} variant="gold" size="lg">
-                Quiero mi Hydrafacial
-              </PillCTA>
-            </div>
-            <p className="mt-4 text-xs text-cream/50">*Precio promocional sujeto a vigencia y valoración.</p>
-          </div>
-          <div className="relative hidden sm:block">
-            <ArtFrame variant="facial" alt="Hydrafacial en Reduzen" className="aspect-[4/3] rounded-[1.5rem] ring-1 ring-cream/15 lg:aspect-[5/4]" />
-            <span className="absolute -left-2 bottom-6 flex items-center gap-2 rounded-full bg-cream-50 px-4 py-2 text-[0.8rem] font-semibold text-ink shadow-lg sm:-left-5">
-              <ClockIcon size={16} className="text-jade-ink" /> {hydra.duration} aprox.
-            </span>
-          </div>
+      {/* ================= FRASE ================= */}
+      <section aria-label="Nuestra filosofía" className="relative overflow-hidden bg-jade-ink py-24 text-center sm:py-28">
+        <Bubbles count={10} light />
+        <Reveal className="relative mx-auto max-w-3xl px-4">
+          <Lotus className="mx-auto h-10 w-10 text-gold-pale" accent="var(--color-gold)" />
+          <p className="mt-6 font-serif text-[2.1rem] italic leading-tight text-white sm:text-[3.2rem]">“Te mereces este espacio.”</p>
+          <p className="mt-5 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-gold-pale">Desconecta · Renueva · Florece</p>
         </Reveal>
       </section>
 
-      {/* ================= CÓMO AGENDAR ================= */}
-      <section id="como-agendar" aria-labelledby="pasos-titulo" className="scroll-mt-20 py-20 sm:py-28">
+      {/* ================= RITUALES ================= */}
+      <section id="rituales" aria-labelledby="rituales-titulo" className="scroll-mt-24 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Title id="pasos-titulo" badge="Cómo agendar" title="Tu cita en 3 pasos." />
-          <Stagger as="ol" className="relative mt-12 grid gap-5 md:grid-cols-3">
-            <span aria-hidden className="absolute left-[16%] right-[16%] top-10 hidden border-t-2 border-dashed border-gold/50 md:block" />
-            {steps.map((s, i) => (
-              <StaggerItem as="li" key={s.title} className="relative rounded-[1.75rem] bg-cream-50 p-7 text-center ring-1 ring-ink/5">
-                <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-jade-ink font-serif text-2xl text-white ring-8 ring-cream">
-                  {i + 1}
-                </span>
-                <h3 className="mt-5 text-xl">{s.title}</h3>
-                <p className="mt-1.5 text-sm text-stone">{s.body}</p>
+          <SpaTitle id="rituales-titulo" eyebrow="Rituales" title="Combina y consiéntete." intro="Dos tratamientos en una misma visita." />
+          <Stagger as="ul" className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {rituals.map((r, i) => (
+              <StaggerItem as="li" key={r.name} className={`text-center ${i === 1 ? "lg:mt-12" : ""} ${i === 2 ? "sm:col-span-2 sm:mx-auto sm:w-1/2 lg:col-span-1 lg:w-full" : ""}`}>
+                <div className="relative mx-auto max-w-[19rem]">
+                  <ArtFrame variant={r.art} alt={r.name} className="aspect-[3/4] rounded-t-full" />
+                  <span className="absolute inset-x-0 -bottom-4 mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-gold font-serif text-night">{i + 1}</span>
+                </div>
+                <h3 className="mt-9 text-2xl">{r.name}</h3>
+                <p className="mt-2 text-sm text-stone">{r.note}</p>
+                <p className="mt-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold-ink">{r.items.join(" + ")}</p>
+                <SpaButton message={`Hola, quiero información del ${r.name} (${r.items.join(" + ")}).`} variant="line" icon={false} className="mt-6 !h-11">
+                  Pedir precio
+                </SpaButton>
               </StaggerItem>
             ))}
           </Stagger>
-          <Reveal className="mt-10 text-center">
-            <PillCTA message={waMessages.general}>Empezar por WhatsApp</PillCTA>
-          </Reveal>
         </div>
       </section>
 
       {/* ================= RESULTADOS ================= */}
-      <section id="resultados" aria-labelledby="resultados-titulo" className="scroll-mt-20 bg-cream-50 py-20 sm:py-28">
+      <section id="resultados" aria-labelledby="resultados-titulo" className="scroll-mt-24 bg-cream-50 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Title id="resultados-titulo" badge="Resultados" title="Se nota desde la primera sesión." intro="Desliza cada imagen para comparar." />
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <SpaTitle align="left" id="resultados-titulo" eyebrow="Resultados" title="Cambios que se sienten." intro="Desliza cada imagen para comparar antes y después." />
+            <Reveal delay={0.1}>
+              <SpaButton message={waMessages.results} variant="line">Quiero mi valoración</SpaButton>
+            </Reveal>
+          </div>
           {/* PLACEHOLDER: fotos reales antes/después con autorización */}
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="no-scrollbar -mx-4 mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:gap-8">
             {[
               { title: "Hydrafacial", sessions: "1 sesión" },
               { title: "Microneedling", sessions: "3 sesiones" },
               { title: "Moldeo corporal", sessions: "6 sesiones" },
             ].map((r, i) => (
-              <Reveal key={r.title} delay={i * 0.1} className={i === 2 ? "sm:col-span-2 sm:mx-auto sm:w-1/2 lg:col-span-1 lg:w-full" : ""}>
-                <BeforeAfter rounded figure={`0${i + 1}`} title={r.title} sessions={r.sessions} />
+              <Reveal key={r.title} delay={i * 0.1} className="w-[75%] shrink-0 snap-center sm:w-auto">
+                <BeforeAfter figure={`0${i + 1}`} title={r.title} sessions={r.sessions} />
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ================= PREGUNTAS ================= */}
-      <section id="preguntas" aria-labelledby="faq-titulo" className="scroll-mt-20 py-20 sm:py-28">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-          <div>
-            <Title align="left" id="faq-titulo" badge="Preguntas" title="Resolvemos tus dudas." intro="¿No encuentras la tuya? Escríbenos." />
-            <Reveal delay={0.15} className="mt-7">
-              <PillCTA message={waMessages.floating} variant="ghost">
-                Preguntar por WhatsApp
-              </PillCTA>
+      {/* ================= HORARIO + RESERVA ================= */}
+      <section id="reserva" aria-labelledby="reserva-titulo" className="scroll-mt-24 py-24 sm:py-32">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SpaTitle id="reserva-titulo" eyebrow="Reserva" title={<>Este es <em className="text-jade-ink">tu momento.</em></>} />
+          <div className="mt-14 grid overflow-hidden shadow-[0_40px_80px_-50px_rgba(27,42,74,.6)] lg:grid-cols-[1fr_1.4fr]">
+            <Reveal className="relative bg-night p-8 text-cream sm:p-10">
+              <h3 className="font-serif text-2xl !text-cream">Horario</h3>
+              {/* PLACEHOLDER: horario a confirmar con la clienta */}
+              <ul className="mt-5 divide-y divide-cream/15 border-y border-cream/15" data-placeholder="horario-por-confirmar">
+                {site.hours.map((h) => (
+                  <li key={h.days} className="flex justify-between gap-4 py-3 text-sm">
+                    <span className="text-cream/70">{h.days}</span>
+                    <span>{h.time}</span>
+                  </li>
+                ))}
+              </ul>
+              <ul className="mt-8 space-y-4 text-sm">
+                <li className="flex gap-3">
+                  <PinIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+                  <span>
+                    {site.address.street}
+                    <span className="block text-cream/70">{site.address.neighborhood}, {site.address.city}</span>
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <PhoneIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+                  <a href={`tel:${site.phoneE164}`} className="hover:text-gold-pale">{site.phoneDisplay}</a>
+                </li>
+                <li className="flex gap-3">
+                  <ClockIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+                  <span className="text-cream/70">Cita previa por WhatsApp</span>
+                </li>
+              </ul>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 inline-flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-gold-pale hover:text-white"
+              >
+                Cómo llegar <ArrowIcon size={14} />
+              </a>
+            </Reveal>
+            <Reveal delay={0.1} className="bg-white p-8 sm:p-10">
+              <h3 className="font-serif text-2xl">Pre-reserva en 30 segundos</h3>
+              <p className="mt-1 text-sm text-stone">Elige y te escribimos para confirmar.</p>
+              <div className="mt-7">
+                <BookingForm categories={categories} />
+              </div>
             </Reveal>
           </div>
-          <Reveal className="space-y-3">
-            {faqs.map((f, i) => (
-              <details key={f.q} open={i === 0} className="group rounded-2xl bg-white px-5 shadow-[0_10px_30px_-25px_rgba(27,42,74,.6)] ring-1 ring-ink/5 open:ring-jade/40 sm:px-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[0.95rem] font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-jade-ink transition-transform duration-300 group-open:rotate-180">
-                    <ChevronIcon size={16} className="rotate-90" />
-                  </span>
-                </summary>
-                <p className="pb-5 text-sm leading-relaxed text-stone">{f.a}</p>
-              </details>
-            ))}
-          </Reveal>
         </div>
       </section>
 
-      {/* ================= CIERRE + CONTACTO ================= */}
-      <section id="contacto" aria-labelledby="cierre-titulo" className="scroll-mt-20 px-4 pb-20 sm:px-6 sm:pb-28">
-        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-2">
-          <Reveal className="relative flex flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-jade-ink px-6 py-14 text-center sm:px-10">
-            <Bubbles count={7} light />
-            <Lotus className="relative h-12 w-12 text-gold-pale" accent="var(--color-gold)" />
-            <h2 id="cierre-titulo" className="relative mt-5 text-[2rem] leading-tight !text-white sm:text-[2.6rem]">
-              Este es <em className="text-gold-pale">tu momento.</em>
-            </h2>
-            <p className="relative mt-3 max-w-sm text-[0.95rem] text-white/85">Desconecta, renueva tu energía y florece desde adentro.</p>
-            <PillCTA message={waMessages.closing} variant="gold" size="lg" className="relative mt-8">
-              Reservar mi cita
-            </PillCTA>
-            <a href={`tel:${site.phoneE164}`} className="relative mt-4 text-sm text-white/85 underline-offset-4 hover:underline">
-              o llama al {site.phoneDisplay}
-            </a>
-          </Reveal>
-
-          <Reveal delay={0.1} className="flex flex-col overflow-hidden rounded-[2rem] bg-white ring-1 ring-ink/5">
-            <div className="relative aspect-[16/9] bg-cream-100">
-              <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-                <Lotus className="h-12 w-12 text-jade-ink" />
-              </div>
-              <iframe
-                title="Mapa: ubicación de Reduzen en Torreón"
-                src={mapSrc}
-                className="relative h-full w-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-            <ul className="grid gap-4 p-6 text-sm text-ink sm:grid-cols-2 sm:p-7">
-              <li className="flex gap-3">
-                <PinIcon size={20} className="mt-0.5 shrink-0 text-jade-ink" />
-                <span>
-                  {site.address.street}
-                  <span className="block text-stone">{site.address.neighborhood}, {site.address.city}</span>
-                </span>
-              </li>
-              {/* PLACEHOLDER: horario a confirmar con la clienta */}
-              <li className="flex gap-3" data-placeholder="horario-por-confirmar">
-                <ClockIcon size={20} className="mt-0.5 shrink-0 text-jade-ink" />
-                <span>
-                  {site.hours.slice(0, 2).map((h) => (
-                    <span key={h.days} className="block">
-                      <span className="text-stone">{h.days}:</span> {h.time}
-                    </span>
-                  ))}
-                </span>
-              </li>
-            </ul>
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mx-6 mb-6 mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-cream py-3 text-sm font-semibold text-ink transition-colors hover:bg-cream-100 sm:mx-7 sm:mb-7"
-            >
-              Cómo llegar <ArrowIcon size={16} />
-            </a>
-          </Reveal>
+      {/* ================= MAPA ================= */}
+      <section aria-label="Mapa" className="relative h-72 bg-cream-100 sm:h-96">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center" aria-hidden>
+          <Lotus className="h-10 w-10 text-jade-ink" />
+          <p className="font-serif text-xl text-ink">{site.address.neighborhood}</p>
         </div>
+        <iframe
+          title="Mapa: ubicación de Reduzen en Torreón"
+          src={mapSrc}
+          className="relative h-full w-full border-0 grayscale-[50%] sepia-[15%]"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       </section>
     </>
   );
