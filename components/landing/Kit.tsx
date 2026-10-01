@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { categories } from "@/content/services";
 import { site } from "@/content/site";
 import { waLink, waMessages } from "@/lib/whatsapp";
 import { ArtFrame, type ArtVariant } from "../ArtFrame";
-import { ArrowIcon, FacebookIcon, WhatsAppIcon } from "../Icons";
+import { ArrowIcon, ClockIcon, FacebookIcon, InstagramIcon, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "../Icons";
 import { Lotus, Wordmark } from "../Lotus";
 import { Reveal } from "../Motion";
 import { MobileMenu } from "./MobileMenu";
@@ -203,35 +204,171 @@ export function SiteHeader() {
   );
 }
 
-/** Pie centrado. */
+const footerNav = [
+  { href: "/", label: "Inicio" },
+  { href: "/#menu", label: "Tratamientos" },
+  { href: "/#rituales", label: "Rituales" },
+  { href: "/#resultados", label: "Resultados" },
+  { href: "/servicios/", label: "Catálogo completo" },
+  { href: "/nosotros/", label: "Nosotros" },
+  { href: "/#ubicacion", label: "Ubicación y horario" },
+] as const;
+
+function FooterHeading({ children }: { children: ReactNode }) {
+  return <h2 className="font-sans text-[0.74rem] font-semibold uppercase tracking-[0.22em] !text-gold-pale">{children}</h2>;
+}
+
+const social = "flex h-10 w-10 items-center justify-center border border-cream/20 text-cream/80 transition-colors hover:border-gold hover:text-gold";
+
+/** Pie de página completo: llamada a la acción, marca, navegación, servicios, contacto y barra legal. */
 export function SiteFooter() {
+  const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`;
   return (
-    <footer className="bg-night text-center text-cream/70">
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <Lotus className="mx-auto h-10 w-10 text-jade" />
-        <p className="mt-3 font-serif text-3xl text-cream">Reduzen</p>
-        <p className="mt-1 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-gold-pale">Mesoterapia & Spa</p>
-        <p className="mx-auto mt-6 max-w-md text-sm">
-          {site.address.street}, {site.address.neighborhood}, {site.address.city}
-        </p>
-        <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
-          <li>
-            <Link href="/servicios/" className="hover:text-cream">Catálogo</Link>
-          </li>
-          <li>
-            <Link href="/nosotros/" className="hover:text-cream">Nosotros</Link>
-          </li>
-          <li>
-            <Link href="/aviso-de-privacidad/" className="hover:text-cream">Aviso de privacidad</Link>
-          </li>
-          <li>
-            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-cream">
-              <FacebookIcon size={16} /> Facebook
+    <footer className="on-dark bg-night text-cream/70">
+      {/* Franja de llamada a la acción */}
+      <div className="border-b border-cream/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6 md:flex-row md:justify-between md:text-left">
+          <div>
+            <p className="font-serif text-[1.9rem] leading-tight text-cream sm:text-[2.3rem]">
+              ¿Lista para <em className="text-gold-pale">tu momento?</em>
+            </p>
+            <p className="mt-2 text-[1rem]">Reserva por WhatsApp y te confirmamos el horario disponible.</p>
+          </div>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <SpaButton message={waMessages.closing} variant="gold">Reservar por WhatsApp</SpaButton>
+            <a href={`tel:${site.phoneE164}`} className={`${btnBase} h-14 px-8 ${btn.light}`}>
+              <PhoneIcon size={18} /> {site.phoneDisplay}
             </a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
-      <p className="border-t border-cream/10 py-5 text-xs">© {new Date().getFullYear()} Reduzen — Mesoterapia & Spa · Torreón, Coahuila</p>
+
+      {/* Columnas */}
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr_1.35fr] lg:gap-10">
+        <div className="col-span-2 lg:col-span-1">
+          <Link href="/" aria-label="Reduzen, ir al inicio" className="inline-block">
+            <Wordmark light />
+          </Link>
+          <p className="mt-5 max-w-xs text-[0.98rem] leading-relaxed">
+            Spa de mesoterapia y tratamientos estéticos en Torreón. Desconecta, renueva tu energía y florece desde adentro.
+          </p>
+          <ul className="mt-6 flex gap-2">
+            <li>
+              <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className={social}>
+                <FacebookIcon size={18} />
+                <span className="sr-only">Facebook de Reduzen</span>
+              </a>
+            </li>
+            {site.social.instagram && (
+              <li>
+                <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className={social}>
+                  <InstagramIcon size={18} />
+                  <span className="sr-only">Instagram de Reduzen</span>
+                </a>
+              </li>
+            )}
+            <li>
+              <a href={waLink(waMessages.floating)} target="_blank" rel="noopener noreferrer" className={social}>
+                <WhatsAppIcon size={18} />
+                <span className="sr-only">WhatsApp de Reduzen</span>
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${site.email}`} className={social}>
+                <MailIcon size={18} />
+                <span className="sr-only">Correo de Reduzen</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <nav aria-labelledby="pie-navegacion">
+          <FooterHeading>
+            <span id="pie-navegacion">Navegación</span>
+          </FooterHeading>
+          <ul className="mt-5 space-y-3 text-[0.98rem]">
+            {footerNav.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="transition-colors hover:text-cream">{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav aria-labelledby="pie-servicios">
+          <FooterHeading>
+            <span id="pie-servicios">Servicios</span>
+          </FooterHeading>
+          <ul className="mt-5 space-y-3 text-[0.98rem]">
+            {categories.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/servicios/#${c.slug}`} className="transition-colors hover:text-cream">{c.name}</Link>
+              </li>
+            ))}
+            <li>
+              {/* PLACEHOLDER: promo vista en Facebook; confirmar vigencia */}
+              <Link href="/#menu" className="text-gold-pale hover:text-white">
+                Promo Hydrafacial $499 <ArrowIcon size={14} className="inline align-[-1px]" />
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="col-span-2 lg:col-span-1">
+          <FooterHeading>Contacto</FooterHeading>
+          <ul className="mt-5 space-y-4 text-[0.98rem]">
+            <li className="flex gap-3">
+              <PinIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+              <span>
+                {site.address.street}, {site.address.neighborhood}
+                <span className="block">
+                  {site.address.city}, {site.address.region} · C.P. {site.address.postalCode}
+                </span>
+                <a href={maps} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1.5 text-sm text-gold-pale hover:text-white">
+                  Cómo llegar <ArrowIcon size={13} />
+                </a>
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <PhoneIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+              <a href={`tel:${site.phoneE164}`} className="hover:text-cream">{site.phoneDisplay}</a>
+            </li>
+            <li className="flex gap-3">
+              <MailIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+              <a href={`mailto:${site.email}`} className="break-all hover:text-cream">{site.email}</a>
+            </li>
+            {/* PLACEHOLDER: horario a confirmar con la clienta */}
+            <li className="flex gap-3" data-placeholder="horario-por-confirmar">
+              <ClockIcon size={18} className="mt-0.5 shrink-0 text-gold" />
+              <span>
+                {site.hours.map((h) => (
+                  <span key={h.days} className="block">
+                    {h.days}: <span className="text-cream">{h.time}</span>
+                  </span>
+                ))}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Barra legal */}
+      <div className="border-t border-cream/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-[0.8rem] sm:px-6 md:flex-row md:justify-between md:text-left">
+          <p>© {new Date().getFullYear()} Reduzen — Mesoterapia & Spa. Todos los derechos reservados.</p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <li>
+              <Link href="/aviso-de-privacidad/" className="hover:text-cream">Aviso de privacidad</Link>
+            </li>
+            <li>Torreón, Coahuila, México</li>
+            <li>
+              <a href="#" className="inline-flex items-center gap-1.5 hover:text-cream">
+                Volver arriba <ArrowIcon size={13} className="-rotate-90" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </footer>
   );
 }
