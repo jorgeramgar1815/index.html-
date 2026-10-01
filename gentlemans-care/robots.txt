@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gentlemans-care-torreon.vercel.app/sitemap.xml

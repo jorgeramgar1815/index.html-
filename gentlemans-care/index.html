@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es-MX" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gentleman's Care | Barbería en Torreón</title>
+<meta name="description" content="Gentleman's Care – Peluquería y Spa en Torreón, Coahuila. Not just a barber. Agenda tu cita por WhatsApp.">
+<link rel="canonical" href="https://gentlemans-care-torreon.vercel.app/">
+<meta name="theme-color" content="#0D0D0D">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_MX">
+<meta property="og:site_name" content="Gentleman's Care">
+<meta property="og:title" content="Gentleman's Care | Barbería en Torreón">
+<meta property="og:description" content="Peluquería y Spa en Torreón, Coahuila. Bienvenido a tu casa, tu lugar feliz.">
+<meta property="og:url" content="https://gentlemans-care-torreon.vercel.app/">
+<meta property="og:image" content="https://gentlemans-care-torreon.vercel.app/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gentleman's Care – Not just a barber. Peluquería y Spa en Torreón, Coahuila.">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gentleman's Care | Barbería en Torreón">
+<meta name="twitter:description" content="Peluquería y Spa en Torreón, Coahuila. Bienvenido a tu casa, tu lugar feliz.">
+<meta name="twitter:image" content="https://gentlemans-care-torreon.vercel.app/img/og-image.jpg">
+
+<!-- Favicon (generado del logo; reemplazar al recibir el logo oficial) -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+
+<!-- Tipografía del diseño (autoalojada, font-display: swap) -->
+<link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/mrs-saint-delafield-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["HairSalon", "LocalBusiness"],
+  "@id": "https://gentlemans-care-torreon.vercel.app/#negocio",
+  "name": "Gentleman's Care – Peluquería y Spa",
+  "slogan": "Not just a barber",
+  "description": "Peluquería y Spa en Torreón, Coahuila. Bienvenido a tu casa, tu lugar feliz.",
+  "url": "https://gentlemans-care-torreon.vercel.app/",
+  "image": "https://gentlemans-care-torreon.vercel.app/img/og-image.jpg",
+  "logo": "https://gentlemans-care-torreon.vercel.app/img/logo-176.png",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Torreón",
+    "addressRegion": "Coahuila",
+    "addressCountry": "MX"
+  },
+  "areaServed": "Torreón, Coahuila"
+}
+</script>
+
+<script>document.documentElement.classList.replace('no-js', 'js');</script>
+<script src="/config.js" defer></script>
+<script src="/main.js" defer></script>
+</head>
+<body>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<!-- Banner de promoción: se controla desde config.js (promo.mostrar / promo.fechaFin) -->
+<a class="promo-bar" id="promo-bar" href="https://wa.me/" data-wa="promo" data-track="whatsapp-promo-banner" target="_blank" rel="noopener" hidden>
+  <span data-promo="titulo">[PROMOCIÓN – pendiente del cliente]</span>
+  <span class="promo-bar__cta">Pedir por WhatsApp</span>
+</a>
+
+<header class="site-header" id="site-header">
+  <div class="site-header__inner container">
+    <a class="brand" href="#inicio" data-track="logo-header">
+      <!-- FOTO REAL: logo oficial (PNG/SVG en alta resolución). Reemplaza img/logo-176.* -->
+      <picture class="brand__logo">
+        <source srcset="/img/logo-176.avif" type="image/avif">
+        <source srcset="/img/logo-176.webp" type="image/webp">
+        <img src="/img/logo-176.png" width="44" height="44" alt="">
+      </picture>
+      <span class="brand__text">
+        <span class="brand__name">Gentleman's Care</span>
+        <span class="brand__sub">Peluquería y Spa</span>
+      </span>
+    </a>
+
+    <nav class="nav" id="menu-principal" aria-label="Principal">
+      <ul class="nav__list">
+        <li><a class="nav__link" href="#servicios">Servicios</a></li>
+        <li><a class="nav__link" href="#nosotros">Nosotros</a></li>
+        <li><a class="nav__link" href="#como-funciona">Cómo funciona</a></li>
+        <li><a class="nav__link" href="#ubicacion">Ubicación</a></li>
+        <li><a class="nav__link" href="#preguntas">Preguntas</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="btn btn--gold btn--sm" href="https://wa.me/" data-wa="cita" data-track="whatsapp-header" target="_blank" rel="noopener">Agendar</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" data-track="menu-movil">
+        <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span>
+        <span class="menu-toggle__label">Menú</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="contenido" tabindex="-1">
+
+<!-- ============ HERO ============ -->
+<section id="inicio" class="hero" aria-labelledby="hero-title">
+  <div class="hero__wood" aria-hidden="true" data-parallax="0.12"></div>
+  <div class="hero__grid container">
+    <div class="hero__copy">
+      <picture class="hero__logo">
+        <!-- FOTO REAL: logo oficial -->
+        <source srcset="/img/logo-176.avif" type="image/avif">
+        <source srcset="/img/logo-176.webp" type="image/webp">
+        <img src="/img/logo-176.png" width="88" height="88" alt="Logotipo de Gentleman's Care">
+      </picture>
+      <p class="hero__script script">Bienvenido a tu casa, tu lugar feliz</p>
+      <h1 class="hero__title" id="hero-title">Not just a barber</h1>
+      <p class="hero__lead">Gentleman's Care, peluquería y spa en Torreón, Coahuila. Un lugar donde el trato con las personas va primero.</p>
+      <div class="hero__ctas">
+        <a class="btn btn--gold btn--lg" href="https://wa.me/" data-wa="cita" data-track="whatsapp-hero" target="_blank" rel="noopener">Agendar por WhatsApp</a>
+        <a class="btn btn--ghost btn--lg" href="#ubicacion" data-track="como-llegar-hero">Cómo llegar</a>
+      </div>
+    </div>
+    <div class="hero__media" data-parallax="-0.06">
+      <span class="hero__ring" aria-hidden="true"></span>
+      <!-- FOTO REAL: foto del local (sillones azul marino, luz ámbar, espejos redondos). Cuadrada, mín. 1080×1080 -->
+      <picture>
+        <source type="image/avif" srcset="/img/hero-local-600.avif 600w, /img/hero-local-1080.avif 1080w" sizes="(min-width: 960px) 540px, 90vw">
+        <source type="image/webp" srcset="/img/hero-local-600.webp 600w, /img/hero-local-1080.webp 1080w" sizes="(min-width: 960px) 540px, 90vw">
+        <img class="hero__img" src="/img/hero-local-600.webp" width="540" height="540" fetchpriority="high" decoding="async" alt="Interior de Gentleman's Care: sillones de barbero azul marino, paneles de madera, espejos redondos y luz ámbar">
+      </picture>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BARRA DE CONFIANZA ============ -->
+<section class="trust" aria-label="Puntos clave">
+  <ul class="trust__list container">
+    <li class="trust__item">Torreón, Coahuila</li>
+    <li class="trust__item">Trato personalizado</li>
+    <li class="trust__item">Ambiente tipo casa</li>
+    <li class="trust__item">Citas por WhatsApp</li>
+  </ul>
+</section>
+
+<!-- ============ SERVICIOS ============ -->
+<section id="servicios" class="section" aria-labelledby="servicios-title">
+  <div class="container stack-xl">
+    <header class="section-head reveal">
+      <p class="eyebrow">Servicios</p>
+      <h2 class="h2" id="servicios-title">Tu corte, a tu manera</h2>
+    </header>
+    <div class="cards" data-stagger>
+      <article class="card reveal">
+        <span class="card__icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="19" r="3.5"/><circle cx="19" cy="19" r="3.5"/><line x1="9.5" y1="16.5" x2="20" y2="3"/><line x1="16.5" y1="16.5" x2="6" y2="3"/></svg>
+        </span>
+        <h3 class="card__title">Corte y peinado</h3>
+        <p class="card__text">Corte de cabello y peinado en sillón, con tiempo y atención para ti.</p>
+        <div class="card__foot">
+          <span class="chip">[PRECIO]</span>
+          <a class="link-cta" href="https://wa.me/" data-wa="cita" data-track="whatsapp-servicio-corte" target="_blank" rel="noopener">Agendar<span class="sr-only"> corte y peinado</span></a>
+        </div>
+      </article>
+      <article class="card reveal">
+        <span class="card__icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="9" width="18" height="6" rx="1.5"/><line x1="4" y1="19" x2="22" y2="19"/></svg>
+        </span>
+        <h3 class="card__title">[Barba – por confirmar]</h3>
+        <p class="card__text"><span class="chip">[PENDIENTE]</span> Descripción del servicio confirmada por el negocio.</p>
+        <div class="card__foot">
+          <span class="chip">[PRECIO]</span>
+          <a class="link-cta" href="https://wa.me/" data-wa="cita" data-track="whatsapp-servicio-barba" target="_blank" rel="noopener">Agendar<span class="sr-only"> barba</span></a>
+        </div>
+      </article>
+      <article class="card reveal">
+        <span class="card__icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="13" cy="13" r="8"/><circle cx="13" cy="13" r="3"/></svg>
+        </span>
+        <h3 class="card__title">Spa</h3>
+        <p class="card__text"><span class="chip">[PENDIENTE]</span> Qué incluye el servicio de spa.</p>
+        <div class="card__foot">
+          <span class="chip">[PRECIO]</span>
+          <a class="link-cta" href="https://wa.me/" data-wa="cita" data-track="whatsapp-servicio-spa" target="_blank" rel="noopener">Agendar<span class="sr-only"> spa</span></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTO (VOLPE) — config.js: mostrarVolpe ============ -->
+<section id="productos" class="section section--cream" aria-labelledby="productos-title">
+  <div class="container split">
+    <div class="split__media reveal">
+      <!-- FOTO REAL: producto Pasta mate VOLPE (vertical 4:5, mín. 960×1200) -->
+      <picture>
+        <source type="image/avif" srcset="/img/producto-volpe-480.avif 480w, /img/producto-volpe-960.avif 960w" sizes="(min-width: 960px) 560px, 90vw">
+        <source type="image/webp" srcset="/img/producto-volpe-480.webp 480w, /img/producto-volpe-960.webp 960w" sizes="(min-width: 960px) 560px, 90vw">
+        <img class="media media--rounded" src="/img/producto-volpe-480.webp" width="480" height="600" loading="lazy" decoding="async" alt="Lata de pasta mate VOLPE para peinar, hecha en Torreón">
+      </picture>
+    </div>
+    <div class="split__copy reveal">
+      <p class="eyebrow eyebrow--walnut">Hecho en Torreón</p>
+      <h2 class="h2" id="productos-title">Pasta mate VOLPE</h2>
+      <p class="lead lead--dark">Pasta mate para peinados más dinámicos. Natural y lavable.</p>
+      <span class="chip chip--walnut">[CONFIRMAR si se vende en el local y precio]</span>
+      <a class="btn btn--dark" href="https://wa.me/" data-wa="volpe" data-track="whatsapp-volpe" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROMOCIÓN — config.js: promo ============ -->
+<section id="promocion" class="section section--tight" aria-labelledby="promo-title" hidden>
+  <div class="container">
+    <div class="promo reveal">
+      <div class="promo__copy">
+        <p class="eyebrow">Promoción vigente</p>
+        <h2 class="h2 h2--sm" id="promo-title" data-promo="titulo">[PROMOCIÓN – pendiente del cliente]</h2>
+        <p class="lead" data-promo="descripcion">[Descripción de la promoción]</p>
+        <p class="promo__date mono" data-promo="vigenciaTexto">Vigencia: [DEL __ AL __ DE ____]</p>
+      </div>
+      <a class="btn btn--gold btn--lg" href="https://wa.me/" data-wa="promo" data-track="whatsapp-promo-seccion" target="_blank" rel="noopener">Quiero la promoción</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POR QUÉ ELEGIRNOS ============ -->
+<section id="nosotros" class="section section--navy" aria-labelledby="nosotros-title">
+  <div class="container stack-xl">
+    <div class="quote reveal">
+      <h2 class="eyebrow eyebrow--light" id="nosotros-title">Por qué elegirnos</h2>
+      <blockquote class="quote__text"><p>“Bienvenido a tu casa, peluquería, oficina, tu lugar feliz.”</p></blockquote>
+      <p class="script quote__sign">Edy Salazart</p>
+    </div>
+    <div class="features" data-stagger>
+      <div class="feature reveal">
+        <h3 class="feature__title">Ambiente tipo casa</h3>
+        <p class="feature__text">Madera, luz cálida y sillones cómodos. Un lugar para estar a gusto.</p>
+      </div>
+      <div class="feature reveal">
+        <h3 class="feature__title">Trato personal</h3>
+        <p class="feature__text">Más que un corte: la atención y el trato con las personas.</p>
+      </div>
+      <div class="feature reveal">
+        <h3 class="feature__title">Local en plaza comercial</h3>
+        <p class="feature__text">Un espacio cómodo y fácil de visitar en Torreón.</p>
+      </div>
+      <div class="feature reveal" data-volpe>
+        <h3 class="feature__title">Productos de Torreón</h3>
+        <p class="feature__text">Pasta mate VOLPE, hecha en Torreón.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+<section id="como-funciona" class="section" aria-labelledby="pasos-title">
+  <div class="container stack-xl">
+    <header class="section-head reveal">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2 class="h2" id="pasos-title">Tres pasos y listo</h2>
+    </header>
+    <ol class="steps" data-stagger>
+      <li class="step reveal">
+        <span class="step__num" aria-hidden="true">1</span>
+        <h3 class="step__title">Escríbenos por WhatsApp</h3>
+        <p class="step__text">Mándanos un mensaje para agendar tu cita.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num" aria-hidden="true">2</span>
+        <h3 class="step__title">Elige servicio y horario</h3>
+        <p class="step__text">Te decimos qué horarios hay disponibles.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step__num" aria-hidden="true">3</span>
+        <h3 class="step__title">Llega y relájate</h3>
+        <p class="step__text">Bienvenido a tu casa.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ GALERÍA ============ -->
+<section id="galeria" class="section section--flush-top" aria-label="Galería">
+  <div class="container gallery" data-stagger>
+    <!-- FOTO REAL: foto del local (vertical 4:5, mín. 960×1200) -->
+    <picture class="reveal">
+      <source type="image/avif" srcset="/img/galeria-1-480.avif 480w, /img/galeria-1-960.avif 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <source type="image/webp" srcset="/img/galeria-1-480.webp 480w, /img/galeria-1-960.webp 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <img class="media" src="/img/galeria-1-480.webp" width="480" height="600" loading="lazy" decoding="async" alt="Foto del local de Gentleman's Care en Torreón">
+    </picture>
+    <!-- FOTO REAL: corte – antes / después -->
+    <picture class="reveal">
+      <source type="image/avif" srcset="/img/galeria-2-480.avif 480w, /img/galeria-2-960.avif 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <source type="image/webp" srcset="/img/galeria-2-480.webp 480w, /img/galeria-2-960.webp 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <img class="media" src="/img/galeria-2-480.webp" width="480" height="600" loading="lazy" decoding="async" alt="Corte de cabello realizado en Gentleman's Care, antes y después">
+    </picture>
+    <!-- FOTO REAL: foto del equipo -->
+    <picture class="reveal">
+      <source type="image/avif" srcset="/img/galeria-3-480.avif 480w, /img/galeria-3-960.avif 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <source type="image/webp" srcset="/img/galeria-3-480.webp 480w, /img/galeria-3-960.webp 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <img class="media" src="/img/galeria-3-480.webp" width="480" height="600" loading="lazy" decoding="async" alt="Equipo de Gentleman's Care">
+    </picture>
+    <!-- FOTO REAL: sillones / detalle del local -->
+    <picture class="reveal">
+      <source type="image/avif" srcset="/img/galeria-4-480.avif 480w, /img/galeria-4-960.avif 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <source type="image/webp" srcset="/img/galeria-4-480.webp 480w, /img/galeria-4-960.webp 960w" sizes="(min-width: 1240px) 290px, (min-width: 600px) 45vw, 90vw">
+      <img class="media" src="/img/galeria-4-480.webp" width="480" height="600" loading="lazy" decoding="async" alt="Detalle de los sillones de barbero azul marino y la madera del local">
+    </picture>
+  </div>
+</section>
+
+<!-- ============ UBICACIÓN Y HORARIO ============ -->
+<section id="ubicacion" class="section section--ink" aria-labelledby="ubicacion-title">
+  <div class="container split split--top">
+    <div class="stack-lg reveal">
+      <header class="section-head">
+        <p class="eyebrow">Ubicación y horario</p>
+        <h2 class="h2" id="ubicacion-title">Visítanos en Torreón</h2>
+      </header>
+      <p class="status" id="estado-abierto" hidden aria-live="polite"><span class="status__dot" aria-hidden="true"></span><span class="status__text"></span></p>
+      <dl class="info">
+        <div class="info__row">
+          <dt>Dirección</dt>
+          <dd data-cfg="direccion">Plaza comercial, Torreón, Coahuila <span class="chip">[PENDIENTE – plaza y local]</span></dd>
+        </div>
+        <div class="info__row">
+          <dt>Referencia</dt>
+          <dd data-cfg="referencia">A un lado de LOOP Specialty Coffee Roasters <span class="chip">[CONFIRMAR]</span></dd>
+        </div>
+        <div class="info__row">
+          <dt>Horario</dt>
+          <dd>
+            <ul class="hours" id="horario">
+              <li><span>Lunes a viernes</span><span class="mono gold">[PENDIENTE]</span></li>
+              <li><span>Sábado</span><span class="mono gold">[PENDIENTE]</span></li>
+              <li><span>Domingo</span><span class="mono gold">[PENDIENTE]</span></li>
+            </ul>
+          </dd>
+        </div>
+      </dl>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="https://www.google.com/maps/search/?api=1&amp;query=Torre%C3%B3n%2C%20Coahuila" data-maps-link data-track="maps-ubicacion" target="_blank" rel="noopener">Abrir en Google Maps</a>
+        <a class="btn btn--gold" href="https://wa.me/" data-wa="cita" data-track="whatsapp-ubicacion" target="_blank" rel="noopener">Agendar</a>
+      </div>
+    </div>
+    <div class="map reveal" id="mapa">
+      <!-- FOTO REAL (opcional): captura del mapa o fachada del local -->
+      <picture class="map__placeholder">
+        <source type="image/avif" srcset="/img/mapa-640.avif 640w, /img/mapa-1200.avif 1200w" sizes="(min-width: 960px) 580px, 90vw">
+        <source type="image/webp" srcset="/img/mapa-640.webp 640w, /img/mapa-1200.webp 1200w" sizes="(min-width: 960px) 580px, 90vw">
+        <img src="/img/mapa-640.webp" width="640" height="480" loading="lazy" decoding="async" alt="Vista previa del mapa de ubicación de Gentleman's Care en Torreón">
+      </picture>
+      <button class="btn btn--gold map__btn" type="button" data-map-load data-track="mapa-ver">Ver mapa</button>
+      <p class="map__note">El mapa de Google se carga al hacer clic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREGUNTAS FRECUENTES ============ -->
+<section id="preguntas" class="section" aria-labelledby="faq-title">
+  <div class="container container--narrow stack-xl">
+    <header class="section-head reveal">
+      <p class="eyebrow">Preguntas frecuentes</p>
+      <h2 class="h2" id="faq-title">Lo que nos preguntan</h2>
+    </header>
+    <div class="faq reveal">
+      <details class="faq__item">
+        <summary class="faq__q">¿Cómo agendo mi cita?<span class="faq__icon" aria-hidden="true"></span></summary>
+        <div class="faq__a"><p>Escríbenos por WhatsApp y te compartimos los horarios disponibles.</p></div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Necesito cita o atienden sin cita?<span class="faq__icon" aria-hidden="true"></span></summary>
+        <div class="faq__a"><p><span class="chip">[PENDIENTE]</span></p></div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Dónde están?<span class="faq__icon" aria-hidden="true"></span></summary>
+        <div class="faq__a"><p>En una plaza comercial de Torreón, Coahuila. <span class="chip" data-cfg="direccion-faq">[PENDIENTE – dirección exacta]</span></p></div>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Qué formas de pago aceptan?<span class="faq__icon" aria-hidden="true"></span></summary>
+        <div class="faq__a"><p><span class="chip">[PENDIENTE]</span></p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL + MINI FORMULARIO ============ -->
+<section id="reservar" class="cta-final" aria-labelledby="cta-title">
+  <div class="cta-final__wood" aria-hidden="true"></div>
+  <div class="container cta-final__inner">
+    <div class="cta-final__head reveal">
+      <p class="script cta-final__script">Not just a barber</p>
+      <h2 class="cta-final__title" id="cta-title">Reserva tu lugar</h2>
+      <a class="btn btn--dark btn--lg" href="https://wa.me/" data-wa="cita" data-track="whatsapp-cta-final" target="_blank" rel="noopener">Agendar por WhatsApp</a>
+    </div>
+
+    <form class="booking reveal" id="form-cita" novalidate aria-describedby="form-nota">
+      <h3 class="booking__title">O arma tu mensaje</h3>
+      <p class="booking__note" id="form-nota">Llena los datos y se abrirá WhatsApp con tu mensaje listo. No guardamos tu información.</p>
+      <div class="field">
+        <label for="f-nombre">Nombre</label>
+        <input id="f-nombre" name="nombre" type="text" autocomplete="given-name" required minlength="2" maxlength="60" aria-describedby="e-nombre">
+        <p class="field__error" id="e-nombre" aria-live="polite"></p>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-dia">Día preferido</label>
+          <input id="f-dia" name="dia" type="date" required aria-describedby="e-dia">
+          <p class="field__error" id="e-dia" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="f-horario">Horario preferido</label>
+          <select id="f-horario" name="horario" required aria-describedby="e-horario">
+            <option value="">Elige una opción</option>
+            <option value="en la mañana">Mañana</option>
+            <option value="al mediodía">Mediodía</option>
+            <option value="en la tarde">Tarde</option>
+            <option value="en cualquier horario">Cualquier horario</option>
+          </select>
+          <p class="field__error" id="e-horario" aria-live="polite"></p>
+        </div>
+      </div>
+      <button class="btn btn--gold btn--lg btn--block" type="submit" data-track="whatsapp-formulario">Enviar por WhatsApp</button>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container stack-xl">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <picture>
+          <!-- FOTO REAL: logo oficial -->
+          <source srcset="/img/logo-176.avif" type="image/avif">
+          <source srcset="/img/logo-176.webp" type="image/webp">
+          <img src="/img/logo-176.png" width="80" height="80" loading="lazy" alt="Logotipo de Gentleman's Care">
+        </picture>
+        <p class="brand__name">Gentleman's Care</p>
+        <p class="muted">Peluquería y Spa · Torreón, Coahuila</p>
+      </div>
+      <div class="footer__col">
+        <h2 class="footer__h">Contacto</h2>
+        <a class="footer__link" href="https://wa.me/" data-wa="cita" data-track="whatsapp-footer" target="_blank" rel="noopener">WhatsApp: <span data-cfg="whatsapp-label" class="mono gold">[PENDIENTE]</span></a>
+        <span class="footer__link" data-tel data-track="tel-footer">Teléfono: <span data-cfg="telefono-label" class="mono gold">[PENDIENTE]</span></span>
+        <a class="footer__link" href="mailto:" data-mail data-track="email-footer" hidden>Correo: <span data-cfg="email-label"></span></a>
+      </div>
+      <div class="footer__col">
+        <h2 class="footer__h">Redes</h2>
+        <span class="footer__link" data-social="facebook" data-track="facebook-footer">Facebook: Edy Salazart <span class="mono gold" data-pending>[ENLACE]</span></span>
+        <span class="footer__link" data-social="instagram" data-track="instagram-footer">Instagram <span class="mono gold" data-pending>[PENDIENTE]</span></span>
+      </div>
+      <div class="footer__col">
+        <h2 class="footer__h">Horario</h2>
+        <ul class="hours hours--compact" id="horario-footer">
+          <li><span class="mono gold">[PENDIENTE]</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> Gentleman's Care – Peluquería y Spa</p>
+      <a href="/aviso-de-privacidad.html" data-track="aviso-privacidad-footer">Aviso de privacidad</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Botón flotante de WhatsApp -->
+<div class="wa-float">
+  <p class="wa-float__tip" id="wa-tip" aria-hidden="true">¿Agendamos tu cita?</p>
+  <a class="wa-float__btn" href="https://wa.me/" data-wa="cita" data-track="whatsapp-flotante" target="_blank" rel="noopener" aria-label="Agendar cita por WhatsApp">
+    <svg class="wa-float__icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.54-3.69 8.24-8.23 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+    <span class="wa-float__label">WhatsApp</span>
+  </a>
+</div>
+
+</body>
+</html>
