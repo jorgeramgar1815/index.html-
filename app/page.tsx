@@ -52,14 +52,6 @@ export default function HomePage() {
         />
         <Bubbles count={9} />
 
-        {/* Marcos cuadrados flotantes a los lados (escritorio) */}
-        <div className="rise pointer-events-none absolute left-[max(2rem,calc(50%-40rem))] top-20 hidden w-[14rem] xl:block 2xl:w-[16rem]" style={d(".5s")}>
-          <Framed variant="portrait" alt="Clienta relajándose en Reduzen" className="aspect-[4/5] animate-float" />
-        </div>
-        <div className="rise pointer-events-none absolute bottom-32 right-[max(2rem,calc(50%-40rem))] hidden w-[12.5rem] xl:block 2xl:w-[14rem]" style={d(".65s")}>
-          <Framed variant="facial" alt="Tratamiento facial en Reduzen" offset="tl" className="aspect-square animate-float [animation-delay:-3.5s]" />
-        </div>
-
         <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col items-center justify-center px-4 pb-36 pt-16 text-center sm:min-h-[calc(100svh-5rem)] sm:pb-40">
           <Lotus draw className="rise h-20 w-20 text-jade-ink sm:h-24 sm:w-24" strokeWidth={1.3} />
           <div className="rise mt-6" style={d(".1s")}>
@@ -106,15 +98,8 @@ export default function HomePage() {
       {/* ================= BIENVENIDA ================= */}
       <section id="bienvenida" aria-labelledby="bienvenida-titulo" className="scroll-mt-24 bg-cream py-24 sm:py-32">
         <div className="mx-auto grid max-w-6xl items-center gap-16 px-4 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-24">
-          <Reveal className="relative mx-auto w-full max-w-md pb-14 pr-10 sm:pb-16 sm:pr-16">
+          <Reveal className="relative mx-auto w-full max-w-md pr-4 sm:pr-6">
             <Framed variant="nails" alt="Recepción de Reduzen" className="aspect-[4/5]" />
-            <Framed
-              variant="facial"
-              alt="Cabina de faciales"
-              offset="tl"
-              className="!absolute bottom-0 right-0 aspect-square w-[50%]"
-              frameClassName="ring-8 ring-cream"
-            />
             <div className="absolute -left-3 bottom-24 flex items-center gap-3 bg-white px-4 py-3 shadow-[0_20px_40px_-20px_rgba(27,42,74,.5)] sm:-left-8">
               <PinIcon size={20} className="shrink-0 text-jade-ink" />
               <span className="text-left">
@@ -130,7 +115,6 @@ export default function HomePage() {
               id="bienvenida-titulo"
               eyebrow="Bienvenida"
               title={<>Un spa boutique para <em className="text-jade-ink">volver a ti.</em></>}
-              intro="Combinamos mesoterapia, tecnología facial y el cuidado de un spa para que salgas renovada, sin prisas."
             />
             <Stagger as="ul" className="mt-10 space-y-6">
               {pillars.map(({ icon: Icon, title, body }) => (
@@ -163,6 +147,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ================= SLOGAN ================= */}
+      <section aria-label="Nuestra filosofía" className="relative overflow-hidden bg-jade-ink py-14 text-center sm:py-16">
+        <Bubbles count={8} light />
+        <Reveal className="relative mx-auto flex max-w-3xl items-center justify-center gap-5 px-4 sm:gap-8">
+          <span aria-hidden className="hidden h-px w-16 bg-gold/70 sm:block" />
+          <div>
+            <p className="font-serif text-[1.6rem] italic leading-tight text-white sm:text-[2.2rem]">“Te mereces este espacio.”</p>
+            <p className="mt-3 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-gold-pale">Desconecta · Renueva · Florece</p>
+          </div>
+          <span aria-hidden className="hidden h-px w-16 bg-gold/70 sm:block" />
+        </Reveal>
+      </section>
+
       {/* ================= CARTA DE TRATAMIENTOS ================= */}
       <section id="menu" aria-labelledby="menu-titulo" className="on-dark relative scroll-mt-16 overflow-hidden bg-night py-24 sm:scroll-mt-20 sm:py-32">
         <div
@@ -176,19 +173,6 @@ export default function HomePage() {
             <TreatmentMenu items={categories} />
           </Reveal>
         </div>
-      </section>
-
-      {/* ================= SLOGAN ================= */}
-      <section aria-label="Nuestra filosofía" className="relative overflow-hidden bg-jade-ink py-14 text-center sm:py-16">
-        <Bubbles count={8} light />
-        <Reveal className="relative mx-auto flex max-w-3xl items-center justify-center gap-5 px-4 sm:gap-8">
-          <span aria-hidden className="hidden h-px w-16 bg-gold/70 sm:block" />
-          <div>
-            <p className="font-serif text-[1.6rem] italic leading-tight text-white sm:text-[2.2rem]">“Te mereces este espacio.”</p>
-            <p className="mt-3 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-gold-pale">Desconecta · Renueva · Florece</p>
-          </div>
-          <span aria-hidden className="hidden h-px w-16 bg-gold/70 sm:block" />
-        </Reveal>
       </section>
 
       {/* ================= RITUALES ================= */}
