@@ -4,6 +4,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
 import { site, flags } from '../data/site';
+// Fuente de los titulares: se precarga para que la portada no cambie de tipografía al cargar.
+import soraFont from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -72,7 +74,12 @@ const dentist = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script is:inline>
+      // Activa las animaciones de scroll; si el script principal no carga en 3 s, se muestra todo sin animar.
+      document.documentElement.classList.replace('no-js', 'js');
+      setTimeout(function () { if (!window.__dmxReady) document.documentElement.classList.remove('js'); }, 3000);
+    </script>
+    <link rel="preload" href={soraFont} as="font" type="font/woff2" crossorigin />
 
     <title>{title}</title>
     <meta name="description" content={description} />

@@ -3,6 +3,9 @@
  * back-to-top, menú móvil, scroll reveal, parallax del hero, contadores
  * y comparador antes/después. Todo respeta `prefers-reduced-motion`.
  */
+(window as Window & { __dmxReady?: boolean }).__dmxReady = true;
+document.documentElement.classList.add('js');
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ── Scroll: header, progreso, back-to-top, parallax ─────────────────────────
