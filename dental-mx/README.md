@@ -6,10 +6,10 @@ Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su secc
 
 - **Stack:** [Astro](https://astro.build) (genera HTML estático, sin JS de framework en el cliente) + Tailwind CSS v4 + fuentes auto-hospedadas (Sora, Inter y Yellowtail vía Fontsource).
 - **Animaciones y efectos:** CSS y un script pequeño en TypeScript (`src/scripts/main.ts`):
-  - Hero centrado con letrero de neón que se dibuja, aurora de luz y luz que sigue al cursor.
+  - Hero centrado con letrero de neón que se dibuja, aurora de luz y luz que sigue al cursor. La portada se anima sólo con CSS (no espera al JS) y los resplandores son degradados radiales, no `filter: blur()`, para que cargue rápido en celulares.
   - Titulares que aparecen palabra por palabra (`data-split`), scroll reveal con stagger (`data-reveal`) y fotos con revelado tipo cortina (`data-reveal="clip"`).
   - Tarjetas con inclinación 3D y brillo bajo el cursor (`data-tilt`), botones magnéticos (`data-magnetic`) y destello en botones principales.
-  - Bandas y carrusel de testimonios en movimiento continuo, borde de neón giratorio, contadores y transiciones de página nativas.
+  - Bandas y carrusel de testimonios en movimiento continuo, borde de neón giratorio y contadores.
   - Las animaciones continuas se pausan fuera de pantalla (`data-live`) y todo se desactiva con `prefers-reduced-motion`.
 - **SEO local:** title, description, canonical, Open Graph (`public/og.png`), sitemap y `robots.txt`. También JSON-LD `Dentist` con NAP, horario y datos del doctor, más `FAQPage` e `ItemList` de servicios.
 - **Navegación:** menú con anclas y resaltado automático de la sección visible (scrollspy).
