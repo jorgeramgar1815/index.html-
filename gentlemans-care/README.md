@@ -8,7 +8,7 @@ gentlemans-care/
 ├── index.html               Página principal (SEO, JSON-LD, Open Graph en <head>)
 ├── aviso-de-privacidad.html Aviso de privacidad básico
 ├── styles.css               Estilos (variables de color = paleta del diseño)
-├── main.js                  Interacciones (menú, animaciones, horario, formulario…)
+├── main.js                  Interacciones (menú, animaciones, horario, galería, visor…)
 ├── config.js                ← TODOS LOS DATOS EDITABLES
 ├── fonts/                   Archivo, Mrs Saint Delafield, IBM Plex Mono (woff2, OFL)
 ├── img/                     Imágenes (AVIF + WebP) y favicons
@@ -35,8 +35,7 @@ y la página muestra `[PENDIENTE]` mientras no se llene.
 | `contacto.facebook` / `instagram` | URLs de redes; mientras estén vacías se muestra el marcador. |
 | `zonaHoraria` | `America/Monterrey` (hora de Torreón). |
 | `horario` | Un valor por día: `{ abre: '10:00', cierra: '20:00' }`, `null` = cerrado, o una lista para horario partido: `[{abre:'10:00',cierra:'14:00'},{abre:'16:00',cierra:'20:00'}]`. Los días iguales y seguidos se agrupan solos ("Lunes a viernes"). Cuando **los 7 días** tienen datos aparece el indicador **"Abierto ahora / Cerrado"**. |
-| `mensajes` | Textos prellenados de WhatsApp (cita, promoción, VOLPE). |
-| `mostrarVolpe` | `false` oculta la sección de la pasta VOLPE y su punto en "Por qué elegirnos". |
+| `mensajes` | Textos prellenados de WhatsApp (cita y promoción). |
 | `promo.mostrar` | `true` muestra el banner superior y la sección de promoción. |
 | `promo.titulo` / `descripcion` / `vigenciaTexto` | Textos de la promoción. |
 | `promo.fechaFin` | `'AAAA-MM-DD'`. Al terminar ese día (hora de Torreón) la promoción se oculta sola. |
@@ -60,24 +59,32 @@ comentario `<!-- FOTO REAL: ... -->` que indica qué foto va y su tamaño mínim
 
 1. Prepara cada foto en dos anchos (los nombres deben coincidir):
 
-   | Archivo | Proporción | Anchos |
-   |---|---|---|
-   | `hero-local` | 1:1 | 600 y 1080 |
-   | `galeria-1` … `galeria-4` | 4:5 | 480 y 960 |
-   | `producto-volpe` | 4:5 | 480 y 960 |
-   | `mapa` (opcional) | 4:3 | 640 y 1200 |
+   | Sección | Archivo | Proporción | Anchos |
+   |---|---|---|---|
+   | El local | `fachada` | 4:5 vertical | 600 y 1200 |
+   | El local | `interior-1` (interior general) | 4:3 horizontal | 640 y 1280 |
+   | El local | `interior-2` (sillones), `interior-3` (detalles) | 1:1 | 480 y 960 |
+   | Galería | `galeria-1` … `galeria-8` | 4:5 vertical | 480 y 960 |
+   | Ubicación | `mapa` (opcional) | 4:3 | 640 y 1200 |
 
 2. Expórtalas en **AVIF** y **WebP** a `img/` (ej. `img/galeria-1-480.avif`,
    `img/galeria-1-480.webp`, `img/galeria-1-960.avif`, `img/galeria-1-960.webp`).
    Herramienta gratuita: <https://squoosh.app> (AVIF calidad ~50, WebP ~75).
-   Desde terminal: `npx @squoosh/cli` o `sharp-cli`.
-3. Si cambias la proporción, ajusta `width`/`height` del `<img>`.
-4. Actualiza el `alt` si la foto muestra algo distinto.
+   El visor a pantalla completa usa la versión grande (`-960`, `-1200` o `-1280`).
+3. Actualiza el `alt` y el texto `data-caption` (pie de foto del visor) si la foto muestra algo distinto.
+
+### Galería: categorías y tamaños
+- Cada foto es un `<li class="gallery__item" data-cat="cortes">`. Las categorías
+  de los filtros son `cortes`, `local` y `equipo` (botones `data-filter`). Para
+  agregar una categoría, añade un botón `<button class="filter" data-filter="nueva">`.
+- Para agregar fotos, copia un `<li>` completo y cambia el número.
+- Tamaño del mosaico: agrega `gallery__item--tall` (2 filas) o `gallery__item--wide`
+  (2 columnas) al `<li>`; sin clase ocupa una celda.
 
 ### Logo
 **Falta el logo oficial.** El círculo "GC" es un marcador provisional, no el logo.
 Con el logo en alta resolución (PNG transparente o SVG):
-- Reemplaza `img/logo-176.png`, `.webp` y `.avif` (176×176, cuadrado).
+- Reemplaza `img/logo-176.*` (176×176) y `img/logo-320.*` (320×320, se usa en el inicio).
 - Regenera `favicon.ico` (32×32), `img/icon-192.png` y `img/apple-touch-icon.png` (180×180),
   por ejemplo con <https://realfavicongenerator.net>.
 - Opcional: actualiza `img/og-image.jpg` (1200×630) para redes sociales.
@@ -87,8 +94,8 @@ Con el logo en alta resolución (PNG transparente o SVG):
 ## 3. Medición (GA4 / Meta Pixel)
 
 Los botones tienen `data-track` descriptivos (`whatsapp-hero`, `whatsapp-header`,
-`whatsapp-flotante`, `whatsapp-formulario`, `tel-footer`, `maps-ubicacion`,
-`mapa-ver`, etc.). Cada clic hace:
+`whatsapp-flotante`, `tel-footer`, `maps-ubicacion`, `mapa-ver`,
+`galeria-filtro-*`, `galeria-foto-*`, `local-fachada`, etc.). Cada clic hace:
 
 - `dataLayer.push({ event: 'cta_click', cta_name, link_url })` → úsalo en Google Tag Manager.
 - `gtag('event', 'cta_click', …)` si GA4 está instalado.

@@ -56,11 +56,7 @@ window.SITE_CONFIG = {
   mensajes: {
     cita: "Hola, quiero agendar una cita en Gentleman's Care. ¿Qué horarios tienen disponibles?",
     promo: "Hola, quiero información de la promoción de Gentleman's Care.",
-    volpe: "Hola, quiero información sobre la pasta mate VOLPE en Gentleman's Care.",
   },
-
-  // Sección de producto VOLPE (mostrar solo si el negocio confirma que lo vende).
-  mostrarVolpe: true,
 
   /**
    * Promoción. Se muestra en el banner superior y en su propia sección.

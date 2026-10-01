@@ -102,13 +102,6 @@
     if (el) el.textContent = text;
   }
 
-  /* ---------- Producto VOLPE (mostrar / ocultar) ---------- */
-  function applyVolpe() {
-    if (CFG.mostrarVolpe === false) {
-      $$('#productos, [data-volpe]').forEach(function (el) { el.hidden = true; });
-    }
-  }
-
   /* ---------- Promoción con fecha de fin ---------- */
   function applyPromo() {
     var promo = CFG.promo || {};
@@ -368,53 +361,118 @@
     });
   }
 
-  /* ---------- Mini formulario → WhatsApp (no guarda datos) ---------- */
-  function initForm() {
-    var form = $('#form-cita');
-    if (!form) return;
-    var nombre = $('#f-nombre');
-    var dia = $('#f-dia');
-    var horario = $('#f-horario');
-    var hoy = nowInTZ().iso;
-    dia.min = hoy;
+  /* ---------- Galería: filtros por categoría ---------- */
+  function initGallery() {
+    var grid = $('#galeria-grid');
+    if (!grid) return;
+    var buttons = $$('[data-filter]');
+    var items = $$('.gallery__item', grid);
+    var status = $('#galeria-estado');
 
-    function setError(input, msg) {
-      var out = $('#' + input.getAttribute('aria-describedby'));
-      out.textContent = msg || '';
-      if (msg) input.setAttribute('aria-invalid', 'true');
-      else input.removeAttribute('aria-invalid');
-      return !msg;
+    function apply(cat) {
+      items.forEach(function (li) {
+        var show = cat === 'todos' || li.getAttribute('data-cat') === cat;
+        li.classList.toggle('is-hidden', !show);
+        if (show) li.classList.add('is-visible');
+      });
+      var n = items.filter(function (li) { return !li.classList.contains('is-hidden'); }).length;
+      status.textContent = n + (n === 1 ? ' foto' : ' fotos');
     }
-    function validate() {
-      var ok = true;
-      var n = nombre.value.trim();
-      ok = setError(nombre, n.length < 2 ? 'Escribe tu nombre (mínimo 2 letras).' : '') && ok;
-      ok = setError(dia, !dia.value ? 'Elige el día que prefieres.' : dia.value < hoy ? 'Elige una fecha de hoy en adelante.' : '') && ok;
-      ok = setError(horario, !horario.value ? 'Elige un horario.' : '') && ok;
-      return ok;
-    }
-    [nombre, dia, horario].forEach(function (el) {
-      el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', function () {
-        if (el.getAttribute('aria-invalid')) validate();
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.getAttribute('aria-pressed') === 'true') return;
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+        var cat = btn.getAttribute('data-filter');
+        // Transición suave entre filtros (View Transitions API si existe)
+        if (document.startViewTransition && !reduceMotion) {
+          items.forEach(function (li, i) { li.style.viewTransitionName = 'g' + i; });
+          var vt = document.startViewTransition(function () { apply(cat); });
+          vt.finished.then(function () { items.forEach(function (li) { li.style.viewTransitionName = ''; }); });
+        } else {
+          apply(cat);
+        }
       });
     });
+  }
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (!validate()) {
-        var first = $('[aria-invalid="true"]', form);
-        if (first) first.focus();
-        return;
-      }
-      var fecha = new Date(dia.value + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
-      var msg = 'Hola, soy ' + nombre.value.trim() + ". Quiero agendar una cita en Gentleman's Care para el " + fecha +
-        ', de preferencia ' + horario.value + '. ¿Qué horarios tienen disponibles?';
-      var url = waLink(msg);
-      var a = document.createElement('a');
-      a.href = url; a.target = '_blank'; a.rel = 'noopener';
-      document.body.appendChild(a); a.click(); a.remove();
-      form.reset();
+  /* ---------- Visor de fotos (galería y local) ---------- */
+  function initLightbox() {
+    var dlg = $('#lightbox');
+    if (!dlg || typeof dlg.showModal !== 'function') return;
+    var img = $('#lb-img');
+    var avif = $('#lb-avif');
+    var pic = $('.lightbox__pic', dlg);
+    var cap = $('#lb-cap');
+    var count = $('#lb-count');
+    var list = [];
+    var index = 0;
+    var opener = null;
+
+    function group(trigger) {
+      var scope = trigger.closest('#galeria-grid') || trigger.closest('.venue');
+      return $$('[data-lightbox]', scope).filter(function (b) {
+        var li = b.closest('.gallery__item');
+        return !li || !li.classList.contains('is-hidden');
+      });
+    }
+    function show(i) {
+      index = (i + list.length) % list.length;
+      var b = list[index];
+      var full = b.getAttribute('data-full');
+      var thumb = $('img', b);
+      avif.srcset = '/img/' + full + '.avif';
+      img.src = '/img/' + full + '.webp';
+      img.width = thumb.naturalWidth || thumb.width;
+      img.height = thumb.naturalHeight || thumb.height;
+      img.alt = thumb.alt;
+      cap.textContent = b.getAttribute('data-caption') || thumb.alt;
+      count.textContent = (index + 1) + ' / ' + list.length;
+      pic.classList.remove('is-switching');
+      void pic.offsetWidth;
+      pic.classList.add('is-switching');
+    }
+    function open(trigger) {
+      opener = trigger;
+      list = group(trigger);
+      dlg.classList.toggle('lightbox--single', list.length < 2);
+      show(list.indexOf(trigger));
+      dlg.showModal();
+      document.documentElement.classList.add('has-lightbox');
+    }
+
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-lightbox]');
+      if (t) open(t);
     });
+    dlg.addEventListener('click', function (e) {
+      var action = e.target.closest('[data-lb]');
+      if (action) {
+        var a = action.getAttribute('data-lb');
+        if (a === 'close') dlg.close();
+        else show(index + (a === 'next' ? 1 : -1));
+      } else if (e.target === dlg || e.target.classList.contains('lightbox__frame')) {
+        dlg.close();
+      }
+    });
+    dlg.addEventListener('keydown', function (e) {
+      if (list.length < 2) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
+    });
+    dlg.addEventListener('close', function () {
+      document.documentElement.classList.remove('has-lightbox');
+      if (opener) opener.focus();
+    });
+    // Deslizar en pantallas táctiles
+    var x0 = null;
+    dlg.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    dlg.addEventListener('touchend', function (e) {
+      if (x0 === null || list.length < 2) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+      x0 = null;
+    }, { passive: true });
   }
 
   /* ---------- Botón flotante: tooltip a los pocos segundos y pulso único ---------- */
@@ -448,8 +506,8 @@
 
   /* ---------- Inicio ---------- */
   function safe(fn) { try { fn(); } catch (err) { if (window.console) console.error(err); } }
-  [applyContact, applyVolpe, applyPromo, applyHours, initHeader, initMenu, initActiveLink,
-    initReveal, initParallax, initFaq, initMap, initForm, initWaFloat, initTracking].forEach(safe);
+  [applyContact, applyPromo, applyHours, initHeader, initMenu, initActiveLink,
+    initReveal, initParallax, initFaq, initMap, initGallery, initLightbox, initWaFloat, initTracking].forEach(safe);
   var anio = $('#anio');
   if (anio) anio.textContent = nowInTZ().iso.slice(0, 4);
 })();
