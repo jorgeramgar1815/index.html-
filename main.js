@@ -201,6 +201,7 @@
         '<span class="open-status__state">' + (st.abierto ? "Abierto ahora" : "Cerrado") + "</span>" +
         (st.detalle ? '<span class="open-status__detail">' + st.detalle + "</span>" : "");
       el.hidden = false;
+      el.classList.add("is-ready");
     });
     var cerradoHoy = (horario.diasCerrados || []).indexOf(st.hoy.iso) !== -1;
     $$(".hours__row[data-days]").forEach(function (row) {
@@ -331,6 +332,7 @@
   /* ─────────────── Parallax leve en el hero + sombra del encabezado ─────────────── */
   var parallaxEls = $$("[data-parallax]");
   var hero = $(".hero");
+  var progreso = $("[data-scroll-progress]");
   var ticking = false;
 
   function onScroll() {
@@ -339,6 +341,10 @@
     requestAnimationFrame(function () {
       var y = window.scrollY || window.pageYOffset;
       if (header) header.classList.toggle("is-scrolled", y > 8);
+      if (progreso) {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        progreso.style.transform = "scaleX(" + (max > 0 ? Math.min(1, y / max) : 0).toFixed(4) + ")";
+      }
       if (!reduceMotion.matches && hero && y < hero.offsetHeight) {
         parallaxEls.forEach(function (el) {
           var f = parseFloat(el.getAttribute("data-parallax")) || 0;
@@ -530,6 +536,42 @@
     }, seg * 1000);
   }
 
+  /* ─────────────── "25%" que cuenta hacia arriba al aparecer ─────────────── */
+  function iniciarConteo() {
+    var num = $(".promo__number");
+    if (!num || reduceMotion.matches || !("IntersectionObserver" in window)) return;
+    var nodo = num.firstChild; // nodo de texto "25"
+    if (!nodo || nodo.nodeType !== 3) return;
+    var meta = parseInt(nodo.nodeValue, 10);
+    if (!meta) return;
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      var t0 = performance.now(), dur = 1100;
+      (function paso(t) {
+        var k = Math.min(1, (t - t0) / dur);
+        nodo.nodeValue = String(Math.round(meta * (1 - Math.pow(1 - k, 3))));
+        if (k < 1) requestAnimationFrame(paso);
+      })(t0);
+    }, { threshold: 0.4 });
+    // Solo si aún no está en pantalla: lo visible al cargar no se altera
+    if (num.getBoundingClientRect().top > window.innerHeight) io.observe(num);
+  }
+
+  /* ─────────────── Inclinación 3D sutil en tarjetas (solo mouse) ─────────────── */
+  function iniciarInclinacion() {
+    if (reduceMotion.matches || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    $$(".card, .service, .step").forEach(function (el) {
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = "perspective(900px) rotateX(" + (-y * 5).toFixed(2) + "deg) rotateY(" + (x * 6).toFixed(2) + "deg) translateY(-3px)";
+      });
+      el.addEventListener("pointerleave", function () { el.style.transform = ""; });
+    });
+  }
+
   /* ─────────────── Arranque ─────────────── */
   aplicarConfig();
   revisarPromo();
@@ -541,6 +583,8 @@
   iniciarMapa();
   iniciarFormulario();
   iniciarFlotante();
+  iniciarConteo();
+  iniciarInclinacion();
   onScroll();
 
   // Actualiza "Abierto / Cerrado" y la vigencia de la promo cada minuto

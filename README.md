@@ -78,11 +78,10 @@ Los textos (títulos, servicios, productos, preguntas) están directamente en `i
 
 ## 2. Cambiar las fotos
 
-En el HTML hay comentarios `<!-- FOTO REAL: ... -->` que indican qué foto va en cada lugar y el texto `alt` sugerido. Por ahora el sitio usa **ilustraciones de marca** (cartilla de agudeza visual, armazones, lentes de sol, línea Kids y fachada) como relleno. Se ven terminadas, pero conviene cambiarlas por fotos reales del negocio.
+En el HTML hay comentarios `<!-- FOTO REAL: ... -->` que indican qué foto va en cada lugar y el texto `alt` sugerido. Por ahora el sitio usa **ilustraciones de marca** (armazones, lentes de sol, línea Kids y fachada) como relleno. Se ven terminadas, pero conviene cambiarlas por fotos reales del negocio.
 
 | Lugar | Archivos | Proporción | Tamaño mínimo |
 |---|---|---|---|
-| Hero: optometrista haciendo el examen | `img/foto-hero-640.*`, `img/foto-hero-1040.*` | 4:5 (vertical) | 1040 × 1300 |
 | Nueva colección de armazones | `img/foto-armazones-480.*`, `-800.*` | 16:10 | 800 × 500 |
 | Lentes de sol y clip-on | `img/foto-sol-480.*`, `-800.*` | 16:10 | 800 × 500 |
 | Línea Kids | `img/foto-kids-480.*`, `-800.*` | 16:10 | 800 × 500 |
@@ -95,7 +94,7 @@ Cada foto existe en tres formatos: `.avif`, `.webp` y `.jpg`. El navegador elige
 Necesitas [Node.js](https://nodejs.org) 18 o superior.
 
 1. Crea la carpeta `fotos-originales/` en la raíz del proyecto.
-2. Guarda ahí tus fotos con estos nombres: `hero.jpg`, `armazones.jpg`, `sol.jpg`, `kids.jpg`, `local.jpg`.
+2. Guarda ahí tus fotos con estos nombres: `armazones.jpg`, `sol.jpg`, `kids.jpg`, `local.jpg`.
 3. Ejecuta:
    ```bash
    cd scripts
@@ -116,7 +115,7 @@ Por cada foto, exporta los dos anchos de la tabla en AVIF, WebP y JPG, con exact
 
 ### Logo
 
-`img/optica-luz-logo.png` es el logo original del diseño y **no se modificó**. Solo se generaron copias más ligeras (`img/logo-240.*`, `img/logo-400.*`). El favicon y los íconos (`favicon.ico`, `apple-touch-icon.png`, `img/icon-*.png`) son un recorte del ojo del mismo logo.
+`img/optica-luz-logo.png` es el logo original del diseño y **no se modificó**. Solo se generaron copias más ligeras (`img/logo-240.*`, `img/logo-400.*`) y un recorte del ojo para el inicio (`img/logo-ojo.*`). El favicon y los íconos (`favicon.ico`, `apple-touch-icon.png`, `img/icon-*.png`) son un recorte del ojo del mismo logo.
 
 > Ese archivo tiene baja resolución y artefactos de compresión. Si tienes el logo en **SVG** o en PNG de alta resolución (1200 px o más), reemplázalo y vuelve a generar las copias.
 
@@ -178,7 +177,9 @@ Solo pega el código de GA4, GTM o Meta Pixel en el `<head>` de `index.html`. No
 ## 5. Qué incluye
 
 - Menú móvil animado: se cierra con `Esc`, mantiene el foco dentro mientras está abierto y resalta la sección visible.
-- Animaciones de entrada al hacer scroll (escalonadas en tarjetas) y entrada con parallax leve en el hero. Se desactivan si el sistema tiene activado "reducir movimiento".
+- Inicio con el ojo del logo y el nombre en grande, letras que aparecen en secuencia, olas y luces en movimiento.
+- Franja de beneficios en movimiento, barra de progreso de lectura, conteo del 25% e inclinación 3D sutil en tarjetas.
+- Animaciones de entrada al hacer scroll (escalonadas en tarjetas). Se desactivan si el sistema tiene activado "reducir movimiento".
 - Preguntas frecuentes con `<details>` nativo y animado.
 - Formulario (nombre, motivo, día y horario) que arma el mensaje y abre WhatsApp. **No guarda datos.**
 - Indicador "Abierto ahora / Cerrado" calculado con la hora de Torreón.

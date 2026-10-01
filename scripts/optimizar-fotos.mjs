@@ -5,7 +5,6 @@
  * Uso:
  *   1. Coloca tus fotos originales en la carpeta  fotos-originales/  con estos nombres
  *      (cualquier extensión: .jpg, .jpeg, .png, .webp, .heic no):
- *        hero.jpg        → optometrista realizando el examen (vertical)
  *        armazones.jpg   → nueva colección de armazones
  *        sol.jpg         → lentes de sol y clip-on polarizados
  *        kids.jpg        → armazones de la línea Kids
@@ -25,7 +24,6 @@ const destino = path.join(raiz, "img");
 
 // nombre de origen → [prefijo de salida, proporción ancho/alto, anchos a generar]
 const FOTOS = {
-  hero: ["foto-hero", 4 / 5, [640, 1040]],
   armazones: ["foto-armazones", 16 / 10, [480, 800]],
   sol: ["foto-sol", 16 / 10, [480, 800]],
   kids: ["foto-kids", 16 / 10, [480, 800]],

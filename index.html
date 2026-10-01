@@ -168,80 +168,73 @@
       <li><a href="#preguntas" data-nav data-track="menu-movil-preguntas">Preguntas frecuentes</a></li>
     </ul>
   </nav>
+  <div class="scroll-progress" aria-hidden="true" data-scroll-progress></div>
 </header>
 <div class="menu-backdrop" data-menu-backdrop></div>
 
 <main id="contenido" tabindex="-1">
 
-  <!-- ─────────── Hero ─────────── -->
+  <!-- ─────────── Inicio: logo y nombre ─────────── -->
   <section id="inicio" class="hero" aria-labelledby="hero-title">
-    <div class="container hero__grid">
-      <div class="hero__copy">
-        <picture>
-          <source type="image/avif" srcset="img/logo-400.avif" >
-          <source type="image/webp" srcset="img/logo-400.webp">
-          <img class="hero__logo" src="img/logo-400.png" width="400" height="193" alt="Logotipo de Óptica Luz">
-        </picture>
-        <h1 id="hero-title" class="hero__title">Deja tu vista en manos <span class="text-accent">profesionales</span></h1>
-        <p class="hero__lead">Combinamos evaluación optométrica profesional con tecnología de vanguardia para cuidar tu salud visual. Visítanos y descubre una nueva forma de ver bien, sentirte cómodo y lucir un estilo increíble.</p>
-        <div class="btn-row">
-          <a class="btn btn--primary btn--lg" href="https://wa.me/528713333666?text=Hola%2C%20quiero%20agendar%20mi%20examen%20de%20la%20vista%20en%20%C3%93ptica%20Luz." target="_blank" rel="noopener" data-wa="general" data-track="whatsapp-hero">
-            <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-wa"/></svg>
-            Agenda tu examen GRATIS
-          </a>
-          <a class="btn btn--outline btn--lg" href="https://www.google.com/maps/dir/?api=1&amp;destination=Calzada%20Col%C3%B3n%20690%2C%20Plaza%20Reyna%2C%2027220%20Torre%C3%B3n%2C%20Coahuila" target="_blank" rel="noopener" data-maps-dir data-track="como-llegar-hero">
-            <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-pin"/></svg>
-            Cómo llegar
-          </a>
-        </div>
-        <p class="hero__tagline">Claridad que transforma tu mirada</p>
-      </div>
-
-      <div class="hero__media">
-        <div class="hero__blob" aria-hidden="true" data-parallax="0.12"></div>
-        <div class="hero__frame" data-parallax="-0.04">
-          <!-- FOTO REAL: optometrista realizando el examen de la vista en Óptica Luz.
-               Vertical 4:5, mínimo 1040×1300 px. Archivos: img/foto-hero-640.* y img/foto-hero-1040.*
-               Alt sugerido: "Optometrista de Óptica Luz realizando un examen de la vista a una paciente" -->
-          <picture>
-            <source type="image/avif" srcset="img/foto-hero-640.avif 640w, img/foto-hero-1040.avif 1040w" sizes="(min-width: 560px) 520px, calc(100vw - 40px)">
-            <source type="image/webp" srcset="img/foto-hero-640.webp 640w, img/foto-hero-1040.webp 1040w" sizes="(min-width: 560px) 520px, calc(100vw - 40px)">
-            <img src="img/foto-hero-1040.jpg" srcset="img/foto-hero-640.jpg 640w, img/foto-hero-1040.jpg 1040w" sizes="(min-width: 560px) 520px, calc(100vw - 40px)" width="1040" height="1300" fetchpriority="high" decoding="async" alt="Ilustración de una cartilla de agudeza visual con una lupa">
-          </picture>
-        </div>
-        <div class="hero-badge hero-badge--offer" aria-hidden="true">
-          <span class="icon-tile icon-tile--solid"><svg class="icon" width="22" height="22"><use href="#i-eye"/></svg></span>
-          <span class="hero-badge__text"><strong>Examen de la vista</strong><span>GRATIS · computarizado e integral</span></span>
-        </div>
-        <p class="hero-badge hero-badge--status open-status" data-open-status hidden></p>
-      </div>
+    <div class="hero__bg" aria-hidden="true">
+      <span class="hero__orb hero__orb--1"></span>
+      <span class="hero__orb hero__orb--2"></span>
+      <span class="hero__orb hero__orb--3"></span>
     </div>
-    <svg class="hero__wave" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path d="M0,70 C200,10 380,30 560,110 C760,200 1080,190 1440,50 L1440,220 L0,220 Z" fill="#146EFF"/>
-      <path d="M0,130 C220,80 420,95 620,150 C840,210 1120,200 1440,120 L1440,220 L0,220 Z" fill="#fff"/>
-    </svg>
+    <div class="container hero__inner">
+      <picture class="hero__mark" data-parallax="0.18">
+        <source type="image/avif" srcset="img/logo-ojo.avif">
+        <source type="image/webp" srcset="img/logo-ojo.webp">
+        <img src="img/logo-ojo.png" width="316" height="168" fetchpriority="high" alt="">
+      </picture>
+      <h1 id="hero-title" class="hero__title"><span class="sr-only">Óptica Luz</span><span class="hero__ch" style="--i:0" aria-hidden="true">Ó</span><span class="hero__ch" style="--i:1" aria-hidden="true">p</span><span class="hero__ch" style="--i:2" aria-hidden="true">t</span><span class="hero__ch" style="--i:3" aria-hidden="true">i</span><span class="hero__ch" style="--i:4" aria-hidden="true">c</span><span class="hero__ch" style="--i:5" aria-hidden="true">a</span><span class="hero__ch" style="--i:6" aria-hidden="true">&nbsp;</span><span class="hero__ch" style="--i:7" aria-hidden="true">L</span><span class="hero__ch" style="--i:8" aria-hidden="true">u</span><span class="hero__ch" style="--i:9" aria-hidden="true">z</span></h1>
+      <p class="hero__slogan">Claridad que transforma tu mirada</p>
+      <div class="btn-row hero__ctas">
+        <a class="btn btn--primary btn--lg" href="https://wa.me/528713333666?text=Hola%2C%20quiero%20agendar%20mi%20examen%20de%20la%20vista%20en%20%C3%93ptica%20Luz." target="_blank" rel="noopener" data-wa="general" data-track="whatsapp-hero">
+          <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-wa"/></svg>
+          Agenda tu examen GRATIS
+        </a>
+        <a class="btn btn--outline btn--lg" href="https://www.google.com/maps/dir/?api=1&amp;destination=Calzada%20Col%C3%B3n%20690%2C%20Plaza%20Reyna%2C%2027220%20Torre%C3%B3n%2C%20Coahuila" target="_blank" rel="noopener" data-maps-dir data-track="como-llegar-hero">
+          <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-pin"/></svg>
+          Cómo llegar
+        </a>
+      </div>
+      <p class="open-status hero__status" data-open-status>&nbsp;</p>
+    </div>
+    <div class="hero__waves" aria-hidden="true">
+      <svg class="hero__wave hero__wave--back" viewBox="0 0 2880 160" preserveAspectRatio="none" focusable="false"><path d="M0,70 C360,10 720,10 1080,70 S1800,130 2160,70 S2520,10 2880,70 V160 H0 Z" fill="#146EFF"/></svg>
+      <svg class="hero__wave hero__wave--front" viewBox="0 0 2880 160" preserveAspectRatio="none" focusable="false"><path d="M0,100 C480,40 960,40 1440,100 S2400,160 2880,100 V160 H0 Z" fill="#0F5FE0"/></svg>
+    </div>
   </section>
 
-  <!-- ─────────── Beneficios ─────────── -->
-  <section class="benefits" aria-label="Beneficios">
-    <ul class="container benefits__list" data-stagger>
-      <li class="benefit reveal">
-        <span class="icon-tile"><svg class="icon" width="24" height="24" aria-hidden="true"><use href="#i-eye"/></svg></span>
-        <span class="benefit__text">Examen de la vista GRATIS</span>
-      </li>
-      <li class="benefit reveal">
-        <span class="icon-tile"><svg class="icon" width="24" height="24" aria-hidden="true"><use href="#i-cap"/></svg></span>
-        <span class="benefit__text">Licenciado en Optometría titulado</span>
-      </li>
-      <li class="benefit reveal">
-        <span class="icon-tile"><svg class="icon" width="24" height="24" aria-hidden="true"><use href="#i-engrave"/></svg></span>
-        <span class="benefit__text">Grabado láser GRATIS en tu estuche</span>
-      </li>
-      <li class="benefit benefit--promo reveal" data-promo>
-        <span class="icon-tile icon-tile--solid"><svg class="icon" width="24" height="24" aria-hidden="true"><use href="#i-percent"/></svg></span>
-        <span class="benefit__text">25% de descuento por apertura</span>
-      </li>
-    </ul>
+  <!-- ─────────── Beneficios en movimiento ─────────── -->
+  <section class="ticker" aria-label="Beneficios">
+    <div class="ticker__track">
+      <ul class="ticker__list">
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-eye"/></svg>Examen de la vista GRATIS</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-cap"/></svg>Licenciado en Optometría titulado</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-engrave"/></svg>Grabado láser GRATIS en tu estuche</li>
+        <li data-promo><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-percent"/></svg>25% de descuento por apertura</li>
+      </ul>
+      <ul class="ticker__list" aria-hidden="true">
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-eye"/></svg>Examen de la vista GRATIS</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-cap"/></svg>Licenciado en Optometría titulado</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-engrave"/></svg>Grabado láser GRATIS en tu estuche</li>
+        <li data-promo><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-percent"/></svg>25% de descuento por apertura</li>
+      </ul>
+      <ul class="ticker__list" aria-hidden="true">
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-eye"/></svg>Examen de la vista GRATIS</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-cap"/></svg>Licenciado en Optometría titulado</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-engrave"/></svg>Grabado láser GRATIS en tu estuche</li>
+        <li data-promo><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-percent"/></svg>25% de descuento por apertura</li>
+      </ul>
+      <ul class="ticker__list" aria-hidden="true">
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-eye"/></svg>Examen de la vista GRATIS</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-cap"/></svg>Licenciado en Optometría titulado</li>
+        <li><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-engrave"/></svg>Grabado láser GRATIS en tu estuche</li>
+        <li data-promo><svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-percent"/></svg>25% de descuento por apertura</li>
+      </ul>
+    </div>
   </section>
 
   <!-- ─────────── Servicios ─────────── -->
@@ -422,12 +415,11 @@
       <div>
         <header class="reveal">
           <p class="eyebrow">Por qué elegirnos</p>
-          <h2 id="porque-title" class="section-title section-title--spaced">Claridad que transforma tu mirada</h2>
+          <h2 id="porque-title" class="section-title section-title--spaced">Deja tu vista en manos <span class="text-accent">profesionales</span></h2>
         </header>
         <ul class="checklist" data-stagger>
           <li class="reveal"><span class="check" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#i-check"/></svg></span>Atiende Licenciado en Optometría titulado</li>
           <li class="reveal"><span class="check" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#i-check"/></svg></span>Evaluación optométrica profesional con tecnología de vanguardia</li>
-          <li class="reveal"><span class="check" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#i-check"/></svg></span>Examen de la vista computarizado e integral GRATIS</li>
           <li class="reveal"><span class="check" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#i-check"/></svg></span>Asesoría personalizada para elegir armazón según tu rostro</li>
           <li class="reveal"><span class="check" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#i-check"/></svg></span>Muestrario físico en vivo</li>
         </ul>
@@ -451,12 +443,12 @@
         <li class="step reveal">
           <span class="step__num" aria-hidden="true">2</span>
           <h3 class="step__title">Examen gratis</h3>
-          <p class="step__text">Te realizamos un examen de la vista computarizado e integral, sin costo.</p>
+          <p class="step__text">Computarizado e integral, sin costo.</p>
         </li>
         <li class="step reveal">
           <span class="step__num" aria-hidden="true">3</span>
           <h3 class="step__title">Elige tus lentes</h3>
-          <p class="step__text">Te asesoramos para elegir el armazón y las micas ideales para ti.</p>
+          <p class="step__text">Armazón y micas ideales para ti.</p>
         </li>
       </ol>
       <div class="center reveal">
