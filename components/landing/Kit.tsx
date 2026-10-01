@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { site } from "@/content/site";
 import { waLink, waMessages } from "@/lib/whatsapp";
-import { ArrowIcon, ClockIcon, FacebookIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "../Icons";
+import { ArtFrame, type ArtVariant } from "../ArtFrame";
+import { ArrowIcon, FacebookIcon, WhatsAppIcon } from "../Icons";
 import { Lotus, Wordmark } from "../Lotus";
 import { Reveal } from "../Motion";
 import { MobileMenu } from "./MobileMenu";
@@ -25,7 +26,7 @@ const btn: Record<BtnVariant, string> = {
 };
 
 const btnBase =
-  "inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-[3px] text-[0.72rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-300";
+  "inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-[3px] text-[0.78rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-300";
 
 /** Botón de WhatsApp con mensaje prellenado. */
 export function SpaButton({
@@ -42,7 +43,7 @@ export function SpaButton({
   icon?: boolean;
 }) {
   return (
-    <a href={waLink(message)} target="_blank" rel="noopener noreferrer" className={`${btnBase} h-[3.25rem] px-7 ${btn[variant]} ${className}`}>
+    <a href={waLink(message)} target="_blank" rel="noopener noreferrer" className={`${btnBase} h-14 px-8 ${btn[variant]} ${className}`}>
       {icon && <WhatsAppIcon size={18} />}
       {children}
       <span className="sr-only"> (abre WhatsApp en una pestaña nueva)</span>
@@ -53,7 +54,7 @@ export function SpaButton({
 /** Botón interno (anclas o páginas). */
 export function SpaLink({ href, children, variant = "line", className = "" }: { href: string; children: ReactNode; variant?: BtnVariant; className?: string }) {
   return (
-    <a href={href} className={`group ${btnBase} h-[3.25rem] px-7 ${btn[variant]} ${className}`}>
+    <a href={href} className={`group ${btnBase} h-14 px-8 ${btn[variant]} ${className}`}>
       {children}
       <ArrowIcon size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
     </a>
@@ -74,9 +75,9 @@ export function Ornament({
 }) {
   return (
     <p className={`flex items-center gap-3 ${align === "center" ? "justify-center" : ""} ${dark ? "text-gold-pale" : "text-gold-ink"} ${className}`}>
-      {align === "center" && <span aria-hidden className="h-px w-8 bg-gold/70" />}
-      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.24em]">{children}</span>
-      <span aria-hidden className="h-px w-8 bg-gold/70" />
+      {align === "center" && <span aria-hidden className="h-px w-5 shrink-0 bg-gold/70 sm:w-8" />}
+      <span className="whitespace-nowrap text-[0.7rem] font-semibold uppercase tracking-[0.2em] sm:text-[0.74rem] sm:tracking-[0.24em]">{children}</span>
+      <span aria-hidden className="h-px w-5 shrink-0 bg-gold/70 sm:w-8" />
     </p>
   );
 }
@@ -104,11 +105,43 @@ export function SpaTitle({
       <Ornament dark={dark} align={align}>
         {eyebrow}
       </Ornament>
-      <h2 id={id} className={`mt-4 text-[1.9rem] leading-[1.08] sm:text-[2.6rem] ${dark ? "!text-cream" : ""}`}>
+      <h2 id={id} className={`mt-4 text-[2.1rem] leading-[1.08] sm:text-[3rem] ${dark ? "!text-cream" : ""}`}>
         {title}
       </h2>
-      {intro && <p className={`mt-4 text-[0.95rem] leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
+      {intro && <p className={`mt-4 text-[1.06rem] leading-relaxed ${dark ? "text-cream/75" : "text-stone"}`}>{intro}</p>}
     </Reveal>
+  );
+}
+
+/** Imagen con marco cuadrado: filete dorado desplazado detrás de la foto. */
+export function Framed({
+  variant,
+  alt,
+  src = null,
+  className = "",
+  frameClassName = "",
+  offset = "br",
+  priority = false,
+  children,
+}: {
+  variant: ArtVariant;
+  alt: string;
+  src?: string | null;
+  className?: string;
+  frameClassName?: string;
+  /** Hacia dónde se desplaza el filete: abajo-derecha o arriba-izquierda. */
+  offset?: "br" | "tl";
+  priority?: boolean;
+  children?: ReactNode;
+}) {
+  const shift = offset === "br" ? "translate-x-3 translate-y-3 sm:translate-x-4 sm:translate-y-4" : "-translate-x-3 -translate-y-3 sm:-translate-x-4 sm:-translate-y-4";
+  return (
+    <div className={`relative ${className}`}>
+      <span aria-hidden className={`absolute inset-0 border border-gold/70 ${shift}`} />
+      <ArtFrame variant={variant} src={src} alt={alt} priority={priority} className={`h-full w-full shadow-[0_30px_60px_-35px_rgba(27,42,74,.55)] ${frameClassName}`}>
+        {children}
+      </ArtFrame>
+    </div>
   );
 }
 
@@ -120,7 +153,7 @@ const navLeft = [
 ] as const;
 const navRight = [
   { href: "/nosotros/", label: "Nosotros" },
-  { href: "/#reserva", label: "Horario" },
+  { href: "/#ubicacion", label: "Ubicación" },
 ] as const;
 
 function NavList({ items }: { items: readonly { href: string; label: string }[] }) {
@@ -128,7 +161,7 @@ function NavList({ items }: { items: readonly { href: string; label: string }[] 
     <ul className="flex items-center gap-8">
       {items.map((l) => (
         <li key={l.href}>
-          <Link href={l.href} className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink/75 transition-colors hover:text-jade-ink">
+          <Link href={l.href} className="text-[0.74rem] font-semibold uppercase tracking-[0.2em] text-ink/75 transition-colors hover:text-jade-ink">
             {l.label}
           </Link>
         </li>
@@ -137,24 +170,10 @@ function NavList({ items }: { items: readonly { href: string; label: string }[] 
   );
 }
 
-/** Barra superior de datos + cabecera con logo al centro. */
+/** Cabecera fija con el logo al centro y botón de WhatsApp siempre visible. */
 export function SiteHeader() {
   return (
     <>
-      <div className="hidden bg-jade-ink text-[0.72rem] text-white/90 md:block">
-        <div className="mx-auto flex h-9 max-w-6xl items-center justify-between px-6">
-          <span className="flex items-center gap-2">
-            <PinIcon size={14} /> {site.address.neighborhood}, {site.address.city}
-          </span>
-          {/* PLACEHOLDER: horario a confirmar con la clienta */}
-          <span className="flex items-center gap-2">
-            <ClockIcon size={14} /> {site.hours[0].days} {site.hours[0].time}
-          </span>
-          <a href={`tel:${site.phoneE164}`} className="flex items-center gap-2 hover:text-white">
-            <PhoneIcon size={14} /> {site.phoneDisplay}
-          </a>
-        </div>
-      </div>
       <header className="sticky top-0 z-40 border-b border-gold/25 bg-cream-50/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
           <nav aria-label="Secciones" className="hidden lg:block">

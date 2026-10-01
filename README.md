@@ -17,12 +17,12 @@ npm run typecheck
 
 | Ruta | Contenido |
 |---|---|
-| `app/page.tsx` | Inicio estilo spa boutique: portada dividida con arco · bienvenida · carta de tratamientos con pestañas · frase · rituales · resultados · horario + pre-reserva por WhatsApp · mapa |
+| `app/page.tsx` | Inicio estilo spa boutique: portada con nombre y logo al centro · bienvenida · carta de tratamientos (fondo noche, animada) · slogan · rituales · resultados · ubicación y horario |
 | `app/servicios/` | Catálogo completo por categoría, con pestañas y un CTA de WhatsApp por tratamiento |
 | `app/nosotros/` | Historia, valores, equipo y espacio |
 | `app/aviso-de-privacidad/` | Placeholder legal |
 | `app/globals.css` | Tokens de la paleta de marca, tipografía (DM Serif Display + Montserrat), utilidades y animaciones |
-| `components/landing/` | Cabecera y pie del sitio (logo al centro, menú móvil), botones, títulos con loto, carta de tratamientos (`TreatmentMenu`) y formulario de pre-reserva (`BookingForm`) |
+| `components/landing/` | Cabecera y pie del sitio (logo al centro, menú móvil), botones, títulos con loto, marco cuadrado con filete dorado (`Framed`), carta de tratamientos (`TreatmentMenu`) y horario con el día de hoy resaltado (`HoursTable`) |
 | `components/` | PageHeader, SectionHead, TreatmentRow, BeforeAfter, CTASection, CategoryTabs, WhatsAppButton/WhatsAppFloat, ArtFrame, Effects, Decor (Bubbles) |
 | `content/` | **Todo el contenido editable**: datos del negocio, servicios, testimonios y equipo |
 | `lib/whatsapp.ts` | Enlaces `wa.me` y mensajes prellenados por sección y por servicio |
@@ -60,12 +60,12 @@ Mientras no haya fotos reales, cada espacio de imagen muestra una **composición
 ## Decisiones de diseño y accesibilidad
 
 - **Estilo spa boutique** con la **paleta principal de la marca** (PRD §2.1): crema `#F7F3EC`,
-  azul marino `#1B2A4A`, dorado `#C9A24B` y turquesa `#2E8B8B` / `#3AA6A0`. Arcos, filetes dorados,
-  botones rectangulares con letra espaciada y un orden distinto al de otros proyectos (sin tarjetas de
+  azul marino `#1B2A4A`, dorado `#C9A24B` y turquesa `#2E8B8B` / `#3AA6A0`. Marcos cuadrados con filete
+  dorado desplazado, botones rectangulares con letra espaciada y un orden distinto al de otros proyectos (sin tarjetas de
   servicios, sin "3 pasos" ni preguntas frecuentes).
-- **Tipografía legible**: DM Serif Display (titulares) + Montserrat (texto, 15 px base).
-- **Conversión**: botón "Reservar" fijo en la cabecera, carta de tratamientos que abre WhatsApp con el
-  nombre del tratamiento y pre-reserva que arma el mensaje con tratamiento, día y horario.
+- **Tipografía legible**: DM Serif Display (titulares) + Montserrat (texto, 16 px base).
+- **Conversión**: todas las reservas van por WhatsApp: botón "Reservar" fijo en la cabecera, cada fila de la
+  carta abre WhatsApp con el nombre del tratamiento y la sección de ubicación incluye Google Maps y Waze.
 - Contraste AA: `gold-ink #7A5C14` (5.6:1) y `stone #665F55` (5.7:1) sobre crema; marino sobre
   turquesa `#3AA6A0` (4.8:1); dorado `#C9A24B` sobre azul marino (7.4:1).
 - Efectos: entrada escalonada de la portada, sello giratorio, burbujas, revelado al hacer scroll y comparador antes/después con pista animada. Sin imágenes dinámicas al pasar el mouse.
