@@ -22,12 +22,12 @@ export function HoursTable() {
       {site.hours.map((h, i) => {
         const isToday = i === today;
         return (
-          <li key={h.days} className={`flex items-center justify-between gap-4 py-3.5 text-[0.98rem] ${isToday ? "text-white" : "text-cream/75"}`}>
-            <span className="flex items-center gap-3">
-              {h.days}
+          <li key={h.days} className={`flex items-center justify-between gap-3 py-3.5 text-[0.98rem] ${isToday ? "text-white" : "text-cream/75"}`}>
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="whitespace-nowrap">{h.days}</span>
               {isToday && <span className="bg-gold px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-night">Hoy</span>}
             </span>
-            <span className={isToday ? "font-semibold" : ""}>{h.time}</span>
+            <span className={`whitespace-nowrap ${isToday ? "font-semibold" : ""}`}>{h.time}</span>
           </li>
         );
       })}

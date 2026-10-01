@@ -41,7 +41,7 @@ export default function NosotrosPage() {
 
       {/* 01 — HISTORIA */}
       <section aria-labelledby="historia-titulo" className="bg-cream-50 py-24 sm:py-32">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
           <figure className="lg:col-span-5">
             <ClipReveal className="aspect-[4/5]">
               <ArtFrame variant="portrait" alt="El equipo de Reduzen en el spa" className="h-full w-full" />

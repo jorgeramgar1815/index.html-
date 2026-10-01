@@ -270,12 +270,12 @@ export default function HomePage() {
             </Reveal>
 
             <div className="flex flex-col gap-5">
-              <Reveal delay={0.05} className="on-dark bg-night p-8 text-cream sm:p-10">
+              <Reveal delay={0.05} className="on-dark bg-night p-6 text-cream sm:p-10">
                 <h3 className="font-serif text-[1.75rem] !text-cream">Horario</h3>
                 <HoursTable />
                 <p className="mt-5 text-sm text-cream/65">Atención con cita previa.</p>
               </Reveal>
-              <Reveal delay={0.12} className="border border-gold/40 bg-cream-50 p-8 sm:p-10">
+              <Reveal delay={0.12} className="border border-gold/40 bg-cream-50 p-6 sm:p-10">
                 <h3 className="font-serif text-[1.75rem]">Reserva tu cita</h3>
                 <p className="mt-2 text-[1rem] text-stone">Escríbenos y elige tratamiento, día y horario.</p>
                 <SpaButton message={waMessages.closing} className="mt-6 w-full">Reservar por WhatsApp</SpaButton>

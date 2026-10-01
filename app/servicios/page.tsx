@@ -43,7 +43,7 @@ export default function ServiciosPage() {
           aria-labelledby={`${c.slug}-titulo`}
           className={`scroll-mt-36 sm:scroll-mt-40 py-20 sm:py-28 ${idx % 2 ? "bg-cream-50" : "bg-cream"}`}
         >
-          <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-10">
             {/* Columna fija con número gigante, título e imagen */}
             <div className="lg:col-span-4">
               <div className="lg:sticky lg:top-40">
@@ -59,7 +59,7 @@ export default function ServiciosPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-8">
+            <div className="min-w-0 lg:col-span-8">
               <Reveal>
                 <div className="border-t border-ink/15">
                   {c.treatments.map((t, i) => (
@@ -68,7 +68,7 @@ export default function ServiciosPage() {
                 </div>
               </Reveal>
               <Reveal className="mt-10">
-                <WhatsAppButton message={waMessages.category(c.name)} variant="outline">
+                <WhatsAppButton message={waMessages.category(c.name)} variant="outline" className="w-full !whitespace-normal text-left sm:w-auto">
                   Preguntar por {c.short.toLowerCase()}
                 </WhatsAppButton>
               </Reveal>

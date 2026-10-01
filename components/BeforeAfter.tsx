@@ -67,7 +67,7 @@ export function BeforeAfter({ title, sessions, figure, beforeSrc = null, afterSr
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
         />
         {/* PLACEHOLDER: reemplazar por casos reales con autorización */}
-        <span className="eyebrow absolute bottom-3 left-3 bg-cream-50/90 px-2.5 py-1 !text-[0.58rem] text-stone">Imagen ilustrativa</span>
+        <span className="eyebrow absolute bottom-3 left-3 bg-cream-50/90 px-2.5 py-1 !text-[0.65rem] text-stone">Imagen ilustrativa</span>
       </div>
       <figcaption className="mt-3 flex items-baseline justify-between gap-3 border-b border-ink/15 pb-3">
         <span className="flex items-baseline gap-3">

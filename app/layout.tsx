@@ -3,7 +3,7 @@ import { DM_Serif_Display, Montserrat } from "next/font/google";
 import type { ReactNode } from "react";
 import { SiteFooter, SiteHeader } from "@/components/landing/Kit";
 import { MotionProvider } from "@/components/Motion";
-import { WhatsAppFloat } from "@/components/WhatsAppButton";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { site } from "@/content/site";
 import { waMessages } from "@/lib/whatsapp";
 import "./globals.css";
