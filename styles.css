@@ -195,6 +195,12 @@ main:focus { outline: none; }
   transition: box-shadow .25s;
 }
 .site-header.is-scrolled { box-shadow: 0 10px 30px -24px rgba(7, 25, 56, .45); }
+/* Encabezado compacto al hacer scroll */
+.header-bar, .brand__logo { transition: min-height .25s var(--ease-out), padding .25s var(--ease-out), height .25s var(--ease-out); }
+.site-header.is-scrolled .header-bar { min-height: 60px; padding-block: 6px; }
+.site-header.is-scrolled .brand__logo { height: 42px; }
+
+::selection { background: var(--azul-bruma); color: var(--tinta); }
 
 /* En móvil el texto y el enlace fluyen en línea para ocupar menos alto */
 .promo-bar {
@@ -463,6 +469,31 @@ main:focus { outline: none; }
 @keyframes hero-blob { from { opacity: 0; transform: translate(-18px, -18px) scale(.9); } }
 @keyframes hero-wave { from { transform: translateY(24px); } }
 
+/* Tarjetas flotantes sobre la imagen del hero */
+.hero-badge {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  background: var(--blanco);
+  box-shadow: 0 18px 40px -18px rgba(7, 25, 56, .45);
+}
+.hero-badge--offer { left: -8px; bottom: 28px; padding: 12px 18px 12px 12px; }
+.hero-badge__text { display: flex; flex-direction: column; line-height: 1.25; }
+.hero-badge__text strong { font-size: 16px; font-weight: 900; }
+.hero-badge__text span { color: var(--texto-suave); font-size: 14px; font-weight: 700; }
+.hero-badge--status { top: 20px; right: -8px; padding: 10px 16px 10px 14px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge--offer { animation: hero-in .7s var(--ease-out) .55s both; }
+  .hero-badge--status { animation: hero-in .7s var(--ease-out) .7s both; }
+}
+@media (min-width: 600px) {
+  .hero-badge--offer { left: -28px; bottom: 40px; }
+  .hero-badge--status { right: -20px; }
+}
+
 /* ---------- Beneficios ---------- */
 .benefits { padding: 8px 0 40px; background: var(--blanco); }
 .benefits__list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px; }
@@ -597,6 +628,13 @@ main:focus { outline: none; }
 .promo__number span { color: var(--azul-cielo); }
 .promo__body { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 .promo__title { font-size: clamp(28px, 4.4vw, 40px); line-height: 1.12; font-weight: 900; text-wrap: balance; }
+.promo__countdown {
+  margin-top: -6px;
+  color: var(--azul-bruma);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
 .promo__validity {
   display: inline-flex;
   align-items: center;
@@ -653,6 +691,18 @@ main:focus { outline: none; }
   font-weight: 900;
 }
 .step__title { font-size: 22px; font-weight: 900; }
+/* Conector punteado entre los números de los pasos (solo en fila, escritorio) */
+@media (min-width: 960px) {
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 56px;
+    left: 90px;
+    right: -32px;
+    border-top: 2px dashed var(--azul-cielo);
+  }
+}
 .step__text { color: var(--texto-suave); font-size: 17px; line-height: 1.55; }
 .step__text a { font-weight: 800; display: inline-block; padding-block: 10px; margin-block: -10px; }
 
@@ -730,7 +780,7 @@ main:focus { outline: none; }
   gap: 4px 8px;
   align-self: flex-start;
   padding: 6px 14px 6px 12px;
-  border-radius: 999px;
+  border-radius: 14px;
   background: var(--blanco);
   font-size: 14px;
   font-weight: 800;
@@ -750,7 +800,7 @@ main:focus { outline: none; }
 /* El separador queda al final de la primera línea si el texto se parte */
 .open-status__state:not(:last-child)::after { content: " ·"; color: var(--texto-suave); }
 .open-status__detail { color: var(--texto-suave); font-weight: 700; }
-.open-status--sm { margin-bottom: 12px; font-size: 14px; }
+.open-status--sm { margin-bottom: 12px; font-size: 13.5px; }
 
 /* ---------- Preguntas frecuentes ---------- */
 .faq { display: flex; flex-direction: column; gap: 12px; }
@@ -887,12 +937,16 @@ select.field__input {
 .segmented__opt input:focus-visible + span { outline: 3px solid var(--azul-luz); outline-offset: 2px; }
 
 /* ---------- Pie de página ---------- */
-.site-footer { padding: 56px 0 110px; background: var(--rubor); }
-.footer__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 32px; }
-.footer__logo { width: 170px; }
+.site-footer { padding: 64px 0 110px; background: var(--marino); color: var(--blanco); }
+.footer__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 36px; }
+/* El logo tiene texto oscuro: va sobre una placa blanca para conservarlo intacto */
+.footer__brand { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.footer__logo-plate { padding: 14px 18px; border-radius: var(--radius); background: var(--blanco); }
+.footer__logo { width: 150px; }
+.footer__tagline { color: var(--azul-bruma); font-size: 15px; font-weight: 700; }
 .footer__heading {
   margin-bottom: 12px;
-  color: var(--azul-intenso);
+  color: var(--azul-bruma);
   font-size: 15px;
   font-weight: 900;
   letter-spacing: .12em;
@@ -906,16 +960,19 @@ select.field__input {
   align-items: center;
   gap: 10px;
   min-height: 44px;
-  color: var(--tinta);
+  color: var(--blanco);
   font-weight: 700;
+  text-decoration-color: rgba(255, 255, 255, .35);
 }
-.footer__links a:hover { color: var(--azul-intenso); }
-.footer__links .icon { color: var(--azul-intenso); }
+.footer__links a:hover { color: var(--azul-bruma); text-decoration-color: currentColor; }
+.footer__links .icon { color: var(--azul-cielo); }
+.footer__hours strong { color: var(--blanco); }
+.site-footer :focus-visible { outline-color: var(--azul-bruma); }
 .footer__legal {
-  margin-top: 40px;
+  margin-top: 48px;
   padding-top: 20px;
-  border-top: 1px solid var(--rubor-borde);
-  color: var(--texto-suave);
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  color: var(--azul-bruma);
   font-size: 14px;
 }
 
@@ -984,16 +1041,21 @@ select.field__input {
 
 /* ---------- Animaciones de entrada al hacer scroll ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js .reveal {
+  /* Solo se ocultan los elementos que main.js marca como pendientes (los que
+     están fuera de la pantalla al cargar); lo visible al cargar nunca se oculta. */
+  .reveal.is-pending {
     opacity: 0;
     transform: translateY(18px);
+  }
+  .reveal.is-pending.is-visible {
+    opacity: 1;
+    transform: none;
     transition: opacity .6s ease, transform .7s var(--ease-out);
     transition-delay: var(--reveal-delay, 0s);
   }
-  .js .reveal.is-visible { opacity: 1; transform: none; }
   /* Tarjetas con hover conservan su transición propia una vez visibles */
-  .js .card.reveal.is-visible,
-  .js .service.reveal.is-visible {
+  .card.reveal.is-pending.is-visible,
+  .service.reveal.is-pending.is-visible {
     transition: opacity .6s ease var(--reveal-delay, 0s), transform .25s var(--ease-out), box-shadow .25s;
   }
 }

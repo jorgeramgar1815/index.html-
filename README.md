@@ -78,7 +78,7 @@ Los textos (títulos, servicios, productos, preguntas) están directamente en `i
 
 ## 2. Cambiar las fotos
 
-En el HTML hay comentarios `<!-- FOTO REAL: ... -->` que indican qué foto va en cada lugar. Por ahora el sitio usa **imágenes de relleno** (dicen "FOTO DE RELLENO").
+En el HTML hay comentarios `<!-- FOTO REAL: ... -->` que indican qué foto va en cada lugar y el texto `alt` sugerido. Por ahora el sitio usa **ilustraciones de marca** (cartilla de agudeza visual, armazones, lentes de sol, línea Kids y fachada) como relleno. Se ven terminadas, pero conviene cambiarlas por fotos reales del negocio.
 
 | Lugar | Archivos | Proporción | Tamaño mínimo |
 |---|---|---|---|
@@ -111,7 +111,7 @@ Por cada foto, exporta los dos anchos de la tabla en AVIF, WebP y JPG, con exact
 
 ### Después de cambiar una foto
 
-- Revisa que el texto `alt` de la imagen en `index.html` describa lo que realmente se ve.
+- Cambia el texto `alt` de la imagen en `index.html` por el "Alt sugerido" del comentario, o por uno que describa lo que realmente se ve.
 - Si la proporción de tu foto es distinta, el sitio la recorta al centro para conservar el diseño.
 
 ### Logo

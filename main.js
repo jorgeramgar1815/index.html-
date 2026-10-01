@@ -92,7 +92,26 @@
     var fin = promo.fechaFin ? Date.parse(promo.fechaFin) : NaN;
     var oculta = promo.mostrar === false || (!isNaN(fin) && Date.now() > fin);
     root.classList.toggle("sin-promo", oculta);
+    pintarCuentaRegresiva(fin, oculta);
     return oculta;
+  }
+
+  // "Termina hoy" / "Último día: mañana" / "Quedan N días" cuando faltan 7 días o menos
+  function pintarCuentaRegresiva(fin, oculta) {
+    var el = $("[data-promo-countdown]");
+    if (!el) return;
+    if (oculta || isNaN(fin)) { el.hidden = true; return; }
+    var hoy = ahoraNegocio();
+    var finPartes = fmtPartes ? (function () {
+      var o = {};
+      fmtPartes.formatToParts(new Date(fin)).forEach(function (p) { o[p.type] = p.value; });
+      return infoFecha(+o.year, +o.month, +o.day);
+    })() : null;
+    if (!finPartes) { el.hidden = true; return; }
+    var dias = Math.round((Date.UTC(finPartes.y, finPartes.m - 1, finPartes.d) - Date.UTC(hoy.y, hoy.m - 1, hoy.d)) / 86400000);
+    if (dias < 0 || dias > 7) { el.hidden = true; return; }
+    el.textContent = dias === 0 ? "Termina hoy" : dias === 1 ? "Último día: mañana" : "Quedan " + (dias + 1) + " días";
+    el.hidden = false;
   }
 
   /* ─────────────── Horario y zona horaria ─────────────── */
@@ -288,11 +307,11 @@
 
   /* ─────────────── Entradas al hacer scroll (con escalonado) ─────────────── */
   function iniciarReveal() {
-    var els = $$(".reveal");
-    if (reduceMotion.matches || !("IntersectionObserver" in window)) {
-      els.forEach(function (el) { el.classList.add("is-visible"); });
-      return;
-    }
+    if (reduceMotion.matches || !("IntersectionObserver" in window)) return;
+    // Lo que ya se ve al cargar queda tal cual; solo se animan los elementos de más abajo
+    var limite = window.innerHeight;
+    var els = $$(".reveal").filter(function (el) { return el.getBoundingClientRect().top > limite; });
+    els.forEach(function (el) { el.classList.add("is-pending"); });
     var io = new IntersectionObserver(function (entries) {
       var lote = 0;
       entries.forEach(function (en) {
