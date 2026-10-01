@@ -202,32 +202,6 @@ main:focus { outline: none; }
 
 ::selection { background: var(--azul-bruma); color: var(--tinta); }
 
-/* En móvil el texto y el enlace fluyen en línea para ocupar menos alto */
-.promo-bar {
-  padding: 7px var(--gutter);
-  background: var(--marino);
-  color: var(--blanco);
-  font-size: 13.5px;
-  line-height: 1.4;
-  text-align: center;
-  text-wrap: balance;
-}
-.promo-bar__text { display: inline; }
-.promo-bar strong { color: var(--azul-bruma); font-weight: 900; }
-.promo-bar__link {
-  display: inline-block;
-  margin-left: 8px;
-  padding-block: 2px;
-  color: var(--blanco);
-  font-weight: 800;
-  text-decoration: underline;
-  white-space: nowrap;
-}
-.promo-bar__link:hover { color: var(--azul-bruma); }
-/* Área táctil ≥ 44px sin agrandar la barra */
-.promo-bar__link { position: relative; }
-.promo-bar__link::after { content: ""; position: absolute; inset: -12px -10px; }
-
 .header-bar {
   display: flex;
   align-items: center;
@@ -1087,7 +1061,6 @@ select.field__input {
 /* ---------- Tabletas ---------- */
 @media (min-width: 600px) {
   :root { --gutter: 28px; }
-  .promo-bar { padding-block: 9px; font-size: 14px; }
   .field-row { grid-template-columns: 1fr 1fr; }
   .booking { padding: 30px 28px; }
 }
