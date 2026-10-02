@@ -29,6 +29,9 @@
     };
   }
 
+  /* ---------- Modo revisión: muestra los datos pendientes ---------- */
+  if (CFG.mostrarPendientes) document.documentElement.classList.add('show-pending');
+
   /* ---------- Enlaces de WhatsApp, teléfono, correo y redes ---------- */
   var waNumber = (function () {
     var raw = String(contacto.whatsapp || '').replace(/\D/g, '');
@@ -45,12 +48,13 @@
       a.href = waLink(mensajes[a.getAttribute('data-wa')] || mensajes.cita);
     });
 
-    if (!isTodo(contacto.whatsapp)) setText('[data-cfg="whatsapp-label"]', contacto.whatsapp);
+    if (!isTodo(contacto.whatsapp)) setText('[data-cfg="whatsapp-label"]', ' · ' + contacto.whatsapp);
 
     var tel = String(contacto.telefono || '').replace(/[^\d+]/g, '');
     if (tel) {
       $$('[data-tel]').forEach(function (el) {
         var a = toLink(el, 'tel:' + tel, false);
+        a.hidden = false;
         setText('[data-cfg="telefono-label"]', contacto.telefono, a);
       });
     }
@@ -67,18 +71,26 @@
       var url = contacto[el.getAttribute('data-social')];
       if (!isTodo(url)) {
         var a = toLink(el, url, true);
-        var pending = $('[data-pending]', a);
-        if (pending) pending.remove();
+        a.classList.remove('pending-block');
+        $$('.chip', a).forEach(function (c) { c.remove(); });
       }
     });
 
     if (!isTodo(contacto.direccion)) {
       setText('[data-cfg="direccion"]', contacto.direccion);
-      setText('[data-cfg="direccion-faq"]', contacto.direccion);
-      var faqChip = $('[data-cfg="direccion-faq"]');
-      if (faqChip) faqChip.classList.remove('chip');
+      setText('[data-cfg="direccion-faq"]', contacto.direccion + '.');
+      $$('[data-cfg="direccion"], [data-cfg="direccion-faq"]').forEach(function (el) {
+        var chip = el.parentNode.querySelector('.chip');
+        if (chip) chip.remove();
+      });
     }
-    if (!isTodo(contacto.referencia)) setText('[data-cfg="referencia"]', contacto.referencia);
+    if (!isTodo(contacto.referencia)) {
+      setText('[data-cfg="referencia"]', contacto.referencia);
+      var refChip = $('#fila-referencia .chip');
+      if (refChip) refChip.remove();
+    } else if (contacto.referencia === '') {
+      $('#fila-referencia').hidden = true;
+    }
 
     var q = encodeURIComponent(contacto.mapsQuery || 'Torreón, Coahuila');
     $$('[data-maps-link]').forEach(function (a) {
@@ -152,7 +164,7 @@
     var horario = CFG.horario || {};
     var days = DIAS.map(function (k) { return normDay(horario[k]); });
     var allTodo = days.every(function (d) { return d === 'TODO'; });
-    if (allTodo) return; // Se queda el marcador del diseño.
+    if (allTodo) return; // Se queda "Consulta nuestro horario por WhatsApp".
 
     var now = nowInTZ();
     var groups = [];
@@ -223,7 +235,8 @@
     var toggle = $('.menu-toggle');
     var nav = $('#menu-principal');
     var label = $('.menu-toggle__label', toggle);
-    var links = $$('.nav__link', nav);
+    var header = $('#site-header');
+    var links = $$('.nav__link, .nav__cta', nav);
     var mq = window.matchMedia('(min-width: 960px)');
 
     function isOpen() { return toggle.getAttribute('aria-expanded') === 'true'; }
@@ -231,6 +244,9 @@
       toggle.setAttribute('aria-expanded', 'true');
       label.textContent = 'Cerrar';
       nav.classList.add('is-open');
+      header.classList.add('is-open');
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.classList.add('has-menu');
       document.addEventListener('keydown', onKey);
       document.addEventListener('click', onOutside);
       setTimeout(function () { links[0].focus(); }, 50);
@@ -239,6 +255,9 @@
       toggle.setAttribute('aria-expanded', 'false');
       label.textContent = 'Menú';
       nav.classList.remove('is-open');
+      header.classList.remove('is-open');
+      document.documentElement.style.overflow = '';
+      document.documentElement.classList.remove('has-menu');
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('click', onOutside);
       if (returnFocus) toggle.focus();

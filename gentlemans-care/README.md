@@ -21,8 +21,13 @@ gentlemans-care/
 
 ## 1. Editar datos y promoción (`config.js`)
 
-Abre `config.js`; todo está comentado. Lo que dice `TODO` es un dato pendiente
-y la página muestra `[PENDIENTE]` mientras no se llene.
+Abre `config.js`; todo está comentado. Lo que dice `TODO` es un dato pendiente.
+Mientras falte, el sitio público muestra un texto genérico (por ejemplo
+"Consulta nuestro horario por WhatsApp") en lugar de dejar huecos.
+
+**Modo revisión:** pon `mostrarPendientes: true` para ver en la página todas las
+etiquetas `[PENDIENTE]`, `[PRECIO]`, `[CONFIRMAR]`… y saber qué falta. Regrésalo
+a `false` antes de compartir el sitio.
 
 | Campo | Qué hace |
 |---|---|
@@ -54,13 +59,15 @@ Si cambias de dominio, reemplaza `https://gentlemans-care-torreon.vercel.app` en
 
 ## 2. Cambiar las fotos
 
-Las imágenes actuales son **de relleno**. En `index.html` cada una tiene un
+Las imágenes actuales son **ilustraciones de relleno** (línea dorada) con la
+dirección de arte del sitio; no son fotos del negocio. En `index.html` cada una tiene un
 comentario `<!-- FOTO REAL: ... -->` que indica qué foto va y su tamaño mínimo.
 
 1. Prepara cada foto en dos anchos (los nombres deben coincidir):
 
    | Sección | Archivo | Proporción | Anchos |
    |---|---|---|---|
+   | Nosotros | `nosotros` (retrato de Edy o del equipo) | 4:5 vertical | 560 y 1120 |
    | El local | `fachada` | 4:5 vertical | 600 y 1200 |
    | El local | `interior-1` (interior general) | 4:3 horizontal | 640 y 1280 |
    | El local | `interior-2` (sillones), `interior-3` (detalles) | 1:1 | 480 y 960 |

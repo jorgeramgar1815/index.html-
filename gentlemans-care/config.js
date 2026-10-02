@@ -5,13 +5,18 @@
  *  Edita SOLO este archivo para cambiar datos de contacto, horario,
  *  mensajes de WhatsApp y promoción. Todo lo que diga "TODO" es un
  *  dato pendiente de confirmar con el negocio: mientras siga así,
- *  la página muestra la etiqueta "[PENDIENTE]".
+ *  la página muestra un texto genérico ("Consulta por WhatsApp")
+ *  y, en modo revisión (mostrarPendientes: true), la etiqueta [PENDIENTE].
  *
  *  Nota: título, meta descripción, JSON-LD y Open Graph están en
  *  <head> de index.html (son estáticos para SEO). Si cambias aquí
  *  la dirección o el teléfono, actualiza también el JSON-LD.
  */
 window.SITE_CONFIG = {
+  // Modo revisión: true muestra en la página las etiquetas [PENDIENTE], [PRECIO]…
+  // para ver qué datos faltan. Déjalo en false en el sitio público.
+  mostrarPendientes: false,
+
   negocio: {
     nombre: "Gentleman's Care",
     giro: 'Peluquería y Spa',
@@ -25,7 +30,7 @@ window.SITE_CONFIG = {
     telefono: '', // TODO: teléfono (ej. '871 123 4567')
     email: '', // TODO: correo (opcional)
     direccion: '', // TODO: plaza y número de local
-    // Al confirmar la referencia, quita el prefijo 'TODO: ' (así desaparece la etiqueta [CONFIRMAR]).
+    // Al confirmar la referencia, quita el prefijo 'TODO: '. Déjala vacía ('') para ocultar la fila.
     referencia: 'TODO: A un lado de LOOP Specialty Coffee Roasters',
     // Texto que se busca en Google Maps (mapa y botón "Abrir en Google Maps").
     mapsQuery: 'Torreón, Coahuila', // TODO: cambiar por la dirección exacta o el nombre en Google Maps
