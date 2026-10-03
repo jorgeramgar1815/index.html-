@@ -1,9 +1,8 @@
 # Mantiene activo el proyecto gratuito de Supabase de las reservaciones de Dental MX.
 # Supabase pausa los proyectos gratis tras 7 días sin actividad; esta consulta
 # semanal (de sólo lectura) lo evita.
-# Configura en GitHub → Settings → Secrets and variables → Actions → Variables:
-#   SUPABASE_URL       https://<ref>.supabase.co
-#   SUPABASE_ANON_KEY  la anon key pública del proyecto
+# Usa la URL y la anon key públicas del proyecto (las mismas que ya están en el HTML del
+# sitio). Se pueden sobrescribir con variables de Actions SUPABASE_URL / SUPABASE_ANON_KEY.
 name: Supabase keep-alive
 
 on:
@@ -17,8 +16,8 @@ jobs:
     steps:
       - name: Consultar datos de reserva
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || 'https://pfqswksorjvxtpbcuoam.supabase.co' }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXN3a3Nvcmp2eHRwYmN1b2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5ODcwNzQsImV4cCI6MjEwNjU2MzA3NH0.T9qTFQNKhmDrAjV8tjWnCoPkrU5P34YfjG9py63CLow' }}
         run: |
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
             echo "Variables SUPABASE_URL / SUPABASE_ANON_KEY sin configurar; se omite."
@@ -26,6 +25,7 @@ jobs:
           fi
           curl -fsS -X POST "$SUPABASE_URL/rest/v1/rpc/datos_reserva" \
             -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             -H "Content-Type: application/json" \
             -d '{"p_slug":"dental-mx"}' > /dev/null
           echo "Supabase respondió correctamente."

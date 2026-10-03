@@ -140,7 +140,7 @@ Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan grat
 - [x] Variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` en Vercel (production, preview, development).
 - [ ] Correo de avisos: falta la `RESEND_API_KEY` (secreto en Supabase → Edge Functions) y `negocios.email_notificaciones`.
 - [ ] Desactivar el registro público en Supabase → Authentication → Sign In / Providers → "Allow new users to sign up".
-- [ ] Variables de GitHub Actions `SUPABASE_URL` y `SUPABASE_ANON_KEY` para el keep-alive (el workflow corre desde `main`).
+- [x] Keep-alive con la URL y anon key públicas en el workflow (GitHub sólo programa workflows de la rama `main`: se activa al fusionar).
 - [ ] Borrar la cita de prueba "Prueba Sistema" (quedó cancelada; no ocupa horario).
 
 ## Criterios de aceptación
