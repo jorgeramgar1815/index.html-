@@ -3,7 +3,7 @@
 Software de reservas en línea para negocios (clínicas, estéticas, barberías, consultorios…). Diseño propio y neutro: de cada negocio sólo se muestran su nombre, giro, dirección, servicios y horario.
 
 - **`/<slug>`** — página de reservas del negocio (ej. [`/dental-mx`](https://agendo-reservas.vercel.app/dental-mx)). `?servicio=<clave>` llega con el servicio elegido.
-- **`/panel`** — panel del negocio: inicio del día, agenda (día / semana), bloqueos y "Mi página". Avisos de cita nueva dentro del panel (campana + bandeja), en tiempo real con sonido y notificación.
+- **`/panel`** — panel del negocio: inicio del día, agenda (día / semana), historial anual, bloqueos y "Mi página". Avisos de cita nueva dentro del panel (campana + bandeja), en tiempo real con sonido y notificación.
 - **`/`** — página del producto.
 
 Producción: <https://agendo-reservas.vercel.app> (proyecto Vercel `agendo`, raíz `agendo/`).
@@ -12,7 +12,7 @@ Producción: <https://agendo-reservas.vercel.app> (proyecto Vercel `agendo`, ra�
 
 - `supabase/migrations/` — esquema + RLS, funciones RPC, tiempo real, perfil del negocio, avisos en el panel.
 - `supabase/seed.sql` — Dental MX (simulado). `supabase/configurar.sql` — liga el usuario del panel.
-- `supabase/tests/pruebas_reservas.sql` — 36 reglas (hace ROLLBACK).
+- `supabase/tests/pruebas_reservas.sql` — 42 reglas (hace ROLLBACK).
 
 ### Agregar otro negocio
 

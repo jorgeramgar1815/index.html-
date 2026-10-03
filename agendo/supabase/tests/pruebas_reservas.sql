@@ -221,4 +221,29 @@ select pg_temp.ok(pg_temp.error_de(format($$select public.crear_cita('dental-mx'
 from ref;
 reset role;
 
+
+-- ─── Historial anual ────────────────────────────────────────────────────────
+-- Una cita atendida el año pasado (insertada directo: crear_cita sólo acepta fechas futuras).
+insert into public.citas (negocio_id, servicio_id, inicio, fin, nombre, telefono, estado)
+select negocio, valoracion, make_timestamptz(extract(year from now())::int - 1, 6, 15, 10, 0, 0, 'America/Monterrey'),
+       make_timestamptz(extract(year from now())::int - 1, 6, 15, 10, 30, 0, 'America/Monterrey'), 'Pasada', '8719990000', 'confirmada'
+from ref;
+
+select pg_temp.ok(public.cerrar_anio() = 1 and public.cerrar_anio() = 1, 'cerrar_anio cierra el año anterior (y se puede repetir)');
+
+select pg_temp.ok((select atendidas = 1 and clientes = 1 and (por_mes ->> 5)::int = 1 and por_servicio -> 0 ->> 'servicio' = 'Valoración'
+                   from public.historiales_anuales where anio = extract(year from now())::int - 1),
+  'el resumen anual cuenta atendidas, clientes, mes y servicio');
+
+select pg_temp.ok((select count(*) from public.avisos where tipo = 'historial_anual') = 1,
+  'al cerrar el año queda un solo aviso en el panel');
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a002';
+select pg_temp.ok((select count(*) from public.historiales_anuales) = 0, 'otro usuario no ve el historial del negocio');
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a001';
+select pg_temp.ok((select count(*) from public.historiales_anuales) = 1, 'la clínica ve su historial anual');
+select pg_temp.ok(pg_temp.error_de($$select public.cerrar_anio()$$) like '%permission denied%', 'la clínica no puede cerrar años a mano');
+reset role;
+
 rollback;

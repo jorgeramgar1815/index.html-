@@ -12,6 +12,7 @@ import { icono, type NombreIcono } from '../scripts/iconos';
 const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
   { id: 'inicio', nombre: 'Inicio', icono: 'inicio' },
   { id: 'agenda', nombre: 'Agenda', icono: 'agenda' },
+  { id: 'historial', nombre: 'Historial', icono: 'historial' },
   { id: 'bloqueos', nombre: 'Bloqueos', icono: 'bloqueos' },
   { id: 'pagina', nombre: 'Mi página', icono: 'pagina' },
 ];
@@ -180,6 +181,42 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                 <div class="mt-5" data-p-agenda />
               </section>
 
+              <!-- Historial -->
+              <section data-seccion="historial" aria-labelledby="t-historial" hidden>
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h1 id="t-historial" class="text-2xl font-bold tracking-tight sm:text-3xl">Historial</h1>
+                    <p class="mt-1 text-suave">Las citas atendidas de cada año. El 1 de enero se cierra el año anterior y se guarda su resumen.</p>
+                  </div>
+                </div>
+                <div class="mt-5 flex flex-wrap items-center gap-2" role="group" aria-label="Año" data-p-anios />
+                <p class="mt-3 flex items-center gap-2 text-sm text-suave" data-p-anio-estado />
+                <div class="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4" data-p-hist-kpis>
+                  {[1, 2, 3, 4].map(() => <div class="esqueleto h-[6.5rem] rounded-[var(--radius-tarjeta)]" />)}
+                </div>
+                <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+                  <section class="tarjeta p-5 sm:p-6" aria-labelledby="t-hist-meses">
+                    <h2 id="t-hist-meses" class="text-lg font-bold">Citas atendidas por mes</h2>
+                    <div class="mt-5" data-p-hist-meses><div class="esqueleto h-48" /></div>
+                  </section>
+                  <section class="tarjeta p-5 sm:p-6" aria-labelledby="t-hist-servicios">
+                    <h2 id="t-hist-servicios" class="text-lg font-bold">Por servicio</h2>
+                    <div class="mt-5" data-p-hist-servicios><div class="esqueleto h-48" /></div>
+                  </section>
+                </div>
+                <section class="tarjeta mt-6 p-5 sm:p-6" aria-labelledby="t-hist-lista">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <h2 id="t-hist-lista" class="basis-full text-lg font-bold sm:basis-auto sm:flex-1">Citas atendidas</h2>
+                    <label class="relative min-w-0 basis-full sm:max-w-xs sm:flex-1 sm:basis-auto">
+                      <span class="sr-only">Buscar</span>
+                      <input type="search" class="w-full rounded-xl border border-borde bg-superficie px-3.5 py-2.5 text-sm focus:border-marca focus:outline-none focus:ring-4 focus:ring-marca-100" placeholder="Buscar nombre, teléfono o servicio" data-p-hist-buscar />
+                    </label>
+                    <button type="button" class="btn btn-secundario min-h-10 px-4 text-sm max-sm:w-full" data-p-hist-descargar><Fragment set:html={icono('descargar', 18)} />Descargar Excel</button>
+                  </div>
+                  <div class="mt-4" data-p-hist-lista><div class="esqueleto h-40" /></div>
+                </section>
+              </section>
+
               <!-- Bloqueos -->
               <section data-seccion="bloqueos" aria-labelledby="t-bloqueos" hidden>
                 <h1 id="t-bloqueos" class="text-2xl font-bold tracking-tight sm:text-3xl">Bloqueos</h1>
@@ -241,7 +278,7 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
           </main>
 
           <!-- Pestañas (móvil) -->
-          <nav class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-borde bg-superficie/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Secciones">
+          <nav class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-borde bg-superficie/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Secciones">
             {
               secciones.map((s) => (
                 <a href={`#${s.id}`} class="p-tab" data-ir={s.id}>
@@ -393,6 +430,26 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
     .p-bloque[data-estado='pendiente'] { background: var(--color-pendiente-50); border-color: #f59e0b; }
     .p-bloque[data-estado='confirmada'] { background: var(--color-confirmada-50); border-color: #10b981; }
     .p-bloque[data-estado='cancelada'] { opacity: 0.6; text-decoration: line-through; }
+
+    .p-barras { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.4rem; align-items: end; height: 11rem; border-bottom: 1px solid var(--color-borde); }
+    .p-barra { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .p-barra-col { width: 100%; max-width: 2.4rem; border-radius: 4px 4px 0 0; background: var(--color-marca); min-height: 2px; transition: filter 0.15s; }
+    .p-barra[data-cero] .p-barra-col { background: var(--color-borde); }
+    .p-barra[data-futuro] .p-barra-col { background: transparent; }
+    .p-barra:hover .p-barra-col, .p-barra:focus-visible .p-barra-col { filter: brightness(1.15); }
+    .p-barra-valor { position: absolute; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 700; color: var(--color-texto); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .p-barra-tip {
+      position: absolute; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none; opacity: 0;
+      white-space: nowrap; border-radius: 0.5rem; background: #101828; color: #fff; padding: 0.3rem 0.55rem; font-size: 0.75rem; font-weight: 600; transition: opacity 0.12s;
+    }
+    .p-barra:nth-child(-n + 2) .p-barra-tip { left: 0; transform: none; }
+    .p-barra:nth-child(n + 11) .p-barra-tip { left: auto; right: 0; transform: none; }
+    .p-barra:hover .p-barra-tip, .p-barra:focus-visible .p-barra-tip { opacity: 1; }
+    .p-barras-meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.4rem; margin-top: 0.4rem; text-align: center; font-size: 0.7rem; font-weight: 600; color: var(--color-tenue); }
+    .p-mes > summary { list-style: none; cursor: pointer; }
+    .p-mes > summary::-webkit-details-marker { display: none; }
+    .p-mes > summary .p-mes-flecha { transition: transform 0.2s; }
+    .p-mes[open] > summary .p-mes-flecha { transform: rotate(90deg); }
 
     .p-switch {
       appearance: none; position: relative; width: 2.75rem; height: 1.6rem; border-radius: 999px; background: #d4d8e3; cursor: pointer;

@@ -23,12 +23,16 @@ type Cita = {
 type Bloqueo = { id: string; inicio: string; fin: string; motivo: string | null };
 type Servicio = { id: string; nombre: string; duracion_min: number; activo: boolean };
 type Horario = { dia_semana: number; abre: string; cierra: string };
-type Seccion = 'inicio' | 'agenda' | 'bloqueos' | 'pagina';
+type Seccion = 'inicio' | 'agenda' | 'historial' | 'bloqueos' | 'pagina';
+type Historial = {
+  anio: number; atendidas: number; canceladas: number; sin_confirmar: number; clientes: number;
+  por_servicio: { servicio: string; total: number }[]; por_mes: number[]; cerrado_en: string;
+};
 type Aviso = {
-  id: string; cita_id: string | null; tipo: 'cita_nueva'; creado_en: string; leido_en: string | null;
+  id: string; cita_id: string | null; tipo: 'cita_nueva' | 'historial_anual'; anio: number | null; creado_en: string; leido_en: string | null;
   citas: { nombre: string; inicio: string; estado: Estado; servicios: { nombre: string } | null } | null;
 };
-const CAMPOS_AVISO = 'id, cita_id, tipo, creado_en, leido_en, citas(nombre, inicio, estado, servicios(nombre))';
+const CAMPOS_AVISO = 'id, cita_id, tipo, anio, creado_en, leido_en, citas(nombre, inicio, estado, servicios(nombre))';
 
 const raiz = document.getElementById('panel');
 if (!raiz) throw new Error('Panel sin configurar');
@@ -142,7 +146,7 @@ function pintarNegocio() {
 }
 
 // ─── Navegación ───────────────────────────────────────────────────────────────
-const SECCIONES: Seccion[] = ['inicio', 'agenda', 'bloqueos', 'pagina'];
+const SECCIONES: Seccion[] = ['inicio', 'agenda', 'historial', 'bloqueos', 'pagina'];
 const seccionDeHash = (): Seccion => {
   const h = location.hash.slice(1) as Seccion;
   return SECCIONES.includes(h) ? h : 'inicio';
@@ -160,6 +164,7 @@ window.addEventListener('hashchange', () => st.negocioId && irA(seccionDeHash())
 function cargarSeccion() {
   if (st.seccion === 'inicio') return cargarInicio();
   if (st.seccion === 'agenda') return cargarAgenda();
+  if (st.seccion === 'historial') return cargarHistorial();
   if (st.seccion === 'bloqueos') return cargarBloqueos();
   return cargarPagina();
 }
@@ -534,6 +539,209 @@ async function cargarAgenda() {
     <div class="lg:hidden">${citas.length ? listas : vacio(`Sin citas${filtroTxt} esta semana.`)}</div>`;
 }
 
+// ─── Historial anual ──────────────────────────────────────────────────────────
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const hist = { anio: 0, atendidas: [] as Cita[], cerrados: new Map<number, Historial>(), primerAnio: 0 };
+const anioActual = () => Number(hoy().slice(0, 4));
+const numero = (n: number) => n.toLocaleString('es-MX');
+
+/** Todas las citas de un año (PostgREST entrega máximo 1000 por consulta). */
+async function citasDelAnio(anio: number) {
+  const desde = aInstante(`${anio}-01-01`, '00:00', zona()).toISOString();
+  const hasta = aInstante(`${anio + 1}-01-01`, '00:00', zona()).toISOString();
+  const todas: Cita[] = [];
+  for (let i = 0; ; i += 1000) {
+    const { data, error } = await supabase
+      .from('citas').select(CAMPOS_CITA).eq('negocio_id', st.negocioId)
+      .gte('inicio', desde).lt('inicio', hasta).order('inicio').range(i, i + 999);
+    if (error) throw error;
+    todas.push(...(data as unknown as Cita[]));
+    if (!data || data.length < 1000) return todas;
+  }
+}
+
+/** Resumen calculado en el momento (año en curso o años sin cerrar). */
+function resumenEnVivo(anio: number, citas: Cita[]): Historial {
+  const ahora = Date.now();
+  const atendidas = citas.filter((c) => c.estado === 'confirmada' && Date.parse(c.fin) <= ahora);
+  const porServicio = new Map<string, number>();
+  const porMes = Array(12).fill(0) as number[];
+  atendidas.forEach((c) => {
+    const s = c.servicios?.nombre ?? 'Cita';
+    porServicio.set(s, (porServicio.get(s) ?? 0) + 1);
+    porMes[Number(fechaDe(c.inicio).slice(5, 7)) - 1]++;
+  });
+  return {
+    anio,
+    atendidas: atendidas.length,
+    canceladas: citas.filter((c) => c.estado === 'cancelada').length,
+    sin_confirmar: citas.filter((c) => c.estado === 'pendiente' && Date.parse(c.fin) <= ahora).length,
+    clientes: new Set(atendidas.map((c) => c.telefono)).size,
+    por_servicio: [...porServicio].map(([servicio, total]) => ({ servicio, total })).sort((a, b) => b.total - a.total),
+    por_mes: porMes,
+    cerrado_en: '',
+  };
+}
+
+async function cargarHistorial() {
+  const actual = anioActual();
+  if (!hist.primerAnio) {
+    const [cerrados, primera] = await Promise.all([
+      supabase.from('historiales_anuales').select('*').eq('negocio_id', st.negocioId),
+      supabase.from('citas').select('inicio').eq('negocio_id', st.negocioId).order('inicio').limit(1).maybeSingle(),
+    ]);
+    ((cerrados.data ?? []) as Historial[]).forEach((h) => hist.cerrados.set(h.anio, h));
+    const primerCita = primera.data ? Number(fechaDe((primera.data as { inicio: string }).inicio).slice(0, 4)) : actual;
+    hist.primerAnio = Math.min(primerCita, ...hist.cerrados.keys(), actual);
+  }
+  if (!hist.anio) hist.anio = actual;
+  const anios = Array.from({ length: actual - hist.primerAnio + 1 }, (_, i) => actual - i);
+  $('[data-p-anios]').innerHTML = anios
+    .map((a) => `<button type="button" class="chip" data-anio="${a}" aria-pressed="${a === hist.anio}">${a}${a === actual ? ' · en curso' : ''}</button>`)
+    .join('');
+
+  const cerrado = hist.cerrados.get(hist.anio);
+  $('[data-p-anio-estado]').innerHTML =
+    hist.anio === actual
+      ? `<span class="estado shrink-0" data-estado="pendiente">En curso</span> Se cierra el 1 de enero de ${actual + 1}. Los números se actualizan solos.`
+      : cerrado
+        ? `<span class="estado shrink-0" data-estado="confirmada">Cerrado</span> Resumen guardado el ${esc(fechaLarga(fechaDe(cerrado.cerrado_en), { day: 'numeric', month: 'long', year: 'numeric' }))}.`
+        : `<span class="estado shrink-0" data-estado="cancelada">Terminado</span> Año anterior a los resúmenes automáticos; calculado con las citas guardadas.`;
+
+  $('[data-p-hist-lista]').innerHTML = '<div class="esqueleto h-40"></div>';
+  const anio = hist.anio;
+  let citas: Cita[];
+  try {
+    citas = await citasDelAnio(anio);
+  } catch (e) {
+    $('[data-p-hist-lista]').innerHTML = errorCarga((e as Error).message);
+    return;
+  }
+  if (anio !== hist.anio) return; // cambió de año mientras cargaba
+  const ahora = Date.now();
+  hist.atendidas = citas.filter((c) => c.estado === 'confirmada' && Date.parse(c.fin) <= ahora).reverse();
+  recordar(hist.atendidas);
+  const r = cerrado ?? resumenEnVivo(anio, citas);
+
+  const kpi = (ico: Parameters<typeof icono>[0], valor: number, etiqueta: string, color: string) => `
+    <div class="tarjeta p-kpi">
+      <span class="p-kpi-icono ${color}">${icono(ico, 20)}</span>
+      <div><p class="text-3xl font-bold tracking-tight tabular-nums">${numero(valor)}</p><p class="text-sm font-medium text-suave">${etiqueta}</p></div>
+    </div>`;
+  $('[data-p-hist-kpis]').innerHTML = [
+    kpi('check', r.atendidas, 'Citas atendidas', 'bg-confirmada-50 text-confirmada'),
+    kpi('usuarios', r.clientes, r.clientes === 1 ? 'Cliente atendido' : 'Clientes atendidos', 'bg-marca-50 text-marca'),
+    kpi('x', r.canceladas, 'Canceladas', 'bg-cancelada-50 text-cancelada'),
+    kpi('pendiente', r.sin_confirmar, 'Pasaron sin confirmar', 'bg-pendiente-50 text-pendiente'),
+  ].join('');
+
+  // Por mes: una serie (color de marca), valor al pasar el cursor y etiqueta sólo en el máximo.
+  const max = Math.max(...r.por_mes, 0);
+  const mesActual = anio === actual ? Number(hoy().slice(5, 7)) - 1 : 11;
+  const iMax = r.por_mes.indexOf(max);
+  $('[data-p-hist-meses]').innerHTML = r.atendidas
+    ? `<div class="p-barras" role="img" aria-label="${esc(r.por_mes.map((v, i) => `${MESES_LARGOS[i]}: ${v}`).join(', '))}">
+        ${r.por_mes
+          .map((v, i) => {
+            const futuro = i > mesActual;
+            const alto = max ? Math.max((v / max) * 100, v ? 3 : 0) : 0;
+            return `<button type="button" class="p-barra" ${v ? '' : 'data-cero'} ${futuro ? 'data-futuro' : ''} aria-label="${MESES_LARGOS[i]}: ${v} citas">
+              <span class="p-barra-col" style="height:${futuro ? 0 : alto}%"></span>
+              ${i === iMax && max ? `<span class="p-barra-valor" style="bottom:calc(${alto}% + 0.3rem)">${numero(v)}</span>` : ''}
+              <span class="p-barra-tip" style="bottom:calc(${futuro ? 0 : alto}% + ${i === iMax ? '1.7rem' : '0.4rem'})">${MESES_LARGOS[i][0]!.toUpperCase() + MESES_LARGOS[i].slice(1)}: ${futuro ? 'aún no llega' : `${numero(v)} ${v === 1 ? 'cita' : 'citas'}`}</span>
+            </button>`;
+          })
+          .join('')}
+      </div>
+      <div class="p-barras-meses" aria-hidden="true">${MESES.map((m) => `<span>${m}</span>`).join('')}</div>`
+    : vacio(anio === actual ? 'Aún no hay citas atendidas este año.' : 'No hubo citas atendidas este año.', 'historial');
+
+  const topServicio = r.por_servicio[0]?.total ?? 0;
+  $('[data-p-hist-servicios]').innerHTML = r.por_servicio.length
+    ? `<ul class="grid gap-3.5">${r.por_servicio
+        .map(
+          (s) => `
+        <li>
+          <div class="flex items-baseline justify-between gap-3 text-sm">
+            <span class="min-w-0 truncate font-semibold">${esc(s.servicio)}</span>
+            <span class="shrink-0 tabular-nums text-suave"><b class="text-texto">${numero(s.total)}</b> · ${Math.round((s.total / r.atendidas) * 100)}%</span>
+          </div>
+          <div class="mt-1.5 h-2 rounded-full bg-fondo"><div class="h-2 rounded-full bg-marca" style="width:${(s.total / topServicio) * 100}%"></div></div>
+        </li>`,
+        )
+        .join('')}</ul>`
+    : vacio('Sin servicios atendidos.', 'historial');
+
+  pintarListaHistorial();
+}
+
+function pintarListaHistorial() {
+  const q = $<HTMLInputElement>('[data-p-hist-buscar]').value.trim().toLowerCase();
+  const filtradas = q
+    ? hist.atendidas.filter((c) => `${c.nombre} ${c.telefono} ${c.servicios?.nombre ?? ''}`.toLowerCase().includes(q))
+    : hist.atendidas;
+  const caja = $('[data-p-hist-lista]');
+  if (!filtradas.length) {
+    caja.innerHTML = vacio(q ? 'Nada coincide con tu búsqueda.' : 'Todavía no hay citas atendidas en este año.', 'historial');
+    return;
+  }
+  const porMes = new Map<number, Cita[]>();
+  filtradas.forEach((c) => {
+    const m = Number(fechaDe(c.inicio).slice(5, 7)) - 1;
+    porMes.set(m, [...(porMes.get(m) ?? []), c]);
+  });
+  caja.innerHTML = `<div class="grid gap-2">${[...porMes]
+    .map(
+      ([m, lista], i) => `
+      <details class="p-mes rounded-xl border border-borde" ${i === 0 || q ? 'open' : ''}>
+        <summary class="flex items-center gap-3 px-4 py-3">
+          <span class="p-mes-flecha text-tenue">${icono('der', 16)}</span>
+          <span class="flex-1 font-bold first-letter:uppercase">${MESES_LARGOS[m]}</span>
+          <span class="text-sm tabular-nums text-suave">${plural(lista.length, 'cita', 'citas')}</span>
+        </summary>
+        <ul class="divide-y divide-borde border-t border-borde">${lista
+          .map(
+            (c) => `
+          <li><button type="button" class="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-0.5 px-4 py-2.5 text-left text-sm hover:bg-fondo sm:flex sm:items-center" data-ver-cita="${c.id}">
+            <span class="order-3 col-span-2 tabular-nums text-suave first-letter:uppercase sm:order-none sm:w-28 sm:shrink-0">${esc(fechaLarga(fechaDe(c.inicio), { weekday: 'short', day: 'numeric' }))} · ${hora(c.inicio)}</span>
+            <span class="min-w-0 truncate font-semibold sm:flex-1">${esc(c.nombre)}</span>
+            <span class="text-right text-suave">${esc(c.servicios?.nombre ?? 'Cita')}</span>
+            <span class="hidden tabular-nums text-tenue sm:inline">${telefonoBonito(c.telefono)}</span>
+          </button></li>`,
+          )
+          .join('')}</ul>
+      </details>`,
+    )
+    .join('')}</div>`;
+}
+
+document.addEventListener('click', (e) => {
+  const b = (e.target as Element).closest<HTMLElement>('[data-anio]');
+  if (!b) return;
+  hist.anio = Number(b.dataset.anio);
+  $<HTMLInputElement>('[data-p-hist-buscar]').value = '';
+  cargarHistorial();
+});
+$('[data-p-hist-buscar]').addEventListener('input', pintarListaHistorial);
+
+$('[data-p-hist-descargar]').addEventListener('click', () => {
+  if (!hist.atendidas.length) return toast('No hay citas atendidas para descargar');
+  const celda = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const filas = [
+    ['Fecha', 'Hora', 'Cliente', 'Teléfono', 'Servicio', 'Nota'],
+    ...[...hist.atendidas].reverse().map((c) => [fechaDe(c.inicio), hora(c.inicio), c.nombre, c.telefono, c.servicios?.nombre ?? '', c.nota ?? '']),
+  ];
+  // BOM para que Excel abra bien los acentos.
+  const csv = '﻿' + filas.map((f) => f.map(celda).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `historial-${st.negocio.slug}-${hist.anio}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast(`Descargado: ${plural(hist.atendidas.length, 'cita', 'citas')} de ${hist.anio}`);
+});
+
 // ─── Bloqueos ─────────────────────────────────────────────────────────────────
 const formBloqueo = $<HTMLFormElement>('#form-bloqueo');
 const campoB = (n: string) => formBloqueo.elements.namedItem(n) as HTMLInputElement;
@@ -793,6 +1001,17 @@ function pintarBandeja() {
     ? `<div class="grid gap-1">${st.avisos
         .map((a) => {
           const c = a.citas;
+          if (a.tipo === 'historial_anual') {
+            return `
+          <button type="button" class="p-aviso" data-aviso="${a.id}" ${a.leido_en ? '' : 'data-nuevo'}>
+            <span class="grid size-10 shrink-0 place-items-center rounded-full ${a.leido_en ? 'bg-fondo text-tenue' : 'bg-white text-marca shadow-sm'}">${icono('historial', 18)}</span>
+            <span class="min-w-0 flex-1 pr-4">
+              <span class="block text-sm font-bold text-texto">Tu historial ${a.anio} está listo</span>
+              <span class="mt-0.5 block text-sm text-suave">Se cerró el año: mira tus citas atendidas y descárgalas.</span>
+              <span class="mt-1 block text-xs text-tenue">${haceCuanto(a.creado_en)}</span>
+            </span>
+          </button>`;
+          }
           return `
           <button type="button" class="p-aviso" data-aviso="${a.id}" ${a.leido_en ? '' : 'data-nuevo'}>
             <span class="grid size-10 shrink-0 place-items-center rounded-full ${a.leido_en ? 'bg-fondo text-tenue' : 'bg-white text-marca shadow-sm'}">${icono('agenda', 18)}</span>
@@ -845,6 +1064,13 @@ $('[data-p-bandeja-lista]').addEventListener('click', async (e) => {
   const a = b && st.avisos.find((x) => x.id === b.dataset.aviso);
   if (!a) return;
   if (!a.leido_en) marcarLeidos([a.id]);
+  if (a.tipo === 'historial_anual' && a.anio) {
+    hist.anio = a.anio;
+    bandeja.close();
+    if (location.hash === '#historial') cargarHistorial();
+    else location.hash = 'historial';
+    return;
+  }
   if (!a.cita_id) return;
   if (!st.citas.has(a.cita_id)) {
     const { data } = await supabase.from('citas').select(CAMPOS_CITA).eq('id', a.cita_id).maybeSingle();
@@ -863,6 +1089,10 @@ async function avisoNuevo(id: string) {
   if (!a) return;
   st.avisos = [a, ...st.avisos].slice(0, 40);
   pintarBandeja();
+  if (a.tipo === 'historial_anual') {
+    toast(`Tu historial ${a.anio} está listo`, true);
+    return;
+  }
   const resumen = a.citas ? `${a.citas.nombre} · ${resumenCita(a.citas)}` : 'Revisa tu agenda';
   toast(`Nueva cita: ${resumen}`, true);
   sonar();
