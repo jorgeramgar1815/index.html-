@@ -4,7 +4,7 @@
  *   citas por confirmar (botones grandes) y la línea del día.
  * - Agenda por día o semana con filtros; detalle de cita en un diálogo.
  * - Bloqueos de días u horas.
- * - Mi página: enlace de reservas (copiar / abrir / compartir), servicios visibles y horario.
+ * - Mi negocio: enlace de reservas (copiar / abrir / compartir) y edición de datos, horario y servicios.
  * - Avisos dentro del panel: cada cita nueva deja un aviso guardado (tabla `avisos`).
  *   Campana con contador y bandeja; llegan en tiempo real con sonido, notificación del
  *   navegador y título de la pestaña, con consulta periódica de respaldo. Los avisos
@@ -14,6 +14,7 @@ import { createClient, type RealtimeChannel } from '@supabase/supabase-js';
 import { aInstante, fechaEnZona, horaEnZona, sumarDias, diaSemana, fechaLarga } from './zona';
 import { esc, iniciales } from './api';
 import { icono, ICONO_WA } from './iconos';
+import { editorHorario, activarHorario, leerHorario, opcionesDuracion, type Tramo } from './horario';
 
 type Estado = 'pendiente' | 'confirmada' | 'cancelada';
 type Cita = {
@@ -21,8 +22,6 @@ type Cita = {
   estado: Estado; creada_en: string; servicios: { nombre: string } | null;
 };
 type Bloqueo = { id: string; inicio: string; fin: string; motivo: string | null };
-type Servicio = { id: string; nombre: string; duracion_min: number; activo: boolean };
-type Horario = { dia_semana: number; abre: string; cierra: string };
 type Seccion = 'inicio' | 'agenda' | 'historial' | 'bloqueos' | 'pagina';
 type Historial = {
   anio: number; atendidas: number; canceladas: number; sin_confirmar: number; clientes: number;
@@ -861,67 +860,181 @@ document.addEventListener('click', async (e) => {
   cargarBloqueos();
 });
 
-// ─── Mi página ────────────────────────────────────────────────────────────────
+// ─── Mi negocio: enlace, datos, horario y servicios ──────────────────────────
 const enlacePagina = () => `${location.origin}/${st.negocio.slug}`;
-const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+type ServicioEditable = { id: string | null; clave: string | null; nombre: string; duracion_min: number; activo: boolean; borrar?: boolean };
+let serviciosEdit: ServicioEditable[] = [];
+
+const soloDigitos = (t: string) => {
+  let d = t.replace(/\D/g, '');
+  if (d.length === 13 && d.startsWith('521')) d = d.slice(3);
+  else if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
+  return d;
+};
+const mostrarError = (sel: string, texto: string | null) => {
+  const x = $(sel);
+  x.hidden = !texto;
+  x.textContent = texto ?? '';
+};
 
 async function cargarPagina() {
   const url = enlacePagina();
   $('[data-p-enlace]').textContent = url.replace(/^https?:\/\//, '');
   $<HTMLAnchorElement>('[data-p-abrir]').href = url;
-  const [serv, hor] = await Promise.all([
-    supabase.from('servicios').select('id, nombre, duracion_min, activo').eq('negocio_id', st.negocioId).order('orden'),
+  const [neg, serv, hor] = await Promise.all([
+    supabase.from('negocios').select('nombre, giro, direccion, whatsapp').eq('id', st.negocioId).single(),
+    supabase.from('servicios').select('id, clave, nombre, duracion_min, activo').eq('negocio_id', st.negocioId).order('orden').order('nombre'),
     supabase.from('horarios').select('dia_semana, abre, cierra').eq('negocio_id', st.negocioId).order('abre'),
     contarPendientes(),
   ]);
-  const cajaS = $('[data-p-servicios]');
-  if (serv.error) cajaS.innerHTML = errorCarga(serv.error.message);
-  else
-    cajaS.innerHTML = `<ul class="divide-y divide-borde">${(serv.data as Servicio[])
-      .map(
-        (s) => `
-        <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-          <div class="min-w-0 flex-1">
-            <p class="font-semibold ${s.activo ? '' : 'text-tenue'}">${esc(s.nombre)}</p>
-            <p class="flex items-center gap-1 text-sm text-suave">${icono('reloj', 14)}${s.duracion_min} min${s.activo ? '' : ' · oculto'}</p>
-          </div>
-          <input type="checkbox" class="p-switch" data-servicio-activo="${s.id}" ${s.activo ? 'checked' : ''} aria-label="Mostrar ${esc(s.nombre)} en tu página" />
-        </li>`,
-      )
-      .join('')}</ul>`;
-
+  // Datos
+  const form = $<HTMLFormElement>('[data-p-form-datos]');
+  if (neg.data) {
+    const n = neg.data as { nombre: string; giro: string | null; direccion: string | null; whatsapp: string };
+    (form.elements.namedItem('nombre') as HTMLInputElement).value = n.nombre;
+    (form.elements.namedItem('giro') as HTMLInputElement).value = n.giro ?? '';
+    (form.elements.namedItem('direccion') as HTMLInputElement).value = n.direccion ?? '';
+    (form.elements.namedItem('whatsapp') as HTMLInputElement).value = telefonoBonito(soloDigitos(n.whatsapp));
+  }
+  // Horario
   const cajaH = $('[data-p-horario]');
   if (hor.error) cajaH.innerHTML = errorCarga(hor.error.message);
   else {
-    const filas = hor.data as Horario[];
-    const hoyDia = diaSemana(hoy());
-    cajaH.innerHTML = `<ul class="grid gap-1">${[1, 2, 3, 4, 5, 6, 0]
-      .map((dia) => {
-        const tramos = filas.filter((h) => h.dia_semana === dia);
-        return `
-          <li class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 ${dia === hoyDia ? 'bg-marca-50' : ''}">
-            <span class="font-semibold ${dia === hoyDia ? 'text-marca-osc' : ''}">${DIAS[dia]}${dia === hoyDia ? ' <span class="text-xs font-bold">· hoy</span>' : ''}</span>
-            <span class="text-right text-sm tabular-nums ${tramos.length ? 'font-medium text-texto' : 'text-tenue'}">${
-              tramos.length ? tramos.map((t) => `${t.abre.slice(0, 5)} – ${t.cierra.slice(0, 5)}`).join('<span class="text-tenue"> · </span>') : 'Cerrado'
-            }</span>
-          </li>`;
-      })
-      .join('')}</ul>`;
+    cajaH.innerHTML = editorHorario(hor.data as Tramo[]);
+    activarHorario(cajaH);
+  }
+  // Servicios
+  if (serv.error) $('[data-p-servicios]').innerHTML = errorCarga(serv.error.message);
+  else {
+    serviciosEdit = (serv.data as ServicioEditable[]).map((x) => ({ ...x }));
+    pintarServicios();
   }
 }
 
-document.addEventListener('change', async (e) => {
-  const sw = (e.target as Element).closest<HTMLInputElement>('[data-servicio-activo]');
-  if (!sw) return;
-  sw.disabled = true;
-  const { error } = await supabase.from('servicios').update({ activo: sw.checked }).eq('id', sw.dataset.servicioActivo!);
-  sw.disabled = false;
-  if (error) {
-    sw.checked = !sw.checked;
-    return toast(`No se pudo cambiar: ${error.message}`);
+function pintarServicios() {
+  $('[data-p-servicios]').innerHTML = serviciosEdit.length
+    ? `<div class="grid gap-2.5">${serviciosEdit
+        .map(
+          (x, i) => `
+      <div class="s-fila" data-servicio="${i}" ${x.borrar ? 'data-borrar' : ''}>
+        <input type="text" maxlength="80" value="${esc(x.nombre)}" placeholder="Nombre del servicio" aria-label="Nombre del servicio" data-s-nombre ${x.borrar ? 'disabled' : ''} />
+        <select aria-label="Duración" data-s-duracion ${x.borrar ? 'disabled' : ''}>${opcionesDuracion(x.duracion_min)}</select>
+        <input type="checkbox" class="p-switch" data-s-activo ${x.activo ? 'checked' : ''} ${x.borrar ? 'disabled' : ''} aria-label="Visible en tu página" title="Visible en tu página" />
+        <button type="button" class="p-icono-btn" data-s-borrar title="${x.borrar ? 'No eliminar' : 'Eliminar servicio'}" aria-label="${x.borrar ? 'No eliminar' : 'Eliminar servicio'}">${icono(x.borrar ? 'izq' : 'basura', 18)}</button>
+      </div>`,
+        )
+        .join('')}</div>
+      <p class="mt-2 text-xs text-tenue">El interruptor indica si el servicio se ve en tu página. Los cambios se aplican al tocar "Guardar servicios".</p>`
+    : vacio('Aún no tienes servicios. Agrega el primero.', 'tienda');
+}
+
+/** Copia lo escrito en las filas al arreglo (antes de repintar o guardar). */
+function leerServicios() {
+  $$('[data-servicio]').forEach((fila) => {
+    const x = serviciosEdit[Number(fila.dataset.servicio)]!;
+    x.nombre = fila.querySelector<HTMLInputElement>('[data-s-nombre]')!.value;
+    x.duracion_min = Number(fila.querySelector<HTMLSelectElement>('[data-s-duracion]')!.value);
+    x.activo = fila.querySelector<HTMLInputElement>('[data-s-activo]')!.checked;
+  });
+}
+
+$('[data-p-servicios]').addEventListener('click', (e) => {
+  const b = (e.target as Element).closest<HTMLElement>('[data-s-borrar]');
+  if (!b) return;
+  leerServicios();
+  const i = Number(b.closest<HTMLElement>('[data-servicio]')!.dataset.servicio);
+  const x = serviciosEdit[i]!;
+  if (!x.id) serviciosEdit.splice(i, 1);
+  else x.borrar = !x.borrar;
+  pintarServicios();
+});
+
+$('[data-p-agregar-servicio]').addEventListener('click', () => {
+  leerServicios();
+  serviciosEdit.push({ id: null, clave: null, nombre: '', duracion_min: 30, activo: true });
+  pintarServicios();
+  $$<HTMLInputElement>('[data-s-nombre]').at(-1)?.focus();
+});
+
+const claveDe = (nombre: string) =>
+  nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50) || 'servicio';
+
+$('[data-p-guardar-servicios]').addEventListener('click', async (e) => {
+  const boton = e.currentTarget as HTMLButtonElement;
+  leerServicios();
+  mostrarError('[data-p-servicios-error]', null);
+  const vivos = serviciosEdit.filter((x) => !x.borrar);
+  if (vivos.some((x) => x.nombre.trim().length < 2)) return mostrarError('[data-p-servicios-error]', 'Cada servicio necesita un nombre (mínimo 2 letras).');
+  if (!vivos.some((x) => x.activo)) return mostrarError('[data-p-servicios-error]', 'Deja al menos un servicio visible para que puedan reservar.');
+  boton.disabled = true;
+  const usadas = new Set(serviciosEdit.map((x) => x.clave).filter(Boolean));
+  const avisos: string[] = [];
+  try {
+    for (const [orden, x] of vivos.entries()) {
+      const datos = { nombre: x.nombre.trim(), duracion_min: x.duracion_min, activo: x.activo, orden: orden + 1 };
+      if (x.id) {
+        const { error } = await supabase.from('servicios').update(datos).eq('id', x.id);
+        if (error) throw error;
+      } else {
+        let clave = claveDe(x.nombre);
+        for (let n = 2; usadas.has(clave); n++) clave = `${claveDe(x.nombre)}-${n}`;
+        usadas.add(clave);
+        const { error } = await supabase.from('servicios').insert({ ...datos, negocio_id: st.negocioId, clave });
+        if (error) throw error;
+      }
+    }
+    for (const x of serviciosEdit.filter((y) => y.borrar && y.id)) {
+      const { error } = await supabase.from('servicios').delete().eq('id', x.id!);
+      if (error) {
+        // Tiene citas registradas: no se puede borrar sin perder el historial; se oculta.
+        await supabase.from('servicios').update({ activo: false }).eq('id', x.id!);
+        avisos.push(x.nombre);
+      }
+    }
+    toast(avisos.length ? `Servicios guardados. "${avisos.join('", "')}" tiene citas, así que se ocultó en lugar de borrarse.` : 'Servicios guardados');
+    await cargarPagina();
+  } catch (err) {
+    mostrarError('[data-p-servicios-error]', `No se pudo guardar: ${(err as Error).message}`);
+  } finally {
+    boton.disabled = false;
   }
-  toast(sw.checked ? 'Servicio visible en tu página' : 'Servicio oculto de tu página');
-  cargarPagina();
+});
+
+$('[data-p-guardar-horario]').addEventListener('click', async (e) => {
+  const boton = e.currentTarget as HTMLButtonElement;
+  const tramos = leerHorario($('[data-p-horario]'));
+  if (typeof tramos === 'string') return mostrarError('[data-p-horario-error]', tramos);
+  if (!tramos.length) return mostrarError('[data-p-horario-error]', 'Abre al menos un día para poder recibir citas.');
+  mostrarError('[data-p-horario-error]', null);
+  boton.disabled = true;
+  let { error } = await supabase.rpc('guardar_horario', { p_negocio_id: st.negocioId, p_horarios: tramos });
+  if (error?.code === 'PGRST202') {
+    // Sin la función en la base (instalación incompleta): reemplaza las filas directo (lo permite RLS).
+    const borrado = await supabase.from('horarios').delete().eq('negocio_id', st.negocioId);
+    error = borrado.error ?? (await supabase.from('horarios').insert(tramos.map((t) => ({ ...t, negocio_id: st.negocioId })))).error;
+  }
+  boton.disabled = false;
+  if (error) return mostrarError('[data-p-horario-error]', error.message === 'HORARIO_INVALIDO' ? 'Revisa el horario: hay horas que no son válidas.' : `No se pudo guardar: ${error.message}`);
+  toast('Horario guardado. Tu página ya muestra los nuevos horarios.');
+});
+
+$('[data-p-form-datos]').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget as HTMLFormElement;
+  const valor = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).value.trim();
+  const tel = soloDigitos(valor('whatsapp'));
+  if (valor('nombre').length < 2) return mostrarError('[data-p-datos-error]', 'Escribe el nombre del negocio.');
+  if (!/^\d{10}$/.test(tel)) return mostrarError('[data-p-datos-error]', 'El WhatsApp debe tener 10 dígitos.');
+  mostrarError('[data-p-datos-error]', null);
+  const boton = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  boton.disabled = true;
+  const datos = { nombre: valor('nombre'), giro: valor('giro') || null, direccion: valor('direccion') || null, whatsapp: `52${tel}` };
+  const { error } = await supabase.from('negocios').update(datos).eq('id', st.negocioId);
+  boton.disabled = false;
+  if (error) return mostrarError('[data-p-datos-error]', `No se pudo guardar: ${error.message}`);
+  Object.assign(st.negocio, { nombre: datos.nombre, giro: datos.giro, direccion: datos.direccion });
+  pintarNegocio();
+  toast('Datos guardados');
 });
 
 $('[data-p-copiar]').addEventListener('click', async (e) => {

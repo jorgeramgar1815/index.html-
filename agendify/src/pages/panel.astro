@@ -1,6 +1,7 @@
 ---
 /**
- * Panel del negocio: inicio (resumen del día), agenda (día / semana), bloqueos y "Mi página".
+ * Panel del negocio: inicio (resumen del día), agenda (día / semana), historial, bloqueos y
+ * "Mi negocio" (enlace, datos, servicios y horario, editables por el propio negocio).
  * El diseño es de Agendify (neutro); se personaliza con el nombre y datos del negocio del usuario.
  * Acceso con Supabase Auth; cada usuario sólo ve el negocio que tiene en `admins` (RLS).
  */
@@ -14,7 +15,7 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
   { id: 'agenda', nombre: 'Agenda', icono: 'agenda' },
   { id: 'historial', nombre: 'Historial', icono: 'historial' },
   { id: 'bloqueos', nombre: 'Bloqueos', icono: 'bloqueos' },
-  { id: 'pagina', nombre: 'Mi página', icono: 'pagina' },
+  { id: 'pagina', nombre: 'Mi negocio', icono: 'tienda' },
 ];
 ---
 
@@ -247,10 +248,10 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                 </div>
               </section>
 
-              <!-- Mi página -->
+              <!-- Mi negocio -->
               <section data-seccion="pagina" aria-labelledby="t-pagina" hidden>
-                <h1 id="t-pagina" class="text-2xl font-bold tracking-tight sm:text-3xl">Mi página</h1>
-                <p class="mt-1 text-suave">Tu enlace de reservas, tus servicios y tu horario.</p>
+                <h1 id="t-pagina" class="text-2xl font-bold tracking-tight sm:text-3xl">Mi negocio</h1>
+                <p class="mt-1 text-suave">Tu enlace de reservas, tus datos, tu horario y tus servicios. Lo que cambies aquí se ve al instante en tu página.</p>
                 <div class="p-hero mt-6 p-6 sm:p-8">
                   <p class="text-sm font-semibold text-white/80">Tu página de reservas</p>
                   <p class="mt-2 break-all text-xl font-bold text-white sm:text-2xl" data-p-enlace>…</p>
@@ -262,15 +263,38 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                   </div>
                 </div>
                 <div class="mt-6 grid gap-6 lg:grid-cols-2">
-                  <section class="tarjeta p-5 sm:p-6" aria-labelledby="t-servicios">
-                    <h2 id="t-servicios" class="text-lg font-bold">Servicios</h2>
-                    <p class="mt-1 text-sm text-suave">Apaga un servicio para ocultarlo de tu página.</p>
-                    <div class="mt-4" data-p-servicios><div class="esqueleto h-40" /></div>
+                  <form class="tarjeta grid content-start gap-4 p-5 sm:p-6" aria-labelledby="t-datos" data-p-form-datos novalidate>
+                    <div>
+                      <h2 id="t-datos" class="text-lg font-bold">Datos del negocio</h2>
+                      <p class="mt-1 text-sm text-suave">Así aparece tu negocio en tu página de reservas y en los mensajes.</p>
+                    </div>
+                    <label class="campo"><span>Nombre</span><input name="nombre" required minlength="2" maxlength="80" /></label>
+                    <label class="campo"><span>Giro <span class="inline font-normal text-tenue">(ej. Clínica dental, Barbería)</span></span><input name="giro" maxlength="60" /></label>
+                    <label class="campo"><span>Dirección</span><input name="direccion" maxlength="200" /></label>
+                    <label class="campo"><span>WhatsApp del negocio (10 dígitos)</span><input name="whatsapp" type="tel" inputmode="numeric" maxlength="16" required /></label>
+                    <p class="text-sm font-medium text-peligro" role="alert" data-p-datos-error hidden></p>
+                    <button type="submit" class="btn btn-primario">Guardar datos</button>
+                  </form>
+                  <section class="tarjeta grid content-start gap-4 p-5 sm:p-6" aria-labelledby="t-horario">
+                    <div>
+                      <h2 id="t-horario" class="text-lg font-bold">Horario de atención</h2>
+                      <p class="mt-1 text-sm text-suave">Las citas sólo se ofrecen dentro de este horario. Para cerrar días sueltos usa Bloqueos.</p>
+                    </div>
+                    <div data-p-horario><div class="esqueleto h-40" /></div>
+                    <p class="text-sm font-medium text-peligro" role="alert" data-p-horario-error hidden></p>
+                    <button type="button" class="btn btn-primario" data-p-guardar-horario>Guardar horario</button>
                   </section>
-                  <section class="tarjeta p-5 sm:p-6" aria-labelledby="t-horario">
-                    <h2 id="t-horario" class="text-lg font-bold">Horario de atención</h2>
-                    <p class="mt-1 text-sm text-suave">Las citas sólo se ofrecen dentro de este horario.</p>
-                    <div class="mt-4" data-p-horario><div class="esqueleto h-40" /></div>
+                  <section class="tarjeta grid content-start gap-4 p-5 sm:p-6 lg:col-span-2" aria-labelledby="t-servicios">
+                    <div>
+                      <h2 id="t-servicios" class="text-lg font-bold">Servicios</h2>
+                      <p class="mt-1 text-sm text-suave">Lo que tus clientes pueden reservar. La duración define cuánto tiempo se aparta en tu agenda. Apaga un servicio para ocultarlo.</p>
+                    </div>
+                    <div data-p-servicios><div class="esqueleto h-40" /></div>
+                    <div class="flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-secundario" data-p-agregar-servicio><Fragment set:html={icono('mas', 18)} />Agregar servicio</button>
+                      <button type="button" class="btn btn-primario" data-p-guardar-servicios>Guardar servicios</button>
+                    </div>
+                    <p class="text-sm font-medium text-peligro" role="alert" data-p-servicios-error hidden></p>
                   </section>
                 </div>
               </section>
@@ -451,6 +475,14 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
     .p-mes > summary .p-mes-flecha { transition: transform 0.2s; }
     .p-mes[open] > summary .p-mes-flecha { transform: rotate(90deg); }
 
+    .h-input { border: 1px solid var(--color-borde); border-radius: 0.6rem; padding: 0.35rem 0.5rem; font-variant-numeric: tabular-nums; background: var(--color-superficie); }
+    .h-input:focus { outline: none; border-color: var(--color-marca); box-shadow: 0 0 0 3px var(--color-marca-100); }
+    .s-fila { display: grid; grid-template-columns: minmax(0, 1fr) 8rem auto auto; gap: 0.6rem; align-items: center; }
+    .s-fila input[type='text'], .s-fila select { width: 100%; border: 1px solid var(--color-borde); border-radius: 0.7rem; padding: 0.55rem 0.7rem; background: var(--color-superficie); font-size: 0.95rem; }
+    .s-fila input[type='text']:focus, .s-fila select:focus { outline: none; border-color: var(--color-marca); box-shadow: 0 0 0 3px var(--color-marca-100); }
+    .s-fila[data-borrar] { opacity: 0.45; }
+    .s-fila[data-borrar] input[type='text'] { text-decoration: line-through; }
+    @media (max-width: 639px) { .s-fila { grid-template-columns: minmax(0, 1fr) auto auto; } .s-fila > select { grid-column: 1; grid-row: 2; } }
     .p-switch {
       appearance: none; position: relative; width: 2.75rem; height: 1.6rem; border-radius: 999px; background: #d4d8e3; cursor: pointer;
       transition: background-color 0.2s; flex-shrink: 0;

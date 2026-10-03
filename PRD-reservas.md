@@ -79,7 +79,7 @@ flowchart LR
 
 ## Modelo de datos y seguridad
 
-Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
+Archivos: `agendify/supabase/migrations/` (8 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
 
 | Tabla | Campos clave | Notas |
 | --- | --- | --- |
@@ -91,6 +91,7 @@ Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configur
 | avisos | id, negocio_id, cita_id, tipo, creado_en, leido_en | Uno por cita nueva (trigger); la clínica sólo puede marcarlos como leídos |
 | historiales_anuales | negocio_id, anio, atendidas, canceladas, sin_confirmar, clientes, por_servicio, por_mes, cerrado_en | Resumen congelado de cada año cerrado; la clínica sólo lo lee |
 | admins | user_id, negocio_id | Liga usuarios de Supabase Auth con su negocio |
+| superadmins | user_id | Quién entra al panel de negocios (/admin) |
 | ajustes_internos | clave, valor | URL de funciones; nadie la lee por la API |
 
 **Reglas de seguridad**
@@ -127,7 +128,14 @@ Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configur
 - Eliminar del historial: sólo citas canceladas (botón "Eliminar" y, con el filtro "Canceladas", "Eliminar las N"). La base de datos lo exige (política RLS).
 - Bloqueos: día completo o rango de horas, con lista y opción de quitar.
 - Historial: por año, citas atendidas (confirmadas y ya terminadas), clientes, canceladas y las que pasaron sin confirmar; gráfica por mes, desglose por servicio, lista por mes con buscador y "Descargar Excel" (CSV). El año en curso se calcula en vivo; el 1 de enero `cerrar_anio()` (pg_cron, 12:00 UTC) guarda el resumen del año anterior en `historiales_anuales` y deja un aviso "Tu historial AAAA está listo".
-- Mi página: enlace de reservas (copiar, abrir, compartir), servicios visibles (interruptor) y horario.
+- Mi negocio: enlace de reservas (copiar, abrir, compartir) y edición de sus datos (nombre, giro, dirección, WhatsApp), servicios (agregar, renombrar, duración, ocultar, eliminar; si tiene citas se oculta) y horario semanal (hasta dos turnos por día). El enlace sólo lo cambia el panel de negocios.
+
+**Panel de negocios** — `agendify/src/pages/admin.astro`, `src/scripts/admin.ts` (ruta `/admin`, sólo `superadmins`)
+
+- Alta de negocio en un solo formulario: datos, enlace, cuenta del panel (correo + contraseña generada), servicios y horario. Al terminar muestra los datos de acceso para copiarlos o enviarlos por WhatsApp.
+- Lista de negocios con citas del mes, por confirmar, próxima cita y usuario; buscador.
+- Editar datos y enlace, activar / desactivar (desactivado no recibe reservas) y poner una contraseña nueva.
+- Todo pasa por funciones `security definer` que verifican `es_superadmin()`: `resumen_negocios`, `crear_negocio`, `editar_negocio`, `cambiar_clave_negocio`.
 - Avisos: campana con contador de no leídos y bandeja ("Nueva cita · nombre", servicio, día y hora, hace cuánto). Tocar un aviso abre la cita; "Marcar todo como leído". Llegan en tiempo real con sonido, notificación del navegador y contador en la pestaña; los que llegaron con el panel cerrado aparecen al entrar ("Tienes N avisos nuevos").
 - Barra lateral en escritorio y pestañas abajo en celular.
 
@@ -139,7 +147,8 @@ Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configur
 
 Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan gratis).
 
-- [x] Proyecto creado; 7 migraciones aplicadas y seed cargado.
+- [x] Proyecto creado; migraciones 1–8 aplicadas y seed cargado. Pendiente: la función `guardar_horario` de la migración 8 (la herramienta pide confirmación por contener un DELETE); mientras, el panel guarda el horario directo en la tabla.
+- [x] Cuenta de superadmin creada para el panel de negocios (credenciales entregadas por chat).
 - [x] Tarea programada `cerrar-anio` (pg_cron, 1 de enero 12:00 UTC) activa; cierre probado en producción dentro de una transacción que se deshizo.
 - [x] Pruebas (`supabase/tests/pruebas_reservas.sql`) en la base real: todas pasan.
 - [x] Realtime activo en `citas` y `avisos`; trigger de avisos probado en producción (dentro de una transacción que se deshizo).

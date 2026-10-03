@@ -246,4 +246,63 @@ select pg_temp.ok((select count(*) from public.historiales_anuales) = 1, 'la cl�
 select pg_temp.ok(pg_temp.error_de($$select public.cerrar_anio()$$) like '%permission denied%', 'la clínica no puede cerrar años a mano');
 reset role;
 
+
+-- ─── Panel de negocios y configuración de cada negocio ──────────────────────
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-00000000a003', 'dueno@prueba.local');
+insert into public.superadmins (user_id) values ('00000000-0000-0000-0000-00000000a003');
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a001';
+select pg_temp.ok(pg_temp.error_de($$select * from public.resumen_negocios()$$) = 'NO_AUTORIZADO'
+                  and pg_temp.error_de($$select public.crear_negocio('X', 'x-x', null, null, '8711111111', 'x@x.mx', '12345678', '[{"nombre":"A","duracion_min":30}]', '[]')$$) = 'NO_AUTORIZADO',
+  'un negocio no puede usar el panel de negocios');
+
+update public.negocios set nombre = 'Dental MX Centro', giro = 'Clínica dental', direccion = 'Calle 1', whatsapp = '528715866828';
+select pg_temp.ok((select nombre from public.negocios) = 'Dental MX Centro', 'el negocio edita su nombre, giro, dirección y WhatsApp');
+select pg_temp.ok(pg_temp.error_de($$update public.negocios set slug = 'otro'$$) like '%permission denied%'
+                  and pg_temp.error_de($$update public.negocios set activo = false$$) like '%permission denied%',
+  'el negocio no puede cambiar su enlace ni desactivarse');
+
+select public.guardar_horario(negocio, '[{"dia_semana":1,"abre":"09:00","cierra":"13:00"},{"dia_semana":2,"abre":"09:00","cierra":"13:00"}]') from ref;
+select pg_temp.ok((select count(*) from public.horarios) = 2, 'el negocio guarda su horario');
+select pg_temp.ok(pg_temp.error_de(format($$select public.guardar_horario(%L, '[{"dia_semana":1,"abre":"14:00","cierra":"10:00"}]')$$, negocio)) = 'HORARIO_INVALIDO',
+  'un horario que cierra antes de abrir se rechaza')
+from ref;
+
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a003';
+select pg_temp.ok(public.crear_negocio('Barbería Prueba', 'barberia-prueba', 'Barbería', 'Av. 2', '8712223344', 'barberia@prueba.local', 'clave-segura-1',
+    '[{"nombre":"Corte de cabello","duracion_min":30},{"nombre":"Barba","duracion_min":15}]',
+    '[{"dia_semana":2,"abre":"10:00","cierra":"19:00"}]') is not null,
+  'el superadmin da de alta un negocio con servicios, horario y usuario');
+reset role;
+select pg_temp.ok((select count(*) from public.servicios s join public.negocios n on n.id = s.negocio_id where n.slug = 'barberia-prueba' and s.clave = 'corte-de-cabello') = 1
+                  and (select count(*) from public.horarios h join public.negocios n on n.id = h.negocio_id where n.slug = 'barberia-prueba') = 1
+                  and (select u.encrypted_password = extensions.crypt('clave-segura-1', u.encrypted_password)
+                       from auth.users u join public.admins a on a.user_id = u.id join public.negocios n on n.id = a.negocio_id where n.slug = 'barberia-prueba'),
+  'el alta crea servicios (con clave), horario y un usuario con su contraseña');
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a003';
+select pg_temp.ok(pg_temp.error_de($$select public.crear_negocio('Otra', 'barberia-prueba', null, null, '8711111111', 'otra@prueba.local', '12345678', '[{"nombre":"A","duracion_min":30}]', '[]')$$) = 'ENLACE_OCUPADO'
+                  and pg_temp.error_de($$select public.crear_negocio('Otra', 'otra', null, null, '8711111111', 'barberia@prueba.local', '12345678', '[{"nombre":"A","duracion_min":30}]', '[]')$$) = 'CORREO_OCUPADO'
+                  and pg_temp.error_de($$select public.crear_negocio('Otra', 'panel', null, null, '8711111111', 'z@prueba.local', '12345678', '[{"nombre":"A","duracion_min":30}]', '[]')$$) = 'ENLACE_INVALIDO',
+  'el alta rechaza enlaces repetidos o reservados y correos repetidos');
+select pg_temp.ok((select count(*) from public.resumen_negocios()) = 2, 'el superadmin ve todos los negocios');
+
+select public.editar_negocio(r.id, r.nombre, r.slug, r.giro, r.direccion, r.whatsapp, false) from public.resumen_negocios() r where r.slug = 'barberia-prueba';
+select pg_temp.ok(public.cambiar_clave_negocio(id, 'nueva-clave-9') = 'barberia@prueba.local', 'cambiar la contraseña devuelve el correo del negocio') from public.resumen_negocios() where slug = 'barberia-prueba';
+reset role;
+select pg_temp.ok((select u.encrypted_password = extensions.crypt('nueva-clave-9', u.encrypted_password) from auth.users u where u.email = 'barberia@prueba.local'),
+  'el superadmin cambia la contraseña de un negocio');
+set local role anon;
+select pg_temp.ok(pg_temp.error_de($$select public.datos_reserva('barberia-prueba')$$) = 'NEGOCIO_INACTIVO', 'un negocio desactivado no recibe reservas');
+reset role;
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a001';
+select pg_temp.ok((select count(*) from public.negocios) = 1, 'cada negocio sólo ve el suyo');
+select pg_temp.ok(pg_temp.error_de(format($$select public.guardar_horario(%L, '[]')$$, (select id from public.negocios where slug = 'barberia-prueba'))) is not null,
+  'un negocio no puede cambiar el horario de otro');
+reset role;
+
 rollback;

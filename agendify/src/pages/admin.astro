@@ -1,0 +1,101 @@
+---
+/**
+ * Panel de negocios (dueño de Agendify): alta de negocios con su cuenta, lista con sus
+ * números, editar datos y enlace, activar / desactivar y cambiar la contraseña del panel.
+ * Sólo para usuarios en `superadmins`; todo pasa por funciones que lo verifican.
+ */
+import App from '../layouts/App.astro';
+import Logo from '../components/Logo.astro';
+import { APP, SUPABASE, configurado } from '../config';
+import { icono } from '../scripts/iconos';
+---
+
+<App title={`Panel de negocios · ${APP.nombre}`} noindex>
+  {
+    !configurado ? (
+      <main class="grid min-h-dvh place-items-center px-6 text-center"><Logo /></main>
+    ) : (
+      <div id="admin" data-url={SUPABASE.url} data-key={SUPABASE.anonKey}>
+        <div id="a-cargando" class="grid min-h-dvh place-items-center">
+          <div class="size-9 animate-spin rounded-full border-[3px] border-marca-100 border-t-marca" role="status" aria-label="Cargando" />
+        </div>
+
+        <!-- Acceso -->
+        <main id="a-login" class="grid min-h-dvh place-items-center px-4 py-10" hidden>
+          <div class="w-full max-w-sm">
+            <div class="text-center"><Logo /></div>
+            <form id="a-form-login" class="tarjeta mt-6 p-6 sm:p-8" novalidate>
+              <p class="inline-flex rounded-full bg-marca-50 px-2.5 py-1 text-xs font-bold text-marca-osc">Administrador</p>
+              <h1 class="mt-3 text-2xl font-bold tracking-tight">Panel de negocios</h1>
+              <p class="mt-1.5 text-sm text-suave">Da de alta y administra los negocios que usan {APP.nombre}.</p>
+              <label class="campo mt-6"><span>Correo</span><input name="email" type="email" autocomplete="username" required /></label>
+              <label class="campo mt-4"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required /></label>
+              <p id="a-login-error" class="mt-4 rounded-xl bg-orange-50 px-3.5 py-2.5 text-sm font-medium text-peligro" role="alert" hidden />
+              <button type="submit" class="btn btn-primario btn-lg mt-6 w-full">Entrar</button>
+            </form>
+            <p class="mt-6 text-center text-sm text-suave">¿Eres un negocio? <a href="/panel" class="font-semibold text-marca hover:underline">Entra a tu panel</a></p>
+          </div>
+        </main>
+
+        <!-- Panel -->
+        <div id="a-panel" hidden>
+          <header class="sticky top-0 z-30 border-b border-borde bg-superficie/90 backdrop-blur">
+            <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6">
+              <Logo />
+              <span class="hidden rounded-full bg-marca-50 px-2.5 py-1 text-xs font-bold text-marca-osc sm:inline">Panel de negocios</span>
+              <span class="flex-1" />
+              <button type="button" class="btn btn-primario min-h-10 px-4 text-sm" data-a-nuevo><Fragment set:html={icono('mas', 18)} /><span>Nuevo negocio</span></button>
+              <button type="button" class="p-icono-btn" data-a-salir aria-label="Salir" title="Salir"><Fragment set:html={icono('salir')} /></button>
+            </div>
+          </header>
+          <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+            <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Tus negocios</h1>
+            <p class="mt-1 text-suave">Cada negocio entra a su propio panel en <b class="text-texto" data-a-dominio>/panel</b> con su correo y contraseña.</p>
+            <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4" data-a-kpis>
+              {[1, 2, 3, 4].map(() => <div class="esqueleto h-[6.5rem] rounded-[var(--radius-tarjeta)]" />)}
+            </div>
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <h2 class="flex-1 text-lg font-bold">Negocios</h2>
+              <input type="search" class="w-full rounded-xl border border-borde bg-superficie px-3.5 py-2.5 text-sm focus:border-marca focus:outline-none focus:ring-4 focus:ring-marca-100 sm:w-72" placeholder="Buscar por nombre, enlace o correo" data-a-buscar />
+            </div>
+            <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3" data-a-lista><div class="esqueleto h-56" /></div>
+          </main>
+        </div>
+
+        <dialog id="a-dialogo" class="a-dialogo" aria-label="Formulario"><div data-a-dialogo /></dialog>
+        <div id="toasts" class="pointer-events-none fixed inset-x-0 bottom-6 z-50 grid justify-items-center gap-2 px-4 sm:left-auto sm:right-6 sm:justify-items-end" aria-live="polite" />
+      </div>
+    )
+  }
+
+  <script>
+    import '../scripts/admin';
+  </script>
+
+  <style is:global>
+    .p-icono-btn { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 0.8rem; color: var(--color-suave); }
+    .p-icono-btn:hover { background: var(--color-fondo); color: var(--color-texto); }
+    .p-kpi { display: grid; gap: 0.75rem; padding: 1rem 1.1rem; }
+    .p-kpi-icono { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 0.8rem; }
+    .p-avatar { display: grid; place-items: center; flex-shrink: 0; border-radius: 0.9rem; font-weight: 700; color: #fff; background: linear-gradient(135deg, var(--color-marca), #8b5cf6); }
+    .p-switch { appearance: none; position: relative; width: 2.75rem; height: 1.6rem; border-radius: 999px; background: #d4d8e3; cursor: pointer; transition: background-color 0.2s; flex-shrink: 0; }
+    .p-switch::after { content: ''; position: absolute; top: 0.2rem; left: 0.2rem; width: 1.2rem; height: 1.2rem; border-radius: 999px; background: #fff; box-shadow: 0 1px 3px rgb(16 24 40 / 0.25); transition: transform 0.2s; }
+    .p-switch:checked { background: var(--color-marca); }
+    .p-switch:checked::after { transform: translateX(1.15rem); }
+    .p-toast { pointer-events: auto; display: flex; align-items: center; gap: 0.6rem; max-width: 26rem; border-radius: 0.9rem; padding: 0.8rem 1rem; background: #101828; color: #fff; font-size: 0.9rem; font-weight: 600; box-shadow: var(--shadow-flota); animation: aparecer 0.3s both; }
+    .a-dialogo { margin: auto; width: min(46rem, calc(100% - 1.5rem)); max-height: calc(100dvh - 1.5rem); border: 0; padding: 0; border-radius: var(--radius-tarjeta); background: var(--color-superficie); box-shadow: var(--shadow-flota); }
+    .a-dialogo::backdrop { background: rgb(16 24 40 / 0.45); backdrop-filter: blur(2px); }
+    .a-paso { display: grid; gap: 1rem; border-top: 1px solid var(--color-borde); padding-top: 1.25rem; }
+    .a-paso-num { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: var(--color-marca); color: #fff; font-size: 0.8rem; font-weight: 800; }
+    .h-input { border: 1px solid var(--color-borde); border-radius: 0.6rem; padding: 0.35rem 0.5rem; font-variant-numeric: tabular-nums; background: var(--color-superficie); }
+    .h-input:focus { outline: none; border-color: var(--color-marca); box-shadow: 0 0 0 3px var(--color-marca-100); }
+    .s-fila { display: grid; grid-template-columns: minmax(0, 1fr) 8rem auto; gap: 0.6rem; align-items: center; }
+    .s-fila input, .s-fila select { width: 100%; border: 1px solid var(--color-borde); border-radius: 0.7rem; padding: 0.55rem 0.7rem; background: var(--color-superficie); font-size: 0.95rem; }
+    .s-fila input:focus, .s-fila select:focus { outline: none; border-color: var(--color-marca); box-shadow: 0 0 0 3px var(--color-marca-100); }
+    .a-prefijo { display: flex; align-items: center; border: 1px solid var(--color-borde); border-radius: 0.75rem; background: var(--color-fondo); overflow: hidden; }
+    .a-prefijo span { padding: 0 0.2rem 0 0.85rem; color: var(--color-tenue); font-size: 0.9rem; white-space: nowrap; }
+    .a-prefijo input { flex: 1; min-width: 0; border: 0; border-left: 1px solid var(--color-borde); padding: 0.75rem; background: var(--color-superficie); font-size: 1rem; }
+    .a-prefijo:focus-within { border-color: var(--color-marca); box-shadow: 0 0 0 4px var(--color-marca-100); }
+    .a-prefijo input:focus { outline: none; }
+  </style>
+</App>

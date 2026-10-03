@@ -34,6 +34,7 @@ export const MENSAJES: Record<string, string> = {
   NOTA_LARGA: 'La nota es muy larga (máximo 280 caracteres).',
   SERVICIO_INVALIDO: 'Ese servicio ya no está disponible. Elige otro.',
   NEGOCIO_NO_ENCONTRADO: 'No encontramos este negocio. Revisa el enlace.',
+  NEGOCIO_INACTIVO: 'Este negocio no está recibiendo reservas en línea por ahora. Contáctalo directamente.',
   SOLICITUD_INVALIDA: 'No pudimos procesar tu solicitud.',
   ERROR_RED: 'No pudimos conectar. Revisa tu internet e inténtalo de nuevo.',
 };
