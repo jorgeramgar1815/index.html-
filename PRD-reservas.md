@@ -128,17 +128,20 @@ Archivos: `dental-mx/supabase/migrations/` (3 migraciones), `seed.sql`, `configu
 
 **Mantenimiento** — `.github/workflows/supabase-keepalive.yml` consulta Supabase dos veces por semana para que el plan gratis no se pause.
 
-## Puesta en marcha (pendiente)
+## Puesta en marcha
 
-1. **Crear el proyecto** en Supabase: nombre `dental-mx`, región `us-east-1`, plan gratis.
-2. **Base de datos**: en el SQL Editor, correr en orden las 3 migraciones de `dental-mx/supabase/migrations/` y luego `seed.sql`.
-3. **Pruebas**: correr `supabase/tests/pruebas_reservas.sql`; deben salir 28 líneas `OK` (hace ROLLBACK, no deja datos).
-4. **Auth**: Authentication → Providers → Email: desactivar "Allow new users to sign up". Crear el usuario de la clínica (Add user, Auto Confirm).
-5. **Configurar**: editar y correr `supabase/configurar.sql` (admin, correo de avisos, URL de funciones).
-6. **Correo**: crear cuenta en Resend, poner el secreto `RESEND_API_KEY` en Supabase → Edge Functions, y desplegar `notificar-cita` (verify JWT desactivado: la función se protege sola, ver comentario en el código).
-7. **Vercel**: variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` en el proyecto `dental-mx` y volver a desplegar.
-8. **GitHub**: variables de Actions `SUPABASE_URL` y `SUPABASE_ANON_KEY` para el keep-alive.
-9. Correr los criterios de aceptación en producción y borrar las citas de prueba.
+Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan gratis).
+
+- [x] Proyecto creado; 3 migraciones aplicadas y seed cargado.
+- [x] Pruebas (`supabase/tests/pruebas_reservas.sql`) en la base real: todas pasan.
+- [x] Realtime activo en `citas`; `pg_net` y trigger de avisos configurados (`ajustes_internos.url_funciones`).
+- [x] Edge Function `notificar-cita` desplegada (verify JWT desactivado: se protege sola). Probada: el trigger la llama y responde.
+- [x] Usuario de la clínica creado y ligado a Dental MX (credenciales entregadas por chat; cambiar la contraseña).
+- [x] Variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` en Vercel (production, preview, development).
+- [ ] Correo de avisos: falta la `RESEND_API_KEY` (secreto en Supabase → Edge Functions) y `negocios.email_notificaciones`.
+- [ ] Desactivar el registro público en Supabase → Authentication → Sign In / Providers → "Allow new users to sign up".
+- [ ] Variables de GitHub Actions `SUPABASE_URL` y `SUPABASE_ANON_KEY` para el keep-alive (el workflow corre desde `main`).
+- [ ] Borrar la cita de prueba "Prueba Sistema" (quedó cancelada; no ocupa horario).
 
 ## Criterios de aceptación
 
