@@ -3,7 +3,7 @@
 -- Reemplaza los valores entre <> y ejecútalo en el SQL Editor de Supabase.
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- Usuario del negocio para el panel de Agendo (/panel).
+-- Usuario del negocio para el panel de Agendify (/panel).
 --    Primero créalo en Authentication → Users → "Add user" (correo + contraseña,
 --    marcando "Auto Confirm User"). Luego lígalo a Dental MX:
 insert into public.admins (user_id, negocio_id)

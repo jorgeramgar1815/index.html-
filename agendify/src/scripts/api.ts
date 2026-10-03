@@ -1,8 +1,8 @@
 /**
- * Acceso público a Agendo: funciones RPC de Supabase con la anon key (sin librería).
+ * Acceso público a Agendify: funciones RPC de Supabase con la anon key (sin librería).
  * Los errores llegan con un código en MAYÚSCULAS que aquí se traduce a español.
  */
-export class ErrorAgendo extends Error {}
+export class ErrorAgendify extends Error {}
 
 export function crearRpc(url: string, key: string) {
   return async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
@@ -13,11 +13,11 @@ export function crearRpc(url: string, key: string) {
       if (key.startsWith('eyJ')) headers.Authorization = `Bearer ${key}`;
       const r = await fetch(`${url}/rest/v1/rpc/${fn}`, { method: 'POST', headers, body: JSON.stringify(args), signal: control.signal });
       const data = await r.json().catch(() => null);
-      if (!r.ok) throw new ErrorAgendo((data && (data.message as string)) || 'ERROR_RED');
+      if (!r.ok) throw new ErrorAgendify((data && (data.message as string)) || 'ERROR_RED');
       return data as T;
     } catch (e) {
-      if (e instanceof ErrorAgendo) throw e;
-      throw new ErrorAgendo('ERROR_RED');
+      if (e instanceof ErrorAgendify) throw e;
+      throw new ErrorAgendify('ERROR_RED');
     } finally {
       clearTimeout(tiempo);
     }

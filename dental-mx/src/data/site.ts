@@ -108,16 +108,16 @@ export function waLink(message: string = site.whatsapp.defaultMessage): string {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-// ─── Reservaciones en línea (Agendo) ──────────────────────────────────────────
-// Las citas se agendan en Agendo, el software de reservas (proyecto agendo/ de este
-// repositorio). Aquí sólo va el enlace a la página de Dental MX en Agendo.
-// Se puede cambiar con la variable PUBLIC_AGENDO_URL; vacía, "Agendar" abre WhatsApp.
-const AGENDO_URL = (import.meta.env.PUBLIC_AGENDO_URL ?? 'https://agendo-reservas.vercel.app/dental-mx').replace(/\/+$/, '');
-export const reservasActivas = Boolean(AGENDO_URL);
+// ─── Reservaciones en línea (Agendify) ──────────────────────────────────────────
+// Las citas se agendan en Agendify, el software de reservas (proyecto agendify/ de este
+// repositorio). Aquí sólo va el enlace a la página de Dental MX en Agendify.
+// Se puede cambiar con la variable PUBLIC_AGENDIFY_URL; vacía, "Agendar" abre WhatsApp.
+const AGENDIFY_URL = (import.meta.env.PUBLIC_AGENDIFY_URL ?? 'https://agendify-reservas.vercel.app/dental-mx').replace(/\/+$/, '');
+export const reservasActivas = Boolean(AGENDIFY_URL);
 
 /** Enlace de reserva en línea; con `servicio` llega ya elegido (?servicio=clave). */
 export function reservaLink(servicio?: string): string {
-  return servicio ? `${AGENDO_URL}?servicio=${encodeURIComponent(servicio)}` : AGENDO_URL;
+  return servicio ? `${AGENDIFY_URL}?servicio=${encodeURIComponent(servicio)}` : AGENDIFY_URL;
 }
 
 /** Navegación de la landing: anclas a cada sección de la página de inicio. */

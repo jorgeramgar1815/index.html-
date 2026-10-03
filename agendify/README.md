@@ -1,12 +1,12 @@
-# Agendo
+# Agendify
 
 Software de reservas en línea para negocios (clínicas, estéticas, barberías, consultorios…). Diseño propio y neutro: de cada negocio sólo se muestran su nombre, giro, dirección, servicios y horario.
 
-- **`/<slug>`** — página de reservas del negocio (ej. [`/dental-mx`](https://agendo-reservas.vercel.app/dental-mx)). `?servicio=<clave>` llega con el servicio elegido.
+- **`/<slug>`** — página de reservas del negocio (ej. [`/dental-mx`](https://agendify-reservas.vercel.app/dental-mx)). `?servicio=<clave>` llega con el servicio elegido.
 - **`/panel`** — panel del negocio: inicio del día, agenda (día / semana), historial anual, bloqueos y "Mi página". Avisos de cita nueva dentro del panel (campana + bandeja), en tiempo real con sonido y notificación.
 - **`/`** — página del producto.
 
-Producción: <https://agendo-reservas.vercel.app> (proyecto Vercel `agendo`, raíz `agendo/`).
+Producción: <https://agendify-reservas.vercel.app> (proyecto Vercel `agendify`, raíz `agendify/`).
 
 ## Backend (Supabase)
 

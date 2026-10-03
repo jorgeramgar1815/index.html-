@@ -1,5 +1,5 @@
 /**
- * Agendo · página pública de reservas.
+ * Agendify · página pública de reservas.
  * Flujo: servicio → día y hora → datos → confirmación (+ aviso por WhatsApp al negocio).
  * Usa sólo las funciones RPC públicas: datos_reserva, dias_disponibles,
  * horarios_disponibles y crear_cita.
@@ -45,7 +45,7 @@ const ICONO_RELOJ =
 // ─── Encabezado, pasos y resumen ──────────────────────────────────────────────
 function pintarNegocio() {
   const n = st.datos!.negocio;
-  document.title = `Reservar en ${n.nombre} · Agendo`;
+  document.title = `Reservar en ${n.nombre} · Agendify`;
   $('[data-r-negocio]').innerHTML = `
     <div class="grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-marca to-violet-500 text-lg font-bold text-white shadow-[0_8px_20px_-8px_rgb(79_70_229/0.7)]">${esc(iniciales(n.nombre))}</div>
     <div class="min-w-0">

@@ -1,5 +1,5 @@
 /**
- * Agendo · panel del negocio (Supabase Auth + RLS).
+ * Agendify · panel del negocio (Supabase Auth + RLS).
  * - Inicio: saludo con el nombre del negocio, números del día, siguiente cita,
  *   citas por confirmar (botones grandes) y la línea del día.
  * - Agenda por día o semana con filtros; detalle de cita en un diálogo.
@@ -40,7 +40,7 @@ const supabase = createClient(raiz.dataset.url!, raiz.dataset.key!, { auth: { pe
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
 const $$ = <T extends HTMLElement = HTMLElement>(sel: string) => [...document.querySelectorAll<T>(sel)];
 const CAMPOS_CITA = 'id, inicio, fin, nombre, telefono, nota, estado, creada_en, servicios(nombre)';
-const CLAVE_SONIDO = 'agendo-sonido';
+const CLAVE_SONIDO = 'agendo-sonido'; // nombre anterior; se conserva para no perder la preferencia
 
 const st = {
   negocioId: '',

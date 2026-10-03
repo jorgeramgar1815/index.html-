@@ -16,9 +16,9 @@ Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su secc
 
 ## Reservaciones en línea
 
-Las citas se agendan en **Agendo**, el software de reservas de este repositorio (`../agendo/`). La landing sólo enlaza a la página de Dental MX en Agendo: <https://agendo-reservas.vercel.app/dental-mx>. Especificación y puesta en marcha: [`PRD-reservas.md`](../PRD-reservas.md).
+Las citas se agendan en **Agendify**, el software de reservas de este repositorio (`../agendify/`). La landing sólo enlaza a la página de Dental MX en Agendify: <https://agendify-reservas.vercel.app/dental-mx>. Especificación y puesta en marcha: [`PRD-reservas.md`](../PRD-reservas.md).
 
-- **Enlace:** `reservaLink()` en `src/data/site.ts`; se puede cambiar con `PUBLIC_AGENDO_URL`. Vacía, los botones "Agendar" abren WhatsApp.
+- **Enlace:** `reservaLink()` en `src/data/site.ts`; se puede cambiar con `PUBLIC_AGENDIFY_URL`. Vacía, los botones "Agendar" abren WhatsApp.
 - **Servicio preseleccionado:** `BookingButton servicio="<clave>"` → `/dental-mx?servicio=<clave>`.
 
 ## Comandos

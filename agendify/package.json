@@ -1,9 +1,9 @@
 {
-  "name": "agendo",
+  "name": "agendify",
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "Agendo: software de reservaciones en línea multi-negocio (Supabase + Astro).",
+  "description": "Agendify: software de reservaciones en línea multi-negocio (Supabase + Astro).",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

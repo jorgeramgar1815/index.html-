@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Perfil público del negocio para la página de reservas de Agendo:
+-- Perfil público del negocio para la página de reservas de Agendify:
 -- dirección y giro (ej. "Clínica dental"). datos_reserva los devuelve.
 -- ═══════════════════════════════════════════════════════════════════════════
 

@@ -1,10 +1,10 @@
-# PRD — Agendo, sistema de reservaciones (primer cliente: Dental MX)
+# PRD — Agendify, sistema de reservaciones (primer cliente: Dental MX)
 
 Oct 2, 2026 · @Jorge · Ajustado al proyecto real el Oct 3, 2026
 
 ## Resumen
 
-**Agendo** (carpeta `agendo/`, Astro estático en Vercel) es un software de reservas propio, con diseño neutro que no usa los colores de ningún negocio, para usarlo con varios clientes. Cada negocio tiene su página de reservas en `/<slug>` (ej. `/dental-mx`) y un panel en `/panel` personalizado con su nombre. La landing de Dental MX (`dental-mx/`) sólo enlaza a su página en Agendo. El backend vive en Supabase y es multi-negocio (columna `negocio_id`).
+**Agendify** (carpeta `agendify/`, Astro estático en Vercel) es un software de reservas propio, con diseño neutro que no usa los colores de ningún negocio, para usarlo con varios clientes. Cada negocio tiene su página de reservas en `/<slug>` (ej. `/dental-mx`) y un panel en `/panel` personalizado con su nombre. La landing de Dental MX (`dental-mx/`) sólo enlaza a su página en Agendify. El backend vive en Supabase y es multi-negocio (columna `negocio_id`).
 
 **Objetivos**
 
@@ -17,8 +17,8 @@ Oct 2, 2026 · @Jorge · Ajustado al proyecto real el Oct 3, 2026
 
 | Tema | Decisión |
 | --- | --- |
-| Producto | Software aparte (Agendo), neutro y multi-negocio. Muestra el nombre, giro y dirección del negocio; colores propios (índigo sobre blanco). |
-| Botones | Los botones "Agendar" de la landing son enlaces a `agendo-reservas.vercel.app/dental-mx` (con `?servicio=` cuando aplica). WhatsApp queda para preguntas y como respaldo si no hay enlace (`PUBLIC_AGENDO_URL` vacía). |
+| Producto | Software aparte (Agendify), neutro y multi-negocio. Muestra el nombre, giro y dirección del negocio; colores propios (índigo sobre blanco). |
+| Botones | Los botones "Agendar" de la landing son enlaces a `agendify-reservas.vercel.app/dental-mx` (con `?servicio=` cuando aplica). WhatsApp queda para preguntas y como respaldo si no hay enlace (`PUBLIC_AGENDIFY_URL` vacía). |
 | Horario y duraciones | Simulación: horario de la landing (L–V 10:00–14:00 y 16:00–20:00, sábado 10:00–14:00) y duraciones inventadas. Confirmar con la clínica. |
 | Aviso de cita nueva | Dentro del panel (en lugar de correo): cada cita nueva deja un aviso guardado; campana con contador y bandeja, en tiempo real con sonido y notificación del navegador. |
 | Supabase | Proyecto nuevo `dental-mx` en la organización de Jorge (plan gratis, us-east-1). |
@@ -56,7 +56,7 @@ La clave permite que un enlace llegue con el servicio ya elegido: `/dental-mx?se
 ```mermaid
 flowchart LR
   L["Landing Dental MX<br/>(sólo enlaces)"]
-  subgraph Vercel["Vercel · Agendo (Astro)"]
+  subgraph Vercel["Vercel · Agendify (Astro)"]
     W["Página de reservas<br/>/&lt;slug&gt; (reservar.ts)"]
     P["Panel del negocio<br/>/panel (panel.ts + supabase-js)"]
   end
@@ -75,11 +75,11 @@ flowchart LR
 
 - La página de reservas usa la anon key y sólo llama funciones RPC (con `fetch`, sin librería). Las tablas quedan cerradas por RLS. `vercel.json` reescribe `/<slug>` a la página de reservas.
 - El panel entra con Supabase Auth y sólo ve su negocio. Recibe las citas nuevas por Realtime y, de respaldo, revisa cada minuto.
-- Agendo necesita `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` (proyecto Vercel `agendo`, raíz `agendo/`). La landing ya no usa Supabase.
+- Agendify necesita `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` (proyecto Vercel `agendify`, raíz `agendify/`). La landing ya no usa Supabase.
 
 ## Modelo de datos y seguridad
 
-Archivos: `agendo/supabase/migrations/` (7 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
+Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
 
 | Tabla | Campos clave | Notas |
 | --- | --- | --- |
@@ -111,14 +111,14 @@ Archivos: `agendo/supabase/migrations/` (7 migraciones), `seed.sql`, `configurar
 
 ## Requisitos funcionales (implementados)
 
-**Página de reservas** — `agendo/src/pages/reservar.astro`, `src/scripts/reservar.ts` (ruta `/<slug>`)
+**Página de reservas** — `agendify/src/pages/reservar.astro`, `src/scripts/reservar.ts` (ruta `/<slug>`)
 
 - Encabezado con el negocio (iniciales, nombre, giro y dirección) y pasos 1-2-3; resumen lateral en escritorio.
 - Servicio → calendario de 30 días (sólo días con horarios) → horas libres (mañana / tarde) → datos → éxito con "Avisar por WhatsApp".
 - Estados de carga, "sin horarios ese día", errores claros y salida a WhatsApp; negocio inexistente muestra un aviso.
 - Si alguien ganó el horario, avisa y recarga las horas.
 
-**Panel** — `agendo/src/pages/panel.astro`, `src/scripts/panel.ts` (ruta `/panel`, `noindex`)
+**Panel** — `agendify/src/pages/panel.astro`, `src/scripts/panel.ts` (ruta `/panel`, `noindex`)
 
 - Login con correo y contraseña (Supabase Auth); el panel toma el nombre del negocio del usuario.
 - Inicio: saludo con el nombre del negocio, números del día (citas hoy, por confirmar, próximos 7 días, reservas nuevas), siguiente cita, "Por confirmar" con botones grandes y la línea del día.
@@ -145,8 +145,8 @@ Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan grat
 - [x] Realtime activo en `citas` y `avisos`; trigger de avisos probado en producción (dentro de una transacción que se deshizo).
 - [x] Aviso por correo apagado (trigger `citas_avisar_nueva` desactivado). La Edge Function `notificar-cita` sigue publicada pero ya nadie la llama; se puede borrar en Supabase → Edge Functions.
 - [x] Usuario de la clínica creado y ligado a Dental MX (credenciales entregadas por chat; cambiar la contraseña).
-- [x] Proyecto Vercel `agendo` (raíz `agendo/`) con `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY`; dominio `agendo-reservas.vercel.app`.
-- [x] Landing de Dental MX enlazando a `agendo-reservas.vercel.app/dental-mx`.
+- [x] Proyecto Vercel `agendify` (raíz `agendify/`) con `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY`; dominio `agendify-reservas.vercel.app`.
+- [x] Landing de Dental MX enlazando a `agendify-reservas.vercel.app/dental-mx`.
 - [ ] Desactivar el registro público en Supabase → Authentication → Sign In / Providers → "Allow new users to sign up".
 - [x] Keep-alive con la URL y anon key públicas en el workflow (GitHub sólo programa workflows de la rama `main`: se activa al fusionar).
 - [ ] Borrar la cita de prueba "Prueba Sistema" (quedó cancelada; no ocupa horario).

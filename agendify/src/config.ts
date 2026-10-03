@@ -1,9 +1,9 @@
 /**
- * Configuración de Agendo. La marca del software es independiente de cada negocio:
+ * Configuración de Agendify. La marca del software es independiente de cada negocio:
  * cada negocio sólo aporta su nombre, giro, dirección, servicios y horario (en Supabase).
  */
 export const APP = {
-  nombre: 'Agendo',
+  nombre: 'Agendify',
   lema: 'Reservas en línea para tu negocio',
 };
 
