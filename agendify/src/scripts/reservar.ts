@@ -316,7 +316,7 @@ async function enviar(form: HTMLFormElement) {
       p_nota: campo('nota').value.trim() || null,
       p_trampa: campo('sitio_web').value || null,
     });
-    pasoExito(cita);
+    pasoExito(cita, telefono);
   } catch (e) {
     const codigo = (e as Error).message;
     boton.disabled = false;
@@ -337,9 +337,9 @@ async function enviar(form: HTMLFormElement) {
 }
 
 // ─── Confirmación ─────────────────────────────────────────────────────────────
-function pasoExito(c: CitaCreada) {
-  encabezado(null, '¡Cita registrada!', `${c.negocio} te confirmará por WhatsApp.`);
-  const texto = `Hola, acabo de agendar en línea: ${c.servicio}, ${fechaLarga(c.fecha)} a las ${c.hora} h. A nombre de ${c.nombre}.`;
+function pasoExito(c: CitaCreada, telefono: string) {
+  encabezado(null, '¡Cita registrada!', 'Te llegará la confirmación a tu WhatsApp.');
+  const direccion = st.datos?.negocio.direccion;
   cuerpo.innerHTML = `
     <div class="grid gap-5 text-center aparecer">
       <div class="mx-auto grid size-16 place-items-center rounded-full bg-confirmada-50 text-confirmada ring-8 ring-confirmada-50/60">
@@ -351,8 +351,12 @@ function pasoExito(c: CitaCreada) {
         <div class="flex justify-between gap-4"><dt class="text-suave">Servicio</dt><dd class="text-right font-semibold">${esc(c.servicio)}</dd></div>
         <div class="flex justify-between gap-4"><dt class="text-suave">Día</dt><dd class="text-right font-semibold first-letter:uppercase">${esc(fechaLarga(c.fecha))}</dd></div>
         <div class="flex justify-between gap-4"><dt class="text-suave">Hora</dt><dd class="text-right font-semibold">${esc(c.hora)} h</dd></div>
+        ${direccion ? `<div class="flex justify-between gap-4"><dt class="text-suave">Dirección</dt><dd class="text-right font-semibold">${esc(direccion)}</dd></div>` : ''}
       </dl>
-      <a href="https://wa.me/${encodeURIComponent(c.whatsapp)}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener" class="btn btn-exito btn-lg w-full">${ICONO_WA}Avisar por WhatsApp</a>
+      <div class="flex items-start gap-3 rounded-xl border border-confirmada/20 bg-confirmada-50 px-4 py-3 text-left text-sm">
+        <span class="mt-0.5 shrink-0 text-[#128c4b]">${ICONO_WA}</span>
+        <p class="text-texto">${esc(c.negocio)} revisará tu cita y te enviará la confirmación por WhatsApp al <b class="whitespace-nowrap">${esc(telefono.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</b>.</p>
+      </div>
       <button type="button" class="btn btn-sutil w-full" data-r-otra>Agendar otra cita</button>
     </div>`;
   cuerpo.querySelector('[data-r-otra]')!.addEventListener('click', () => {

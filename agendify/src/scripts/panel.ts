@@ -44,7 +44,7 @@ const CLAVE_SONIDO = 'agendo-sonido'; // nombre anterior; se conserva para no pe
 
 const st = {
   negocioId: '',
-  negocio: { slug: '', nombre: 'Tu negocio', giro: null as string | null, zona_horaria: 'America/Monterrey' },
+  negocio: { slug: '', nombre: 'Tu negocio', giro: null as string | null, direccion: null as string | null, zona_horaria: 'America/Monterrey' },
   seccion: 'inicio' as Seccion,
   vista: 'dia' as 'dia' | 'semana',
   fecha: '',
@@ -115,7 +115,7 @@ async function iniciarPanel() {
     return mostrarLogin('Este usuario no tiene un negocio asignado.');
   }
   st.negocioId = admin.negocio_id;
-  const { data: negocio } = await supabase.from('negocios').select('slug, nombre, giro, zona_horaria').eq('id', st.negocioId).single();
+  const { data: negocio } = await supabase.from('negocios').select('slug, nombre, giro, direccion, zona_horaria').eq('id', st.negocioId).single();
   if (negocio) st.negocio = negocio;
   st.fecha = hoy();
   pintarNegocio();
@@ -195,10 +195,22 @@ async function contarPendientes() {
 function enlaceWa(c: Cita) {
   const servicio = c.servicios?.nombre ?? 'cita';
   const nombre = c.nombre.split(' ')[0];
+  const dia = fechaLarga(fechaDe(c.inicio));
   const texto =
     c.estado === 'cancelada'
       ? `Hola ${nombre}, te escribimos de ${st.negocio.nombre} sobre tu cita de ${servicio}.`
-      : `Hola ${nombre}, te escribimos de ${st.negocio.nombre} para confirmar tu cita de ${servicio} el ${fechaLarga(fechaDe(c.inicio))} a las ${hora(c.inicio)} h.`;
+      : c.estado === 'confirmada'
+        ? [
+            `Hola ${nombre}, tu cita en ${st.negocio.nombre} está confirmada ✅`,
+            '',
+            `Servicio: ${servicio}`,
+            `Día: ${dia[0]!.toUpperCase()}${dia.slice(1)}`,
+            `Hora: ${hora(c.inicio)} h`,
+            ...(st.negocio.direccion ? [`Dirección: ${st.negocio.direccion}`] : []),
+            '',
+            'Si necesitas cambiarla o cancelarla, responde a este mensaje.',
+          ].join('\n')
+        : `Hola ${nombre}, te escribimos de ${st.negocio.nombre} sobre tu cita de ${servicio} el ${dia} a las ${hora(c.inicio)} h.`;
   return `https://wa.me/52${c.telefono}?text=${encodeURIComponent(texto)}`;
 }
 
@@ -209,7 +221,7 @@ function acciones(c: Cita) {
   return `
     <div class="flex flex-wrap gap-2">
       ${c.estado === 'pendiente' ? `<button type="button" class="p-accion max-sm:flex-1" data-tipo="confirmar" data-accion="confirmada" data-id="${c.id}">${icono('check', 17)}Confirmar</button>` : ''}
-      <a class="p-accion" data-tipo="wa" href="${esc(enlaceWa(c))}" target="_blank" rel="noopener">${ICONO_WA(16)}WhatsApp</a>
+      <a class="p-accion" data-tipo="wa" href="${esc(enlaceWa(c))}" target="_blank" rel="noopener" title="${c.estado === 'confirmada' ? 'Enviar la confirmación por WhatsApp' : 'Escribir por WhatsApp'}">${ICONO_WA(16)}WhatsApp</a>
       ${c.estado !== 'cancelada' ? `<button type="button" class="p-accion" data-tipo="cancelar" data-accion="cancelada" data-id="${c.id}" title="Cancelar cita">${icono('x', 16)}<span class="max-sm:sr-only">Cancelar</span></button>` : ''}
       ${c.estado === 'cancelada' ? `<button type="button" class="p-accion" data-tipo="eliminar" data-eliminar="${c.id}" title="Eliminar del historial">${icono('basura', 16)}Eliminar</button>` : ''}
     </div>`;
@@ -257,9 +269,28 @@ document.addEventListener('click', async (e) => {
     return toast(`No se pudo actualizar: ${error.message}`);
   }
   $<HTMLDialogElement>('#detalle').close();
-  toast(nuevo === 'confirmada' ? 'Cita confirmada. Avísale por WhatsApp.' : 'Cita cancelada · el horario quedó libre');
+  const c = st.citas.get(b.dataset.id!);
+  if (c) c.estado = nuevo;
+  if (nuevo === 'confirmada' && c) enviarConfirmacion(c);
+  else toast(nuevo === 'confirmada' ? 'Cita confirmada' : 'Cita cancelada · el horario quedó libre');
   await refrescar();
 });
+
+/** Tras confirmar: mensaje de confirmación listo para mandarlo al WhatsApp del cliente. */
+function enviarConfirmacion(c: Cita) {
+  $('[data-p-detalle]').innerHTML = `
+    <div class="tarjeta grid gap-4 p-6 text-center">
+      <div class="mx-auto grid size-14 place-items-center rounded-full bg-confirmada-50 text-confirmada">${icono('check', 28)}</div>
+      <div>
+        <p class="text-lg font-bold">Cita confirmada</p>
+        <p class="mt-1 text-sm text-suave">Envíale la confirmación a <b class="text-texto">${esc(c.nombre)}</b> por WhatsApp.</p>
+      </div>
+      <p class="rounded-xl bg-fondo px-4 py-3 text-left text-sm text-suave">${esc(c.servicios?.nombre ?? 'Cita')} · <span class="inline-block first-letter:uppercase">${esc(fechaLarga(fechaDe(c.inicio)))}</span> · ${hora(c.inicio)} h<br />${telefonoBonito(c.telefono)}</p>
+      <a class="btn btn-exito btn-lg w-full" href="${esc(enlaceWa(c))}" target="_blank" rel="noopener" data-cerrar>${ICONO_WA(20)}Enviar confirmación</a>
+      <button type="button" class="btn btn-sutil w-full" data-cerrar>Ahora no</button>
+    </div>`;
+  $<HTMLDialogElement>('#detalle').showModal();
+}
 
 // Eliminar del historial (sólo citas canceladas; la base de datos también lo exige).
 document.addEventListener('click', async (e) => {

@@ -114,7 +114,7 @@ Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configur
 **Página de reservas** — `agendify/src/pages/reservar.astro`, `src/scripts/reservar.ts` (ruta `/<slug>`)
 
 - Encabezado con el negocio (iniciales, nombre, giro y dirección) y pasos 1-2-3; resumen lateral en escritorio.
-- Servicio → calendario de 30 días (sólo días con horarios) → horas libres (mañana / tarde) → datos → éxito con "Avisar por WhatsApp".
+- Servicio → calendario de 30 días (sólo días con horarios) → horas libres (mañana / tarde) → datos → éxito: resumen de la cita y aviso de que la confirmación llegará a su WhatsApp (el cliente ya no escribe a la clínica).
 - Estados de carga, "sin horarios ese día", errores claros y salida a WhatsApp; negocio inexistente muestra un aviso.
 - Si alguien ganó el horario, avisa y recarga las horas.
 
@@ -123,7 +123,7 @@ Archivos: `agendify/supabase/migrations/` (7 migraciones), `seed.sql`, `configur
 - Login con correo y contraseña (Supabase Auth); el panel toma el nombre del negocio del usuario.
 - Inicio: saludo con el nombre del negocio, números del día (citas hoy, por confirmar, próximos 7 días, reservas nuevas), siguiente cita, "Por confirmar" con botones grandes y la línea del día.
 - Agenda por día o semana (columnas en escritorio, lista en celular), filtros por estado y detalle de cita.
-- Confirmar, Cancelar (libera el horario) y WhatsApp al cliente con mensaje listo.
+- Confirmar, Cancelar (libera el horario) y WhatsApp al cliente con mensaje listo. Al confirmar se abre "Enviar confirmación": WhatsApp al cliente con la confirmación (servicio, día, hora y dirección); la clínica sólo toca enviar.
 - Eliminar del historial: sólo citas canceladas (botón "Eliminar" y, con el filtro "Canceladas", "Eliminar las N"). La base de datos lo exige (política RLS).
 - Bloqueos: día completo o rango de horas, con lista y opción de quitar.
 - Historial: por año, citas atendidas (confirmadas y ya terminadas), clientes, canceladas y las que pasaron sin confirmar; gráfica por mes, desglose por servicio, lista por mes con buscador y "Descargar Excel" (CSV). El año en curso se calcula en vivo; el 1 de enero `cerrar_anio()` (pg_cron, 12:00 UTC) guarda el resumen del año anterior en `historiales_anuales` y deja un aviso "Tu historial AAAA está listo".
