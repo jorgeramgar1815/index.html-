@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { nav, site, waLink, reservasActivas } from '../data/site';
+import { nav, site, waLink, reservasActivas, reservaLink } from '../data/site';
 ---
 
 <header
@@ -38,12 +38,11 @@ import { nav, site, waLink, reservasActivas } from '../data/site';
 
     <div class="relative z-10 flex items-center gap-2">
       <a
-        href={waLink()}
+        href={reservasActivas ? reservaLink() : waLink()}
         target={reservasActivas ? undefined : '_blank'}
         rel="noopener"
         class="btn btn-primary hidden min-h-11 px-5 text-sm sm:inline-flex"
         data-cta="header-agendar"
-        data-reservar={reservasActivas || undefined}
       >
         <Icon name={reservasActivas ? 'calendar' : 'whatsapp'} size={18} />
         Agendar cita
@@ -89,12 +88,11 @@ import { nav, site, waLink, reservasActivas } from '../data/site';
     </ul>
     <div class="mt-auto space-y-4 pt-8">
       <a
-        href={waLink()}
+        href={reservasActivas ? reservaLink() : waLink()}
         target={reservasActivas ? undefined : '_blank'}
         rel="noopener"
         class="btn btn-primary btn-lg w-full"
         data-cta="menu-agendar"
-        data-reservar={reservasActivas || undefined}
       >
         <Icon name={reservasActivas ? 'calendar' : 'whatsapp'} size={20} /> {reservasActivas ? 'Agendar cita' : 'Agendar por WhatsApp'}
       </a>

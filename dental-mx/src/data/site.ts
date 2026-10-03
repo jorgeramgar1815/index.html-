@@ -108,17 +108,17 @@ export function waLink(message: string = site.whatsapp.defaultMessage): string {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-// ─── Reservaciones en línea (Supabase) ────────────────────────────────────────
-// La URL y la anon key son públicas por diseño: el acceso lo controlan RLS y las
-// funciones RPC (ver supabase/ y PRD-reservas.md). Se configuran como variables
-// de entorno PUBLIC_SUPABASE_URL y PUBLIC_SUPABASE_ANON_KEY (Vercel / .env).
-// Si faltan, los botones "Agendar" siguen abriendo WhatsApp como antes.
-export const reservas = {
-  slug: 'dental-mx',
-  supabaseUrl: (import.meta.env.PUBLIC_SUPABASE_URL ?? '').replace(/\/+$/, ''),
-  anonKey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '',
-};
-export const reservasActivas = Boolean(reservas.supabaseUrl && reservas.anonKey);
+// ─── Reservaciones en línea (Agendo) ──────────────────────────────────────────
+// Las citas se agendan en Agendo, el software de reservas (proyecto agendo/ de este
+// repositorio). Aquí sólo va el enlace a la página de Dental MX en Agendo.
+// Se puede cambiar con la variable PUBLIC_AGENDO_URL; vacía, "Agendar" abre WhatsApp.
+const AGENDO_URL = (import.meta.env.PUBLIC_AGENDO_URL ?? 'https://agendo-reservas.vercel.app/dental-mx').replace(/\/+$/, '');
+export const reservasActivas = Boolean(AGENDO_URL);
+
+/** Enlace de reserva en línea; con `servicio` llega ya elegido (?servicio=clave). */
+export function reservaLink(servicio?: string): string {
+  return servicio ? `${AGENDO_URL}?servicio=${encodeURIComponent(servicio)}` : AGENDO_URL;
+}
 
 /** Navegación de la landing: anclas a cada sección de la página de inicio. */
 export const nav = [

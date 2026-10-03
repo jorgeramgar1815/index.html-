@@ -5,7 +5,7 @@
  * La tarjeta `featured` (valoración) se resalta como punto de partida.
  */
 import Icon from './Icon.astro';
-import { flags, waLink, reservasActivas, type Service } from '../data/site';
+import { flags, waLink, reservasActivas, reservaLink, type Service } from '../data/site';
 interface Props {
   service: Service;
   index?: number;
@@ -56,11 +56,9 @@ const reserva = featured && reservasActivas;
   </ul>
 
   <a
-    href={waLink(service.waMessage)}
+    href={reserva ? reservaLink(service.slug) : waLink(service.waMessage)}
     target={reserva ? undefined : '_blank'}
     rel="noopener"
-    data-reservar={reserva || undefined}
-    data-servicio={reserva ? service.slug : undefined}
     class:list={[
       'mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 font-display text-sm font-semibold transition-[background-color,color,box-shadow] duration-300',
       featured

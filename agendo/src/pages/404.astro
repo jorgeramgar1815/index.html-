@@ -1,0 +1,15 @@
+---
+import App from '../layouts/App.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<App title="Página no encontrada · Agendo" noindex>
+  <main class="grid min-h-dvh place-items-center px-6 text-center">
+    <div>
+      <Logo />
+      <h1 class="mt-8 text-3xl font-bold tracking-tight">No encontramos esta página</h1>
+      <p class="mt-2 text-suave">Revisa el enlace que te compartieron.</p>
+      <a href="/" class="btn btn-primario mt-6">Ir al inicio</a>
+    </div>
+  </main>
+</App>

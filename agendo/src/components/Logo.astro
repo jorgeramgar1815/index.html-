@@ -1,0 +1,16 @@
+---
+/** Logotipo de Agendo (marca del software, no del negocio). */
+import { APP } from '../config';
+interface Props { class?: string; compacto?: boolean }
+const { class: className = '', compacto = false } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2 font-bold tracking-tight text-texto', className]}>
+  <svg viewBox="0 0 32 32" class="size-8 shrink-0" aria-hidden="true">
+    <rect width="32" height="32" rx="9" fill="#4f46e5" />
+    <rect x="8" y="9.5" width="16" height="14" rx="3.5" fill="none" stroke="#fff" stroke-width="2" />
+    <path d="M8 14h16M12.5 7.5v4M19.5 7.5v4" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+    <path d="m12.8 18.6 2.2 2.1 4.2-4.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  {!compacto && <span class="text-lg">{APP.nombre}</span>}
+</span>

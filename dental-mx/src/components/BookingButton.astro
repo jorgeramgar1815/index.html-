@@ -1,11 +1,10 @@
 ---
 /**
- * Botón "Agendar". Con reservaciones configuradas abre el widget de reserva
- * (con el servicio preseleccionado si se indica); si no, o si falla el JS,
- * abre WhatsApp como antes.
+ * Botón "Agendar". Lleva a la página de reservas en línea (Agendo), con el
+ * servicio preseleccionado si se indica; sin enlace configurado abre WhatsApp.
  */
 import Icon from './Icon.astro';
-import { reservasActivas, waLink } from '../data/site';
+import { reservasActivas, reservaLink, waLink } from '../data/site';
 
 interface Props {
   label?: string;
@@ -32,12 +31,10 @@ const {
 ---
 
 <a
-  href={waLink(message)}
+  href={reservasActivas ? reservaLink(servicio) : waLink(message)}
   target={reservasActivas ? undefined : '_blank'}
   rel="noopener"
   class:list={['btn', variant === 'primary' ? 'btn-primary' : 'btn-ghost', size === 'lg' && 'btn-lg', className]}
-  data-reservar={reservasActivas || undefined}
-  data-servicio={reservasActivas ? servicio : undefined}
   data-cta={cta}
   data-magnetic={magnetic || undefined}
 >

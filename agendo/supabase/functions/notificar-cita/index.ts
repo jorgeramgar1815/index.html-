@@ -5,7 +5,8 @@
 //
 // Variables (Supabase → Edge Functions → Secrets):
 //   RESEND_API_KEY   clave de https://resend.com (plan gratis: 3,000 correos/mes)
-//   AVISOS_REMITENTE opcional, ej. "Dental MX <citas@tudominio.com>".
+//   AVISOS_REMITENTE opcional, ej. "Agendo <citas@tudominio.com>".
+//   AGENDO_URL opcional: dirección de Agendo para el enlace al panel.
 //                    Sin dominio verificado en Resend usa "onboarding@resend.dev"
 //                    (sólo puede enviar al correo de tu cuenta de Resend).
 // SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY las pone Supabase automáticamente.
@@ -18,7 +19,8 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const REMITENTE = Deno.env.get('AVISOS_REMITENTE') ?? 'Citas Dental MX <onboarding@resend.dev>';
+const REMITENTE = Deno.env.get('AVISOS_REMITENTE') ?? 'Agendo <onboarding@resend.dev>';
+const PANEL = `${(Deno.env.get('AGENDO_URL') ?? 'https://agendo-reservas.vercel.app').replace(/\/+$/, '')}/panel`;
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -56,14 +58,15 @@ Deno.serve(async (req) => {
       <h2 style="margin:0 0 4px">Nueva cita por confirmar</h2>
       <p style="margin:0 0 16px;color:#555">${esc(negocio.nombre)}</p>
       <table style="width:100%;border-collapse:collapse;font-size:15px">
-        <tr><td style="padding:6px 0;color:#555">Paciente</td><td style="padding:6px 0;text-align:right"><b>${esc(cita.nombre)}</b></td></tr>
+        <tr><td style="padding:6px 0;color:#555">Cliente</td><td style="padding:6px 0;text-align:right"><b>${esc(cita.nombre)}</b></td></tr>
         <tr><td style="padding:6px 0;color:#555">Servicio</td><td style="padding:6px 0;text-align:right">${esc(servicio)}</td></tr>
         <tr><td style="padding:6px 0;color:#555">Cuándo</td><td style="padding:6px 0;text-align:right">${esc(cuando)}</td></tr>
         <tr><td style="padding:6px 0;color:#555">Teléfono</td><td style="padding:6px 0;text-align:right">${esc(tel)}</td></tr>
         ${cita.nota ? `<tr><td style="padding:6px 0;color:#555">Nota</td><td style="padding:6px 0;text-align:right">${esc(cita.nota)}</td></tr>` : ''}
       </table>
-      <p style="margin:20px 0 0"><a href="https://wa.me/52${cita.telefono}" style="background:#b5ee3a;color:#0e100e;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:600">WhatsApp al paciente</a></p>
-      <p style="margin:16px 0 0;color:#777;font-size:13px">Confírmala o cancélala en el panel de citas (/admin).</p>
+      <p style="margin:20px 0 0"><a href="${PANEL}" style="background:#4f46e5;color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600">Abrir mi panel</a>
+        <a href="https://wa.me/52${cita.telefono}" style="margin-left:8px;color:#047857;font-weight:600;text-decoration:none">WhatsApp al cliente</a></p>
+      <p style="margin:16px 0 0;color:#777;font-size:13px">Confírmala o cancélala desde tu panel de Agendo.</p>
     </div>`;
 
   const r = await fetch('https://api.resend.com/emails', {

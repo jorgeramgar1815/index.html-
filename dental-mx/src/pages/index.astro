@@ -22,7 +22,7 @@ import fotoConsultorio from '../assets/img/consultorio.jpg';
 import fotoSala from '../assets/img/sala-de-espera.jpg';
 // PLACEHOLDER: retrato ilustrativo; reemplazar por la foto real del doctor (site.doctor.photo).
 import fotoEquipo from '../assets/img/equipo-clinico.jpg';
-import { faqs, flags, reasons, reservasActivas, services, site, steps, testimonials, tips, waLink } from '../data/site';
+import { faqs, flags, reasons, reservaLink, reservasActivas, services, site, steps, testimonials, tips, waLink } from '../data/site';
 
 // Fondo de la portada: importar una foto aquí para usarla (null = escena de marca con listones de madera).
 const heroImage: ImageMetadata | null = null;
@@ -192,13 +192,11 @@ const schema = [
                     </p>
                     {s.promo!.note && <p class="mt-1 text-sm text-mute">{s.promo!.note}</p>}
                     <a
-                      href={waLink(`Hola, me interesa la promoción de ${s.name.toLowerCase()} (${s.promo!.now}).`)}
+                      href={reservasActivas ? reservaLink(s.slug) : waLink(`Hola, me interesa la promoción de ${s.name.toLowerCase()} (${s.promo!.now}).`)}
                       target={reservasActivas ? undefined : '_blank'}
                       rel="noopener"
                       class="btn btn-primary mt-6 min-h-11 px-5 text-sm"
                       data-cta={`promo-${s.slug}`}
-                      data-reservar={reservasActivas || undefined}
-                      data-servicio={reservasActivas ? s.slug : undefined}
                     >
                       <Icon name={reservasActivas ? 'calendar' : 'whatsapp'} size={17} /> Aprovechar
                       <span class="sr-only">la promoción de {s.name.toLowerCase()}</span>

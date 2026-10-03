@@ -3,8 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
-import Reservas from '../components/Reservas.astro';
-import { site, flags, reservasActivas } from '../data/site';
+import { site, flags } from '../data/site';
 // Fuente de los titulares: se precarga para que la portada no cambie de tipografía al cargar.
 import soraFont from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
 
@@ -136,7 +135,6 @@ const dentist = {
 
     <Footer />
     <WhatsAppFab />
-    {reservasActivas && <Reservas />}
 
     <script>
       import '../scripts/main';

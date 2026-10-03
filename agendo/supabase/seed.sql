@@ -5,8 +5,10 @@
 -- ═══════════════════════════════════════════════════════════════════════════
 
 with negocio as (
-  insert into public.negocios (slug, nombre, whatsapp, zona_horaria)
-  values ('dental-mx', 'Dental MX', '5218715866828', 'America/Monterrey')
+  insert into public.negocios (slug, nombre, giro, direccion, whatsapp, zona_horaria)
+  values ('dental-mx', 'Dental MX', 'Clínica dental',
+          'C. del Mar 1000, Local 16, Torreón Residencial, Torreón, Coah.',
+          '5218715866828', 'America/Monterrey')
   returning id
 ),
 servicios as (

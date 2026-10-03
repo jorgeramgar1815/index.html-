@@ -1,0 +1,88 @@
+---
+/** Página de Agendo (el software). Cada negocio tiene su página en /<slug> y su panel en /panel. */
+import App from '../layouts/App.astro';
+import Logo from '../components/Logo.astro';
+import { APP } from '../config';
+import { icono, type NombreIcono } from '../scripts/iconos';
+
+const DEMO = '/dental-mx';
+const ventajas: { icono: NombreIcono; titulo: string; texto: string }[] = [
+  { icono: 'pagina', titulo: 'Tu página de reservas', texto: 'Un enlace con el nombre de tu negocio para Instagram, Google y WhatsApp.' },
+  { icono: 'reloj', titulo: 'Sólo horarios libres', texto: 'Tus clientes ven tus horas disponibles en tiempo real. Nunca se enciman dos citas.' },
+  { icono: 'campana', titulo: 'Aviso al instante', texto: 'Suena y te llega una notificación en el panel cuando alguien reserva.' },
+  { icono: 'check', titulo: 'Confirma en un toque', texto: 'Confirma, cancela o escribe por WhatsApp desde el celular o la computadora.' },
+];
+---
+
+<App title={`${APP.nombre} · ${APP.lema}`} description="Agenda en línea para negocios: página de reservas, horarios libres en tiempo real y panel para confirmar citas.">
+  <header class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <Logo />
+    <a href="/panel" class="btn btn-secundario min-h-10 px-4 text-sm">Entrar al panel</a>
+  </header>
+
+  <main>
+    <section class="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-8 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
+      <div>
+        <p class="inline-flex items-center gap-2 rounded-full border border-marca-100 bg-marca-50 px-3 py-1 text-xs font-bold text-marca-osc">
+          Para clínicas, estéticas, barberías, consultorios…
+        </p>
+        <h1 class="mt-5 text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+          Tus clientes reservan solos. <span class="text-marca">Tú sólo confirmas.</span>
+        </h1>
+        <p class="mt-5 max-w-xl text-lg text-suave">
+          {APP.nombre} le da a tu negocio una página de reservas y un panel sencillo para ver tu día, confirmar citas y cerrar horarios.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={DEMO} class="btn btn-primario btn-lg">Ver ejemplo en vivo</a>
+          <a href="/panel" class="btn btn-secundario btn-lg">Entrar al panel</a>
+        </div>
+        <p class="mt-4 text-sm text-tenue">Ejemplo: página de reservas de Dental MX.</p>
+      </div>
+
+      <!-- Vista previa ilustrativa -->
+      <div class="relative" aria-hidden="true">
+        <div class="absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br from-marca-100 via-violet-100 to-transparent blur-2xl"></div>
+        <div class="tarjeta p-5 sm:p-6">
+          <div class="flex items-center gap-3">
+            <div class="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-marca to-violet-500 font-bold text-white">TN</div>
+            <div><p class="font-bold">Tu negocio</p><p class="text-sm text-suave">Elige día y hora</p></div>
+          </div>
+          <div class="mt-5 grid grid-cols-7 gap-1.5 text-center text-sm font-semibold">
+            {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d) => <span class="text-xs text-tenue">{d}</span>)}
+            {Array.from({ length: 14 }, (_, i) => (
+              <span class:list={['grid h-9 place-items-center rounded-lg', i === 9 ? 'bg-marca text-white' : i % 7 === 6 ? 'text-[#c3c9d4]' : 'bg-marca-50 text-marca-osc']}>{i + 5}</span>
+            ))}
+          </div>
+          <div class="mt-5 grid grid-cols-3 gap-2 text-sm font-semibold">
+            {['10:00', '10:30', '11:30', '12:00', '16:00', '17:30'].map((h, i) => (
+              <span class:list={['grid h-10 place-items-center rounded-lg border', i === 3 ? 'border-marca bg-marca text-white' : 'border-borde']}>{h}</span>
+            ))}
+          </div>
+        </div>
+        <div class="tarjeta absolute -bottom-6 -left-2 flex items-center gap-3 px-4 py-3 shadow-[var(--shadow-flota)] sm:-left-8">
+          <span class="grid size-9 place-items-center rounded-full bg-confirmada-50 text-confirmada"><Fragment set:html={icono('campana', 18)} /></span>
+          <div class="text-sm"><p class="font-bold">Nueva cita</p><p class="text-suave">Ana López · jueves 12:00</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-borde bg-superficie py-16">
+      <div class="mx-auto grid max-w-6xl gap-6 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+        {
+          ventajas.map((v) => (
+            <div>
+              <span class="grid size-11 place-items-center rounded-xl bg-marca-50 text-marca"><Fragment set:html={icono(v.icono, 22)} /></span>
+              <h2 class="mt-4 font-bold">{v.titulo}</h2>
+              <p class="mt-1.5 text-sm leading-relaxed text-suave">{v.texto}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-tenue sm:px-6">
+    <Logo compacto />
+    <p>{APP.nombre} · {APP.lema}</p>
+  </footer>
+</App>

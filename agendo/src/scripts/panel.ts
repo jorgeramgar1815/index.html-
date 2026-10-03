@@ -1,0 +1,762 @@
+/**
+ * Agendo · panel del negocio (Supabase Auth + RLS).
+ * - Inicio: saludo con el nombre del negocio, números del día, siguiente cita,
+ *   citas por confirmar (botones grandes) y la línea del día.
+ * - Agenda por día o semana con filtros; detalle de cita en un diálogo.
+ * - Bloqueos de días u horas.
+ * - Mi página: enlace de reservas (copiar / abrir / compartir), servicios visibles y horario.
+ * - Avisos de cita nueva: tiempo real, sonido, notificación del navegador y título
+ *   de la pestaña; con consulta periódica de respaldo.
+ */
+import { createClient, type RealtimeChannel } from '@supabase/supabase-js';
+import { aInstante, fechaEnZona, horaEnZona, sumarDias, diaSemana, fechaLarga } from './zona';
+import { esc, iniciales } from './api';
+import { icono, ICONO_WA } from './iconos';
+
+type Estado = 'pendiente' | 'confirmada' | 'cancelada';
+type Cita = {
+  id: string; inicio: string; fin: string; nombre: string; telefono: string; nota: string | null;
+  estado: Estado; creada_en: string; servicios: { nombre: string } | null;
+};
+type Bloqueo = { id: string; inicio: string; fin: string; motivo: string | null };
+type Servicio = { id: string; nombre: string; duracion_min: number; activo: boolean };
+type Horario = { dia_semana: number; abre: string; cierra: string };
+type Seccion = 'inicio' | 'agenda' | 'bloqueos' | 'pagina';
+
+const raiz = document.getElementById('panel');
+if (!raiz) throw new Error('Panel sin configurar');
+const supabase = createClient(raiz.dataset.url!, raiz.dataset.key!, { auth: { persistSession: true, autoRefreshToken: true } });
+const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+const $$ = <T extends HTMLElement = HTMLElement>(sel: string) => [...document.querySelectorAll<T>(sel)];
+const CAMPOS_CITA = 'id, inicio, fin, nombre, telefono, nota, estado, creada_en, servicios(nombre)';
+const CLAVE_AVISOS = 'agendo-avisos';
+
+const st = {
+  negocioId: '',
+  negocio: { slug: '', nombre: 'Tu negocio', giro: null as string | null, zona_horaria: 'America/Monterrey' },
+  seccion: 'inicio' as Seccion,
+  vista: 'dia' as 'dia' | 'semana',
+  fecha: '',
+  filtro: 'todas' as 'todas' | Estado,
+  citas: new Map<string, Cita>(),
+  conocidas: new Set<string>(),
+  ultimaRevision: new Date().toISOString(),
+  canal: null as RealtimeChannel | null,
+  avisos: false,
+  sinLeer: 0,
+};
+const zona = () => st.negocio.zona_horaria;
+const hoy = () => fechaEnZona(new Date(), zona());
+const hora = (iso: string) => horaEnZona(new Date(iso), zona());
+const fechaDe = (iso: string) => fechaEnZona(new Date(iso), zona());
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+const recordar = (citas: Cita[]) => citas.forEach((c) => (st.citas.set(c.id, c), st.conocidas.add(c.id)));
+
+// ─── Acceso ───────────────────────────────────────────────────────────────────
+function mostrar(vista: 'cargando' | 'login' | 'panel') {
+  $('#vista-cargando').hidden = vista !== 'cargando';
+  $('#vista-login').hidden = vista !== 'login';
+  $('#vista-panel').hidden = vista !== 'panel';
+}
+
+function mostrarLogin(mensaje?: string) {
+  mostrar('login');
+  const err = $('#login-error');
+  err.hidden = !mensaje;
+  err.textContent = mensaje ?? '';
+}
+
+async function arrancar() {
+  const { data } = await supabase.auth.getSession();
+  if (data.session) await iniciarPanel();
+  else mostrarLogin();
+}
+
+$('#form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget as HTMLFormElement;
+  const boton = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+  const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+  if (!email || !password) return mostrarLogin('Escribe tu correo y tu contraseña.');
+  boton.disabled = true;
+  boton.textContent = 'Entrando…';
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  boton.disabled = false;
+  boton.textContent = 'Entrar';
+  if (error) return mostrarLogin(/invalid/i.test(error.message) ? 'Correo o contraseña incorrectos.' : 'No se pudo entrar. Inténtalo de nuevo.');
+  await iniciarPanel();
+});
+
+$$('[data-p-salir]').forEach((b) =>
+  b.addEventListener('click', async () => {
+    st.canal?.unsubscribe();
+    await supabase.auth.signOut();
+    location.replace(location.pathname);
+  }),
+);
+
+async function iniciarPanel() {
+  const { data: admin, error } = await supabase.from('admins').select('negocio_id').limit(1).maybeSingle();
+  if (error || !admin) {
+    await supabase.auth.signOut();
+    return mostrarLogin('Este usuario no tiene un negocio asignado.');
+  }
+  st.negocioId = admin.negocio_id;
+  const { data: negocio } = await supabase.from('negocios').select('slug, nombre, giro, zona_horaria').eq('id', st.negocioId).single();
+  if (negocio) st.negocio = negocio;
+  st.fecha = hoy();
+  pintarNegocio();
+  try { st.avisos = localStorage.getItem(CLAVE_AVISOS) === '1'; } catch { /* sin almacenamiento */ }
+  pintarAvisos();
+  mostrar('panel');
+  irA(seccionDeHash(), false);
+  conectarTiempoReal();
+  setInterval(revisarNuevas, 60_000);
+  // Al volver a la pestaña: limpia el contador y revisa por si algo llegó.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    st.sinLeer = 0;
+    actualizarTitulo();
+    revisarNuevas();
+  });
+}
+
+function pintarNegocio() {
+  const n = st.negocio;
+  $$('[data-p-nombre]').forEach((x) => (x.textContent = n.nombre));
+  $$('[data-p-giro]').forEach((x) => (x.textContent = n.giro || 'Panel de citas'));
+  $$('[data-p-iniciales]').forEach((x) => (x.textContent = iniciales(n.nombre)));
+  actualizarTitulo();
+}
+
+// ─── Navegación ───────────────────────────────────────────────────────────────
+const SECCIONES: Seccion[] = ['inicio', 'agenda', 'bloqueos', 'pagina'];
+const seccionDeHash = (): Seccion => {
+  const h = location.hash.slice(1) as Seccion;
+  return SECCIONES.includes(h) ? h : 'inicio';
+};
+
+function irA(seccion: Seccion, desplazar = true) {
+  st.seccion = seccion;
+  $$('[data-seccion]').forEach((s) => (s.hidden = s.dataset.seccion !== seccion));
+  $$('[data-ir]').forEach((a) => (a.dataset.ir === seccion ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+  if (desplazar) window.scrollTo({ top: 0 });
+  cargarSeccion();
+}
+window.addEventListener('hashchange', () => st.negocioId && irA(seccionDeHash()));
+
+function cargarSeccion() {
+  if (st.seccion === 'inicio') return cargarInicio();
+  if (st.seccion === 'agenda') return cargarAgenda();
+  if (st.seccion === 'bloqueos') return cargarBloqueos();
+  return cargarPagina();
+}
+
+/** Recarga lo que se ve y el contador de pendientes (tras un cambio o una cita nueva). */
+async function refrescar() {
+  await Promise.all([cargarSeccion(), st.seccion === 'inicio' ? null : contarPendientes()]);
+}
+
+function pintarContador(n: number) {
+  $$('[data-p-contador]').forEach((x) => {
+    x.hidden = n === 0;
+    x.textContent = String(n);
+  });
+}
+
+async function contarPendientes() {
+  const { count } = await supabase
+    .from('citas')
+    .select('id', { count: 'exact', head: true })
+    .eq('negocio_id', st.negocioId)
+    .eq('estado', 'pendiente')
+    .gte('inicio', new Date().toISOString());
+  pintarContador(count ?? 0);
+}
+
+// ─── Tarjeta de cita (reutilizada en inicio, agenda y diálogo) ────────────────
+function enlaceWa(c: Cita) {
+  const servicio = c.servicios?.nombre ?? 'cita';
+  const nombre = c.nombre.split(' ')[0];
+  const texto =
+    c.estado === 'cancelada'
+      ? `Hola ${nombre}, te escribimos de ${st.negocio.nombre} sobre tu cita de ${servicio}.`
+      : `Hola ${nombre}, te escribimos de ${st.negocio.nombre} para confirmar tu cita de ${servicio} el ${fechaLarga(fechaDe(c.inicio))} a las ${hora(c.inicio)} h.`;
+  return `https://wa.me/52${c.telefono}?text=${encodeURIComponent(texto)}`;
+}
+
+const ETIQUETA: Record<Estado, string> = { pendiente: 'Por confirmar', confirmada: 'Confirmada', cancelada: 'Cancelada' };
+const telefonoBonito = (t: string) => t.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+
+function acciones(c: Cita) {
+  return `
+    <div class="flex flex-wrap gap-2">
+      ${c.estado === 'pendiente' ? `<button type="button" class="p-accion max-sm:flex-1" data-tipo="confirmar" data-accion="confirmada" data-id="${c.id}">${icono('check', 17)}Confirmar</button>` : ''}
+      <a class="p-accion" data-tipo="wa" href="${esc(enlaceWa(c))}" target="_blank" rel="noopener">${ICONO_WA(16)}WhatsApp</a>
+      ${c.estado !== 'cancelada' ? `<button type="button" class="p-accion" data-tipo="cancelar" data-accion="cancelada" data-id="${c.id}" title="Cancelar cita">${icono('x', 16)}<span class="max-sm:sr-only">Cancelar</span></button>` : ''}
+    </div>`;
+}
+
+function tarjetaCita(c: Cita, { conFecha = false, conHora = true, conEstado = true, horaSoloMovil = false } = {}) {
+  const fecha = fechaDe(c.inicio);
+  return `
+    <article class="p-cita" data-estado="${c.estado}">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          ${
+            conHora || conFecha
+              ? `<p class="text-sm font-semibold text-suave tabular-nums ${horaSoloMovil ? 'sm:hidden' : ''}">${conFecha ? `<span class="first-letter:uppercase inline-block">${esc(fechaLarga(fecha, { weekday: 'short', day: 'numeric', month: 'short' }))}</span> · ` : ''}${hora(c.inicio)}–${hora(c.fin)}</p>`
+              : ''
+          }
+          <p class="p-cita-titulo mt-0.5 text-base font-bold text-texto">${esc(c.nombre)}</p>
+          <p class="mt-0.5 text-sm text-suave">${esc(c.servicios?.nombre ?? 'Cita')} · <a class="whitespace-nowrap tabular-nums hover:text-marca" href="tel:${c.telefono}">${telefonoBonito(c.telefono)}</a></p>
+        </div>
+        ${conEstado ? `<span class="estado shrink-0" data-estado="${c.estado}">${ETIQUETA[c.estado]}</span>` : ''}
+      </div>
+      ${c.nota ? `<p class="flex gap-2 rounded-xl bg-fondo px-3 py-2 text-sm text-suave"><span class="mt-0.5 shrink-0 text-tenue">${icono('nota', 15)}</span><span>${esc(c.nota)}</span></p>` : ''}
+      ${acciones(c)}
+    </article>`;
+}
+
+const vacio = (texto: string, ico: Parameters<typeof icono>[0] = 'agenda') => `
+  <div class="grid justify-items-center gap-2 rounded-2xl border border-dashed border-borde px-4 py-10 text-center">
+    <span class="grid size-11 place-items-center rounded-full bg-fondo text-tenue">${icono(ico, 22)}</span>
+    <p class="text-sm text-suave">${texto}</p>
+  </div>`;
+
+const errorCarga = (msg: string) => `<p class="rounded-xl bg-orange-50 px-4 py-3 text-sm text-peligro">No se pudo cargar. ${esc(msg)}</p>`;
+
+// Confirmar / cancelar (delegado: inicio, agenda y diálogo).
+document.addEventListener('click', async (e) => {
+  const b = (e.target as Element).closest<HTMLButtonElement>('[data-accion]');
+  if (!b) return;
+  const nuevo = b.dataset.accion as Estado;
+  if (nuevo === 'cancelada' && !confirm('¿Cancelar esta cita? El horario quedará libre para otra persona.')) return;
+  b.disabled = true;
+  const { error } = await supabase.from('citas').update({ estado: nuevo }).eq('id', b.dataset.id!);
+  if (error) {
+    b.disabled = false;
+    return toast(`No se pudo actualizar: ${error.message}`);
+  }
+  $<HTMLDialogElement>('#detalle').close();
+  toast(nuevo === 'confirmada' ? 'Cita confirmada. Avísale por WhatsApp.' : 'Cita cancelada · el horario quedó libre');
+  await refrescar();
+});
+
+// Detalle de cita (desde la vista de semana).
+document.addEventListener('click', (e) => {
+  const b = (e.target as Element).closest<HTMLElement>('[data-ver-cita]');
+  const c = b && st.citas.get(b.dataset.verCita!);
+  if (!c) return;
+  $('[data-p-detalle]').innerHTML = `
+    <div class="grid gap-2">
+      ${tarjetaCita(c, { conFecha: true })}
+      <button type="button" class="btn btn-secundario w-full" data-cerrar>Cerrar</button>
+    </div>`;
+  $<HTMLDialogElement>('#detalle').showModal();
+});
+document.addEventListener('click', (e) => {
+  if ((e.target as Element).closest('[data-cerrar]')) $<HTMLDialogElement>('#detalle').close();
+});
+$('#detalle').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) (e.currentTarget as HTMLDialogElement).close();
+});
+
+// ─── Inicio ───────────────────────────────────────────────────────────────────
+function saludo() {
+  const h = Number(horaEnZona(new Date(), zona()).slice(0, 2));
+  return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+}
+
+async function cargarInicio() {
+  const d = hoy();
+  $('[data-p-hoy-fecha]').textContent = fechaLarga(d, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  $('[data-p-saludo]').innerHTML = `${saludo()}, <span class="text-marca">${esc(st.negocio.nombre)}</span>`;
+
+  const ahora = new Date();
+  const [semana, pendientes] = await Promise.all([
+    supabase
+      .from('citas')
+      .select(CAMPOS_CITA)
+      .eq('negocio_id', st.negocioId)
+      .gte('inicio', aInstante(d, '00:00', zona()).toISOString())
+      .lt('inicio', aInstante(sumarDias(d, 7), '00:00', zona()).toISOString())
+      .order('inicio'),
+    supabase
+      .from('citas')
+      .select(CAMPOS_CITA)
+      .eq('negocio_id', st.negocioId)
+      .eq('estado', 'pendiente')
+      .gte('inicio', ahora.toISOString())
+      .order('inicio')
+      .limit(30),
+  ]);
+  if (semana.error || pendientes.error) {
+    $('[data-p-hoy]').innerHTML = errorCarga((semana.error ?? pendientes.error)!.message);
+    return;
+  }
+  const citas = semana.data as unknown as Cita[];
+  const porConfirmar = pendientes.data as unknown as Cita[];
+  recordar(citas);
+  recordar(porConfirmar);
+  pintarContador(porConfirmar.length);
+
+  const activas = citas.filter((c) => c.estado !== 'cancelada');
+  const deHoy = activas.filter((c) => fechaDe(c.inicio) === d);
+  const nuevasHoy = citas.filter((c) => fechaDe(c.creada_en) === d).length;
+
+  const kpi = (ico: Parameters<typeof icono>[0], valor: number, etiqueta: string, color: string, destacar = false) => `
+    <div class="tarjeta p-kpi ${destacar ? 'ring-2 ring-amber-300' : ''}">
+      <span class="p-kpi-icono ${color}">${icono(ico, 20)}</span>
+      <div><p class="text-3xl font-bold tracking-tight tabular-nums">${valor}</p><p class="text-sm font-medium text-suave">${etiqueta}</p></div>
+    </div>`;
+  $('[data-p-kpis]').innerHTML = [
+    kpi('agenda', deHoy.length, deHoy.length === 1 ? 'Cita hoy' : 'Citas hoy', 'bg-marca-50 text-marca'),
+    kpi('pendiente', porConfirmar.length, 'Por confirmar', 'bg-pendiente-50 text-pendiente', porConfirmar.length > 0),
+    kpi('semana', activas.length, 'Próximos 7 días', 'bg-sky-50 text-sky-700'),
+    kpi('nuevo', nuevasHoy, nuevasHoy === 1 ? 'Reserva nueva hoy' : 'Reservas nuevas hoy', 'bg-violet-50 text-violet-700'),
+  ].join('');
+
+  // Siguiente cita.
+  const siguiente = activas.find((c) => new Date(c.fin) > ahora);
+  $('[data-p-siguiente]').innerHTML = siguiente
+    ? (() => {
+        const enCurso = new Date(siguiente.inicio) <= ahora;
+        const min = Math.round((new Date(siguiente.inicio).getTime() - ahora.getTime()) / 60000);
+        const cuando = enCurso
+          ? 'En curso'
+          : fechaDe(siguiente.inicio) === d
+            ? min < 60 ? `En ${min} min` : `Hoy a las ${hora(siguiente.inicio)}`
+            : fechaLarga(fechaDe(siguiente.inicio), { weekday: 'long', day: 'numeric', month: 'short' });
+        return `
+          <section class="p-hero p-5 sm:p-6 text-white" aria-label="Siguiente cita">
+            <div class="relative z-10 flex flex-wrap items-start justify-between gap-4">
+              <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-white/70">Siguiente cita · <span class="normal-case first-letter:uppercase inline-block">${esc(cuando)}</span></p>
+                <p class="mt-2 text-2xl font-bold tracking-tight">${esc(siguiente.nombre)}</p>
+                <p class="mt-1 text-white/80">${esc(siguiente.servicios?.nombre ?? 'Cita')} · ${hora(siguiente.inicio)}–${hora(siguiente.fin)}</p>
+              </div>
+              <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-bold">${ETIQUETA[siguiente.estado]}</span>
+            </div>
+            <div class="relative z-10 mt-4 flex flex-wrap gap-2">
+              <a class="btn min-h-10 bg-white px-4 text-sm text-marca-osc hover:bg-marca-50" href="${esc(enlaceWa(siguiente))}" target="_blank" rel="noopener">${ICONO_WA(16)}WhatsApp</a>
+              <a class="btn min-h-10 border border-white/30 px-4 text-sm text-white hover:bg-white/10" href="tel:${siguiente.telefono}">${icono('tel', 16)}Llamar</a>
+            </div>
+          </section>`;
+      })()
+    : '';
+
+  // Por confirmar.
+  const num = $('[data-p-pendientes-num]');
+  num.hidden = !porConfirmar.length;
+  num.textContent = plural(porConfirmar.length, 'cita', 'citas');
+  $('[data-p-pendientes]').innerHTML = porConfirmar.length
+    ? `<div class="grid gap-3">${porConfirmar.map((c) => tarjetaCita(c, { conFecha: true, conEstado: false })).join('')}</div>`
+    : vacio('Todo al día. No hay citas esperando respuesta.', 'check');
+
+  // Línea del día.
+  const todasHoy = citas.filter((c) => fechaDe(c.inicio) === d);
+  $('[data-p-hoy]').innerHTML = todasHoy.length
+    ? todasHoy
+        .map(
+          (c) => `
+        <div class="p-linea ${new Date(c.fin) < ahora ? 'opacity-55' : ''}">
+          <p class="p-linea-hora">${hora(c.inicio)}<small>${hora(c.fin)}</small></p>
+          ${tarjetaCita(c, { horaSoloMovil: true })}
+        </div>`,
+        )
+        .join('')
+    : vacio('Hoy no hay citas agendadas.');
+}
+
+// ─── Agenda ───────────────────────────────────────────────────────────────────
+$$('[data-vista]').forEach((b) =>
+  b.addEventListener('click', () => {
+    st.vista = b.dataset.vista as 'dia' | 'semana';
+    $$('[data-vista]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    cargarAgenda();
+  }),
+);
+$$('[data-nav]').forEach((b) =>
+  b.addEventListener('click', () => {
+    const paso = Number(b.dataset.nav);
+    st.fecha = paso === 0 ? hoy() : sumarDias(st.fecha, paso * (st.vista === 'dia' ? 1 : 7));
+    cargarAgenda();
+  }),
+);
+$$('[data-filtro]').forEach((b) =>
+  b.addEventListener('click', () => {
+    st.filtro = b.dataset.filtro as typeof st.filtro;
+    $$('[data-filtro]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    cargarAgenda();
+  }),
+);
+
+function rango(): [string, string] {
+  if (st.vista === 'dia') return [st.fecha, sumarDias(st.fecha, 1)];
+  const lunes = sumarDias(st.fecha, -((diaSemana(st.fecha) + 6) % 7));
+  return [lunes, sumarDias(lunes, 7)];
+}
+
+async function cargarAgenda() {
+  const [desde, hasta] = rango();
+  const d = hoy();
+  $('[data-p-rango]').textContent =
+    st.vista === 'dia'
+      ? `${fechaLarga(desde)}${desde === d ? ' · hoy' : ''}`
+      : `${fechaLarga(desde, { day: 'numeric', month: 'short' })} – ${fechaLarga(sumarDias(hasta, -1), { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  const caja = $('[data-p-agenda]');
+  caja.innerHTML = `<div class="grid gap-3">${'<div class="esqueleto h-28"></div>'.repeat(3)}</div>`;
+  let consulta = supabase
+    .from('citas')
+    .select(CAMPOS_CITA)
+    .eq('negocio_id', st.negocioId)
+    .gte('inicio', aInstante(desde, '00:00', zona()).toISOString())
+    .lt('inicio', aInstante(hasta, '00:00', zona()).toISOString())
+    .order('inicio');
+  if (st.filtro !== 'todas') consulta = consulta.eq('estado', st.filtro);
+  const [{ data: filas, error }] = await Promise.all([consulta, contarPendientes()]);
+  if (error) {
+    caja.innerHTML = errorCarga(error.message);
+    return;
+  }
+  const citas = (filas ?? []) as unknown as Cita[];
+  recordar(citas);
+  const filtroTxt = st.filtro === 'todas' ? '' : ` ${ETIQUETA[st.filtro].toLowerCase()}`;
+
+  if (st.vista === 'dia') {
+    caja.innerHTML = citas.length
+      ? `<p class="mb-3 text-sm font-medium text-suave">${plural(citas.length, 'cita', 'citas')}${filtroTxt}</p>
+         <div class="grid gap-3 lg:grid-cols-2">${citas.map((c) => tarjetaCita(c)).join('')}</div>`
+      : vacio(`Sin citas${filtroTxt} este día.`);
+    return;
+  }
+
+  // Semana: columnas en escritorio, lista por día en móvil.
+  const dias = Array.from({ length: 7 }, (_, i) => sumarDias(desde, i));
+  const porDia = new Map(dias.map((f) => [f, citas.filter((c) => fechaDe(c.inicio) === f)]));
+  const columnas = dias
+    .map((f) => {
+      const lista = porDia.get(f)!;
+      return `
+        <div class="p-dia-col" ${f === d ? 'data-hoy' : ''}>
+          <p class="px-1 pb-1 text-center">
+            <span class="block text-xs font-bold uppercase tracking-wide ${f === d ? 'text-marca' : 'text-tenue'}">${esc(fechaLarga(f, { weekday: 'short' }).replace('.', ''))}</span>
+            <span class="text-lg font-bold tabular-nums ${f === d ? 'text-marca' : 'text-texto'}">${Number(f.slice(8))}</span>
+          </p>
+          ${
+            lista.length
+              ? lista
+                  .map(
+                    (c) => `
+            <button type="button" class="p-bloque" data-estado="${c.estado}" data-ver-cita="${c.id}">
+              <span class="font-bold tabular-nums">${hora(c.inicio)}</span>
+              <span class="truncate font-semibold text-texto">${esc(c.nombre)}</span>
+              <span class="truncate text-suave">${esc(c.servicios?.nombre ?? 'Cita')}</span>
+            </button>`,
+                  )
+                  .join('')
+              : '<p class="pt-6 text-center text-xs text-tenue">—</p>'
+          }
+        </div>`;
+    })
+    .join('');
+  const listas = dias
+    .filter((f) => porDia.get(f)!.length)
+    .map(
+      (f) => `
+      <h3 class="mb-2 mt-6 text-sm font-bold uppercase tracking-wide first:mt-0 ${f === d ? 'text-marca' : 'text-suave'}">${esc(fechaLarga(f))}${f === d ? ' · hoy' : ''}</h3>
+      <div class="grid gap-3">${porDia.get(f)!.map((c) => tarjetaCita(c)).join('')}</div>`,
+    )
+    .join('');
+  caja.innerHTML = `
+    <div class="hidden lg:block">
+      <div class="mb-3 flex flex-wrap items-center gap-4 text-xs font-semibold text-suave">
+        <span>${plural(citas.length, 'cita', 'citas')}${filtroTxt}</span>
+        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-amber-400"></span>Por confirmar</span>
+        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-emerald-500"></span>Confirmada</span>
+        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-slate-400"></span>Cancelada</span>
+      </div>
+      <div class="p-semana">${columnas}</div>
+    </div>
+    <div class="lg:hidden">${citas.length ? listas : vacio(`Sin citas${filtroTxt} esta semana.`)}</div>`;
+}
+
+// ─── Bloqueos ─────────────────────────────────────────────────────────────────
+const formBloqueo = $<HTMLFormElement>('#form-bloqueo');
+const campoB = (n: string) => formBloqueo.elements.namedItem(n) as HTMLInputElement;
+campoB('todo_dia').addEventListener('change', () => {
+  formBloqueo.querySelectorAll<HTMLElement>('[data-horas]').forEach((x) => (x.hidden = campoB('todo_dia').checked));
+});
+
+formBloqueo.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('#bloqueo-error');
+  const falla = (t: string) => ((err.hidden = false), (err.textContent = t));
+  const desde = campoB('desde').value;
+  const hasta = campoB('hasta').value || desde;
+  const todoDia = campoB('todo_dia').checked;
+  if (!desde) return falla('Elige al menos el día de inicio.');
+  const inicio = aInstante(desde, todoDia ? '00:00' : campoB('hora_desde').value, zona());
+  const fin = todoDia ? aInstante(sumarDias(hasta, 1), '00:00', zona()) : aInstante(hasta, campoB('hora_hasta').value, zona());
+  if (!(fin > inicio)) return falla('El final debe ser después del inicio.');
+  err.hidden = true;
+  const boton = formBloqueo.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  boton.disabled = true;
+  const { error } = await supabase.from('bloqueos').insert({
+    negocio_id: st.negocioId, inicio: inicio.toISOString(), fin: fin.toISOString(), motivo: campoB('motivo').value.trim() || null,
+  });
+  boton.disabled = false;
+  if (error) return falla(`No se pudo crear: ${error.message}`);
+  formBloqueo.reset();
+  campoB('todo_dia').dispatchEvent(new Event('change'));
+  toast('Listo, ese tiempo quedó bloqueado');
+  cargarBloqueos();
+});
+
+function textoBloqueo(b: Bloqueo) {
+  const i = new Date(b.inicio);
+  const f = new Date(b.fin);
+  const fi = fechaEnZona(i, zona());
+  const ff = fechaEnZona(new Date(f.getTime() - 1), zona());
+  const diaCompleto = horaEnZona(i, zona()) === '00:00' && horaEnZona(f, zona()) === '00:00';
+  if (diaCompleto) return fi === ff ? { titulo: fechaLarga(fi), detalle: 'Todo el día' } : { titulo: `${fechaLarga(fi, { day: 'numeric', month: 'short' })} – ${fechaLarga(ff, { day: 'numeric', month: 'short' })}`, detalle: 'Días completos' };
+  const mismoDia = fi === fechaEnZona(f, zona());
+  return {
+    titulo: fechaLarga(fi),
+    detalle: `${horaEnZona(i, zona())} – ${mismoDia ? '' : `${fechaLarga(fechaEnZona(f, zona()), { day: 'numeric', month: 'short' })} `}${horaEnZona(f, zona())} h`,
+  };
+}
+
+async function cargarBloqueos() {
+  const lista = $('[data-p-bloqueos]');
+  const [{ data: filas, error }] = await Promise.all([
+    supabase.from('bloqueos').select('id, inicio, fin, motivo').eq('negocio_id', st.negocioId).gte('fin', new Date().toISOString()).order('inicio'),
+    contarPendientes(),
+  ]);
+  if (error) {
+    lista.innerHTML = errorCarga(error.message);
+    return;
+  }
+  const data = (filas ?? []) as Bloqueo[];
+  lista.innerHTML = data.length
+    ? `<div class="grid gap-2.5">${data
+        .map((b) => {
+          const t = textoBloqueo(b);
+          return `
+          <div class="flex items-center gap-3 rounded-xl border border-borde px-4 py-3">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-cancelada-50 text-cancelada">${icono('bloqueos', 18)}</span>
+            <div class="min-w-0 flex-1">
+              <p class="font-semibold first-letter:uppercase">${esc(t.titulo)}</p>
+              <p class="text-sm text-suave">${esc(t.detalle)}${b.motivo ? ` · ${esc(b.motivo)}` : ''}</p>
+            </div>
+            <button type="button" class="p-accion" data-tipo="cancelar" data-borrar-bloqueo="${b.id}">Quitar</button>
+          </div>`;
+        })
+        .join('')}</div>`
+    : vacio('No hay bloqueos próximos. Tu agenda está abierta según tu horario.', 'bloqueos');
+}
+
+document.addEventListener('click', async (e) => {
+  const b = (e.target as Element).closest<HTMLButtonElement>('[data-borrar-bloqueo]');
+  if (!b || !confirm('¿Quitar este bloqueo? Esos horarios volverán a estar disponibles.')) return;
+  b.disabled = true;
+  const { error } = await supabase.from('bloqueos').delete().eq('id', b.dataset.borrarBloqueo!);
+  if (error) {
+    b.disabled = false;
+    return toast(`No se pudo quitar: ${error.message}`);
+  }
+  toast('Bloqueo quitado');
+  cargarBloqueos();
+});
+
+// ─── Mi página ────────────────────────────────────────────────────────────────
+const enlacePagina = () => `${location.origin}/${st.negocio.slug}`;
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+async function cargarPagina() {
+  const url = enlacePagina();
+  $('[data-p-enlace]').textContent = url.replace(/^https?:\/\//, '');
+  $<HTMLAnchorElement>('[data-p-abrir]').href = url;
+  const [serv, hor] = await Promise.all([
+    supabase.from('servicios').select('id, nombre, duracion_min, activo').eq('negocio_id', st.negocioId).order('orden'),
+    supabase.from('horarios').select('dia_semana, abre, cierra').eq('negocio_id', st.negocioId).order('abre'),
+    contarPendientes(),
+  ]);
+  const cajaS = $('[data-p-servicios]');
+  if (serv.error) cajaS.innerHTML = errorCarga(serv.error.message);
+  else
+    cajaS.innerHTML = `<ul class="divide-y divide-borde">${(serv.data as Servicio[])
+      .map(
+        (s) => `
+        <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold ${s.activo ? '' : 'text-tenue'}">${esc(s.nombre)}</p>
+            <p class="flex items-center gap-1 text-sm text-suave">${icono('reloj', 14)}${s.duracion_min} min${s.activo ? '' : ' · oculto'}</p>
+          </div>
+          <input type="checkbox" class="p-switch" data-servicio-activo="${s.id}" ${s.activo ? 'checked' : ''} aria-label="Mostrar ${esc(s.nombre)} en tu página" />
+        </li>`,
+      )
+      .join('')}</ul>`;
+
+  const cajaH = $('[data-p-horario]');
+  if (hor.error) cajaH.innerHTML = errorCarga(hor.error.message);
+  else {
+    const filas = hor.data as Horario[];
+    const hoyDia = diaSemana(hoy());
+    cajaH.innerHTML = `<ul class="grid gap-1">${[1, 2, 3, 4, 5, 6, 0]
+      .map((dia) => {
+        const tramos = filas.filter((h) => h.dia_semana === dia);
+        return `
+          <li class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 ${dia === hoyDia ? 'bg-marca-50' : ''}">
+            <span class="font-semibold ${dia === hoyDia ? 'text-marca-osc' : ''}">${DIAS[dia]}${dia === hoyDia ? ' <span class="text-xs font-bold">· hoy</span>' : ''}</span>
+            <span class="text-right text-sm tabular-nums ${tramos.length ? 'font-medium text-texto' : 'text-tenue'}">${
+              tramos.length ? tramos.map((t) => `${t.abre.slice(0, 5)} – ${t.cierra.slice(0, 5)}`).join('<span class="text-tenue"> · </span>') : 'Cerrado'
+            }</span>
+          </li>`;
+      })
+      .join('')}</ul>`;
+  }
+}
+
+document.addEventListener('change', async (e) => {
+  const sw = (e.target as Element).closest<HTMLInputElement>('[data-servicio-activo]');
+  if (!sw) return;
+  sw.disabled = true;
+  const { error } = await supabase.from('servicios').update({ activo: sw.checked }).eq('id', sw.dataset.servicioActivo!);
+  sw.disabled = false;
+  if (error) {
+    sw.checked = !sw.checked;
+    return toast(`No se pudo cambiar: ${error.message}`);
+  }
+  toast(sw.checked ? 'Servicio visible en tu página' : 'Servicio oculto de tu página');
+  cargarPagina();
+});
+
+$('[data-p-copiar]').addEventListener('click', async (e) => {
+  const b = e.currentTarget as HTMLButtonElement;
+  try {
+    await navigator.clipboard.writeText(enlacePagina());
+    const t = b.querySelector('span')!;
+    t.textContent = '¡Copiado!';
+    setTimeout(() => (t.textContent = 'Copiar enlace'), 2000);
+  } catch {
+    prompt('Copia tu enlace:', enlacePagina());
+  }
+});
+$('[data-p-compartir]').addEventListener('click', async () => {
+  const datos = { title: st.negocio.nombre, text: `Reserva tu cita en ${st.negocio.nombre}`, url: enlacePagina() };
+  if (navigator.share) {
+    try { await navigator.share(datos); } catch { /* cancelado */ }
+  } else window.open(`https://wa.me/?text=${encodeURIComponent(`${datos.text}: ${datos.url}`)}`, '_blank', 'noopener');
+});
+
+// ─── Avisos de cita nueva ─────────────────────────────────────────────────────
+let audio: AudioContext | null = null;
+
+function pintarAvisos() {
+  $$('[data-p-avisos]').forEach((b) => {
+    b.setAttribute('aria-pressed', String(st.avisos));
+    b.title = st.avisos ? 'Avisos activos: sonido y notificación al llegar una cita' : 'Activa sonido y notificación de citas nuevas';
+  });
+  $$('[data-p-avisos-icono]').forEach((x) => (x.innerHTML = icono(st.avisos ? 'campana' : 'campanaNo')));
+  $$('[data-p-avisos-texto]').forEach((x) => (x.textContent = st.avisos ? 'Avisos activos' : 'Activar avisos'));
+}
+
+$$('[data-p-avisos]').forEach((b) =>
+  b.addEventListener('click', async () => {
+    st.avisos = !st.avisos;
+    if (st.avisos) {
+      audio ??= new AudioContext();
+      await audio.resume();
+      sonar();
+      if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
+    }
+    try { localStorage.setItem(CLAVE_AVISOS, st.avisos ? '1' : '0'); } catch { /* sin almacenamiento */ }
+    pintarAvisos();
+    toast(st.avisos ? 'Avisos activados: sonará al llegar una cita' : 'Avisos desactivados');
+  }),
+);
+
+function sonar() {
+  if (!st.avisos) return;
+  audio ??= new AudioContext();
+  const t = audio.currentTime;
+  [880, 1320].forEach((freq, i) => {
+    const osc = audio!.createOscillator();
+    const vol = audio!.createGain();
+    osc.frequency.value = freq;
+    vol.gain.setValueAtTime(0.0001, t + i * 0.18);
+    vol.gain.exponentialRampToValueAtTime(0.25, t + i * 0.18 + 0.02);
+    vol.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.18 + 0.3);
+    osc.connect(vol).connect(audio!.destination);
+    osc.start(t + i * 0.18);
+    osc.stop(t + i * 0.18 + 0.32);
+  });
+}
+
+function toast(texto: string, nueva = false) {
+  const t = document.createElement('div');
+  t.className = 'p-toast';
+  if (nueva) t.dataset.tipo = 'nueva';
+  t.setAttribute('role', 'status');
+  t.innerHTML = `${nueva ? icono('campana', 18) : icono('check', 18)}<span>${esc(texto)}</span>`;
+  $('#toasts').append(t);
+  setTimeout(() => t.remove(), nueva ? 9000 : 3500);
+}
+
+function actualizarTitulo() {
+  document.title = `${st.sinLeer ? `(${st.sinLeer}) ` : ''}${st.negocio.nombre} · Panel`;
+}
+
+async function citaNueva(id: string) {
+  if (st.conocidas.has(id)) return;
+  st.conocidas.add(id);
+  const { data: fila } = await supabase.from('citas').select(CAMPOS_CITA).eq('id', id).maybeSingle();
+  const c = fila as unknown as Cita | null;
+  const resumen = c
+    ? `${c.nombre} · ${c.servicios?.nombre ?? 'Cita'} · ${fechaLarga(fechaDe(c.inicio), { weekday: 'short', day: 'numeric', month: 'short' })} ${hora(c.inicio)} h`
+    : 'Revisa tu agenda';
+  toast(`Nueva cita: ${resumen}`, true);
+  sonar();
+  if (document.hidden) {
+    st.sinLeer++;
+    actualizarTitulo();
+  }
+  if (st.avisos && 'Notification' in window && Notification.permission === 'granted') {
+    new Notification(`Nueva cita · ${st.negocio.nombre}`, { body: resumen, icon: '/favicon.svg', tag: id });
+  }
+  await refrescar();
+}
+
+function estadoEnVivo(ok: boolean, texto: string) {
+  $$('[data-p-vivo]').forEach((x) => (x.dataset.ok = ok ? 'si' : 'no'));
+  $$('[data-p-vivo-texto]').forEach((x) => (x.textContent = texto));
+}
+
+function conectarTiempoReal() {
+  st.canal = supabase
+    .channel(`citas-${st.negocioId}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'citas', filter: `negocio_id=eq.${st.negocioId}` }, (p) => {
+      if (p.eventType === 'INSERT') citaNueva((p.new as Cita).id);
+      else refrescar();
+    })
+    .subscribe((estado) => {
+      if (estado === 'SUBSCRIBED') estadoEnVivo(true, 'En vivo');
+      else if (estado === 'CHANNEL_ERROR' || estado === 'TIMED_OUT' || estado === 'CLOSED') estadoEnVivo(false, 'Revisando cada minuto');
+    });
+}
+
+// Respaldo por si el tiempo real se corta: busca citas creadas desde la última revisión.
+async function revisarNuevas() {
+  const desde = st.ultimaRevision;
+  st.ultimaRevision = new Date().toISOString();
+  // Margen de 2 minutos por diferencias de reloj; las repetidas se ignoran.
+  const margen = new Date(Date.parse(desde) - 120_000).toISOString();
+  const { data } = await supabase.from('citas').select('id').eq('negocio_id', st.negocioId).gte('creada_en', margen);
+  for (const { id } of data ?? []) await citaNueva(id);
+}
+
+mostrar('cargando');
+arrancar();

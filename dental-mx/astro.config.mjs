@@ -14,6 +14,6 @@ export default defineConfig({
     '/nosotros': '/#nosotros',
     '/contacto': '/#contacto',
   },
-  integrations: [sitemap({ filter: (page) => !page.includes('/admin') })],
+  integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

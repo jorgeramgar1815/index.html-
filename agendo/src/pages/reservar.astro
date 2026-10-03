@@ -1,0 +1,105 @@
+---
+/**
+ * Página pública de reservas de un negocio. URL: /<slug-del-negocio>
+ * (Vercel reescribe /<slug> a esta página; en local: /reservar/?n=<slug>).
+ * El diseño es de Agendo; del negocio sólo se muestran nombre, giro y dirección.
+ */
+import App from '../layouts/App.astro';
+import Logo from '../components/Logo.astro';
+import { APP, SUPABASE } from '../config';
+---
+
+<App title={`Reservar cita · ${APP.nombre}`}>
+  <div id="reservar" data-url={SUPABASE.url} data-key={SUPABASE.anonKey} class="flex min-h-dvh flex-col">
+    <header class="border-b border-borde/70 bg-superficie/80 backdrop-blur">
+      <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <a href="/" aria-label={`${APP.nombre}: inicio`}><Logo /></a>
+        <span class="hidden text-sm text-suave sm:inline">Reserva en línea</span>
+      </div>
+    </header>
+
+    <main class="mx-auto grid w-full max-w-5xl flex-1 gap-6 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <section class="min-w-0">
+        <!-- Negocio -->
+        <div class="tarjeta flex items-center gap-4 p-4 sm:p-5" data-r-negocio>
+          <div class="esqueleto size-14 shrink-0 rounded-2xl"></div>
+          <div class="flex-1 space-y-2"><div class="esqueleto h-5 w-40"></div><div class="esqueleto h-4 w-64 max-w-full"></div></div>
+        </div>
+
+        <!-- Pasos -->
+        <ol class="mt-6 flex items-center gap-2 text-sm font-semibold" data-r-pasos aria-label="Pasos">
+          <li class="flex items-center gap-2" data-paso="1"><span class="paso-num">1</span><span class="hidden sm:inline">Servicio</span></li>
+          <li class="h-px flex-1 bg-borde" aria-hidden="true"></li>
+          <li class="flex items-center gap-2" data-paso="2"><span class="paso-num">2</span><span class="hidden sm:inline">Fecha y hora</span></li>
+          <li class="h-px flex-1 bg-borde" aria-hidden="true"></li>
+          <li class="flex items-center gap-2" data-paso="3"><span class="paso-num">3</span><span class="hidden sm:inline">Tus datos</span></li>
+        </ol>
+
+        <div class="tarjeta mt-4 p-5 sm:p-7">
+          <h1 class="text-xl font-bold tracking-tight sm:text-2xl" data-r-titulo tabindex="-1">Elige el servicio</h1>
+          <p class="mt-1 text-sm text-suave" data-r-subtitulo>¿Qué necesitas?</p>
+          <div class="mt-5" data-r-cuerpo aria-live="polite">
+            <div class="grid gap-3">{[1, 2, 3, 4].map(() => <div class="esqueleto h-[4.5rem]" />)}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resumen (escritorio) -->
+      <aside class="hidden lg:block">
+        <div class="tarjeta sticky top-6 p-5">
+          <p class="text-sm font-bold text-texto">Tu cita</p>
+          <dl class="mt-4 space-y-3 text-sm" data-r-resumen>
+            <div><dt class="text-tenue">Servicio</dt><dd class="font-semibold text-texto" data-r-res="servicio">—</dd></div>
+            <div><dt class="text-tenue">Día</dt><dd class="font-semibold text-texto first-letter:uppercase" data-r-res="dia">—</dd></div>
+            <div><dt class="text-tenue">Hora</dt><dd class="font-semibold text-texto" data-r-res="hora">—</dd></div>
+          </dl>
+          <div class="mt-5 rounded-xl bg-fondo p-3 text-xs leading-relaxed text-suave">
+            Sin costo por reservar. El negocio confirma tu cita por WhatsApp.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="py-6 text-center text-xs text-tenue">
+      Reservas con <a href="/" class="font-semibold text-suave hover:text-marca">{APP.nombre}</a>
+    </footer>
+  </div>
+
+  <script>
+    import '../scripts/reservar';
+  </script>
+
+  <style is:global>
+    .paso-num {
+      display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 999px;
+      border: 1.5px solid var(--color-borde); background: var(--color-superficie); color: var(--color-tenue); font-size: 0.85rem;
+      transition: all 0.25s;
+    }
+    [data-paso] { color: var(--color-tenue); }
+    [data-paso][data-actual] { color: var(--color-texto); }
+    [data-paso][data-actual] .paso-num { border-color: var(--color-marca); background: var(--color-marca); color: #fff; box-shadow: 0 0 0 4px var(--color-marca-100); }
+    [data-paso][data-hecho] .paso-num { border-color: var(--color-marca); background: var(--color-marca-50); color: var(--color-marca); }
+    .r-opcion {
+      display: flex; width: 100%; align-items: center; gap: 0.9rem; text-align: left; border-radius: 1rem;
+      border: 1.5px solid var(--color-borde); background: var(--color-superficie); padding: 0.9rem 1rem; transition: all 0.2s;
+    }
+    .r-opcion:hover { border-color: rgb(79 70 229 / 0.45); background: var(--color-marca-50); }
+    .r-opcion[aria-pressed='true'] { border-color: var(--color-marca); background: var(--color-marca-50); }
+    .r-dia {
+      display: grid; place-items: center; height: 2.7rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.95rem;
+      border: 1.5px solid transparent; transition: all 0.15s; font-variant-numeric: tabular-nums;
+    }
+    .r-dia:not(:disabled) { background: var(--color-marca-50); color: var(--color-marca-osc); }
+    .r-dia:not(:disabled):hover { border-color: var(--color-marca); }
+    .r-dia:disabled { color: #c3c9d4; cursor: not-allowed; }
+    .r-dia[aria-pressed='true'] { background: var(--color-marca); color: #fff; box-shadow: 0 6px 14px -6px rgb(79 70 229 / 0.7); }
+    .r-dia[data-hoy]::after { content: ''; position: absolute; }
+    .r-hora {
+      min-height: 2.9rem; border-radius: 0.75rem; border: 1.5px solid var(--color-borde); background: var(--color-superficie);
+      font-weight: 600; font-variant-numeric: tabular-nums; transition: all 0.15s;
+    }
+    .r-hora:hover { border-color: var(--color-marca); color: var(--color-marca); }
+    .r-hora[aria-pressed='true'] { background: var(--color-marca); border-color: var(--color-marca); color: #fff; }
+    .r-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  </style>
+</App>
