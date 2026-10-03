@@ -1,0 +1,31 @@
+# Mantiene activo el proyecto gratuito de Supabase de las reservaciones de Dental MX.
+# Supabase pausa los proyectos gratis tras 7 días sin actividad; esta consulta
+# semanal (de sólo lectura) lo evita.
+# Configura en GitHub → Settings → Secrets and variables → Actions → Variables:
+#   SUPABASE_URL       https://<ref>.supabase.co
+#   SUPABASE_ANON_KEY  la anon key pública del proyecto
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '17 15 * * 1,4' # lunes y jueves, 09:17 hora de Torreón
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar datos de reserva
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Variables SUPABASE_URL / SUPABASE_ANON_KEY sin configurar; se omite."
+            exit 0
+          fi
+          curl -fsS -X POST "$SUPABASE_URL/rest/v1/rpc/datos_reserva" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"p_slug":"dental-mx"}' > /dev/null
+          echo "Supabase respondió correctamente."

@@ -1,0 +1,135 @@
+---
+/**
+ * Widget de reservación (modal). Se abre con cualquier elemento [data-reservar].
+ * La lógica vive en src/scripts/reservas.ts y se descarga sólo al abrirlo,
+ * para no afectar la velocidad de carga de la landing.
+ * Sólo se monta si las reservaciones están configuradas (ver reservasActivas).
+ */
+import { reservas, waLink } from '../data/site';
+---
+
+<dialog
+  id="reservas"
+  class="reservas-dialog"
+  aria-labelledby="reservas-titulo"
+  data-negocio={reservas.slug}
+  data-url={reservas.supabaseUrl}
+  data-key={reservas.anonKey}
+  data-wa={waLink('Hola, quiero agendar una cita en Dental MX.')}
+>
+  <div class="reservas-panel">
+    <header class="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-7">
+      <div>
+        <p class="eyebrow" data-r-paso>Agenda tu cita</p>
+        <h2 id="reservas-titulo" class="mt-1 font-display text-xl font-bold text-white sm:text-2xl" data-r-titulo>Elige el servicio</h2>
+      </div>
+      <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full border border-line text-snow transition-colors hover:border-lime hover:text-lime" data-r-cerrar aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+      </button>
+    </header>
+    <div class="h-1 bg-surface-2" aria-hidden="true"><div class="h-full bg-lime transition-[width] duration-500" style="width:33%" data-r-progreso></div></div>
+    <div class="reservas-cuerpo px-5 py-5 sm:px-7 sm:py-6" data-r-cuerpo aria-live="polite">
+      <p class="text-mute">Cargando…</p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Abre el widget con cualquier [data-reservar]; descarga la lógica la primera vez.
+  // (El <dialog> sólo existe cuando las reservaciones están configuradas.)
+  if (document.getElementById('reservas')) {
+    let modulo: Promise<typeof import('../scripts/reservas')> | null = null;
+    const cargar = () => (modulo ??= import('../scripts/reservas'));
+
+    document.addEventListener('click', (e) => {
+      const boton = (e.target as Element | null)?.closest<HTMLElement>('[data-reservar]');
+      if (!boton) return;
+      e.preventDefault();
+      cargar().then((m) => m.abrirReservas(boton.dataset.servicio));
+    });
+    // Precarga al acercar el dedo o el cursor, para que abra al instante.
+    ['pointerover', 'touchstart', 'focusin'].forEach((tipo) =>
+      document.addEventListener(tipo, (e) => {
+        if ((e.target as Element | null)?.closest?.('[data-reservar]')) cargar();
+      }, { passive: true }),
+    );
+    if (location.hash === '#agendar') cargar().then((m) => m.abrirReservas());
+  }
+</script>
+
+<style is:global>
+  .reservas-dialog {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-snow);
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    inset: 0;
+  }
+  .reservas-dialog::backdrop { background: rgb(5 6 5 / 0.72); backdrop-filter: blur(4px); }
+  .reservas-panel {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 94dvh;
+    border: 1px solid var(--color-line);
+    border-bottom: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background: var(--color-ink-2);
+    box-shadow: 0 -20px 60px -20px rgb(0 0 0 / 0.8);
+  }
+  .reservas-cuerpo { overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+  @media (min-width: 640px) {
+    .reservas-panel {
+      inset: 50% auto auto 50%;
+      translate: -50% -50%;
+      width: min(36rem, calc(100% - 2rem));
+      max-height: min(46rem, calc(100dvh - 3rem));
+      border-bottom: 1px solid var(--color-line);
+      border-radius: 1.5rem;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reservas-dialog[open] .reservas-panel { animation: reservas-in 0.35s var(--ease-out-soft); }
+    @keyframes reservas-in { from { opacity: 0; transform: translateY(24px); } }
+  }
+  /* Elementos del widget */
+  .r-opcion {
+    display: flex; width: 100%; align-items: center; gap: 1rem; text-align: left;
+    border: 1px solid var(--color-line); border-radius: 1rem; background: var(--color-surface);
+    padding: 0.9rem 1rem; transition: border-color 0.2s, background-color 0.2s;
+  }
+  .r-opcion:hover, .r-opcion[aria-pressed='true'] { border-color: var(--color-lime); }
+  .r-opcion[aria-pressed='true'] { background: rgb(181 238 58 / 0.08); }
+  .r-dia {
+    display: grid; place-items: center; height: 2.6rem; border-radius: 0.7rem; font-weight: 600;
+    font-size: 0.95rem; border: 1px solid transparent; transition: border-color 0.2s, background-color 0.2s;
+  }
+  .r-dia:not(:disabled) { background: var(--color-surface); border-color: var(--color-line); color: var(--color-snow); }
+  .r-dia:not(:disabled):hover { border-color: var(--color-lime); }
+  .r-dia:disabled { color: rgb(255 255 255 / 0.22); cursor: not-allowed; }
+  .r-dia[aria-pressed='true'] { background: var(--color-lime); border-color: var(--color-lime); color: var(--color-ink); }
+  .r-hora {
+    min-height: 2.9rem; border-radius: 0.8rem; border: 1px solid var(--color-line); background: var(--color-surface);
+    font-weight: 600; font-variant-numeric: tabular-nums; transition: border-color 0.2s, background-color 0.2s;
+  }
+  .r-hora:hover { border-color: var(--color-lime); }
+  .r-hora[aria-pressed='true'] { background: var(--color-lime); border-color: var(--color-lime); color: var(--color-ink); }
+  .r-campo { display: block; }
+  .r-campo > span { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; font-weight: 600; color: var(--color-snow); }
+  .r-campo input, .r-campo textarea {
+    width: 100%; border-radius: 0.8rem; border: 1px solid var(--color-line); background: var(--color-surface);
+    padding: 0.8rem 0.95rem; font-size: 1rem; color: var(--color-snow);
+  }
+  .r-campo input:focus, .r-campo textarea:focus { outline: 2px solid var(--color-lime); outline-offset: 1px; }
+  .r-campo [aria-invalid='true'] { border-color: #ff7a7a; }
+  .r-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .r-skeleton { border-radius: 0.8rem; background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%); background-size: 200% 100%; animation: r-brillo 1.2s linear infinite; }
+  @keyframes r-brillo { to { background-position: -200% 0; } }
+  html.reservas-abierto { overflow: hidden; }
+</style>

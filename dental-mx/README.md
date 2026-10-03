@@ -14,6 +14,18 @@ Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su secc
 - **SEO local:** title, description, canonical, Open Graph (`public/og.png`), sitemap y `robots.txt`. También JSON-LD `Dentist` con NAP, horario y datos del doctor, más `FAQPage` e `ItemList` de servicios.
 - **Navegación:** menú con anclas y resaltado automático de la sección visible (scrollspy).
 
+## Reservaciones en línea
+
+Widget de reserva (modal) + panel de la clínica en `/admin`, con Supabase como backend. Especificación, decisiones y puesta en marcha: [`PRD-reservas.md`](../PRD-reservas.md).
+
+- **Activación:** variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` (ver `.env.example`). Sin ellas, los botones "Agendar" abren WhatsApp como antes y `/admin` muestra un aviso.
+- **Botones:** cualquier elemento con `data-reservar` abre el widget; `data-servicio="<clave>"` preselecciona el servicio. Componente: `BookingButton.astro`.
+- **Base de datos:** `supabase/migrations/` (esquema + RLS, funciones RPC, avisos), `supabase/seed.sql` (Dental MX simulado), `supabase/configurar.sql` (admin, correo, URL de funciones).
+- **Pruebas:** `supabase/tests/pruebas_reservas.sql` (28 reglas, hace ROLLBACK).
+- **Correo de cita nueva:** Edge Function `supabase/functions/notificar-cita` (Resend).
+- **Keep-alive:** `.github/workflows/supabase-keepalive.yml`.
+- El widget pesa ~15 KB y se descarga sólo al tocar "Agendar"; el panel carga `supabase-js` sólo en `/admin`.
+
 ## Comandos
 
 ```bash
@@ -42,7 +54,7 @@ src/
   layouts/BaseLayout    ← <head> SEO + JSON-LD, header, footer, botón flotante
   components/           ← Header, Footer, ServiceCard, TestimonialCard, TipCard, WhatsAppButton,
                           WhatsAppFab, CTASection, BeforeAfter, Photo, MapEmbed, TrustBar, …
-  pages/                ← index (landing completa), aviso-de-privacidad, 404
+  pages/                ← index (landing completa), admin (panel de citas), aviso-de-privacidad, 404
 src/assets/img/         ← fotos del consultorio (Astro las optimiza a WebP con varios tamaños)
 public/                 ← favicon, íconos, og.png, manifest
 scripts/generate-images.mjs ← regenera favicon PNG, íconos PWA y og.png

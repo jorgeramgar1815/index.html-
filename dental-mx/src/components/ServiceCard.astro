@@ -5,13 +5,15 @@
  * La tarjeta `featured` (valoración) se resalta como punto de partida.
  */
 import Icon from './Icon.astro';
-import { flags, waLink, type Service } from '../data/site';
+import { flags, waLink, reservasActivas, type Service } from '../data/site';
 interface Props {
   service: Service;
   index?: number;
 }
 const { service, index = 0 } = Astro.props;
 const featured = !!service.featured;
+// El botón de la valoración agenda en línea; los demás siguen siendo una pregunta por WhatsApp.
+const reserva = featured && reservasActivas;
 ---
 
 <article
@@ -55,8 +57,10 @@ const featured = !!service.featured;
 
   <a
     href={waLink(service.waMessage)}
-    target="_blank"
+    target={reserva ? undefined : '_blank'}
     rel="noopener"
+    data-reservar={reserva || undefined}
+    data-servicio={reserva ? service.slug : undefined}
     class:list={[
       'mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 font-display text-sm font-semibold transition-[background-color,color,box-shadow] duration-300',
       featured
@@ -65,9 +69,9 @@ const featured = !!service.featured;
     ]}
     data-cta={`service-${service.slug}`}
   >
-    <Icon name="whatsapp" size={17} />
+    <Icon name={reserva ? 'calendar' : 'whatsapp'} size={17} />
     {featured ? 'Agendar valoración' : 'Preguntar por WhatsApp'}
     {!featured && <Icon name="arrow-right" size={15} class="transition-transform duration-300 group-hover:translate-x-1" />}
-    <span class="sr-only">{featured ? '' : `sobre ${service.name.toLowerCase()} `}(se abre WhatsApp en una pestaña nueva)</span>
+    {!reserva && <span class="sr-only">{featured ? '' : `sobre ${service.name.toLowerCase()} `}(se abre WhatsApp en una pestaña nueva)</span>}
   </a>
 </article>

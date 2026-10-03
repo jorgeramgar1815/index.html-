@@ -1,0 +1,171 @@
+---
+/**
+ * Panel de la clínica: agenda (día / semana), confirmar y cancelar citas,
+ * WhatsApp al paciente, bloqueos de horario y avisos de citas nuevas
+ * (tiempo real + sonido + notificación del navegador).
+ * Acceso con Supabase Auth; cada usuario sólo ve el negocio que tiene en `admins`.
+ */
+import '../styles/global.css';
+import { reservas, reservasActivas, site } from '../data/site';
+---
+
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0e100e" />
+    <title>Panel · {site.name}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="min-h-dvh bg-ink text-snow antialiased">
+    {
+      !reservasActivas ? (
+        <main class="mx-auto grid min-h-dvh max-w-md place-items-center px-6 text-center">
+          <div>
+            <h1 class="font-display text-2xl font-bold text-white">Panel de citas</h1>
+            <p class="mt-3 text-mute">
+              El panel se activa al configurar Supabase (variables <code class="text-snow">PUBLIC_SUPABASE_URL</code> y{' '}
+              <code class="text-snow">PUBLIC_SUPABASE_ANON_KEY</code>). Ver <code class="text-snow">PRD-reservas.md</code>.
+            </p>
+          </div>
+        </main>
+      ) : (
+        <main id="admin" data-url={reservas.supabaseUrl} data-key={reservas.anonKey} class="min-h-dvh">
+          <!-- Acceso -->
+          <section id="vista-login" class="mx-auto grid min-h-dvh max-w-sm place-items-center px-6" hidden>
+            <form id="form-login" class="w-full" novalidate>
+              <p class="eyebrow">Dental MX</p>
+              <h1 class="mt-2 font-display text-3xl font-bold text-white">Panel de citas</h1>
+              <p class="mt-2 text-sm text-mute">Entra con el correo y la contraseña de la clínica.</p>
+              <label class="adm-campo mt-8">
+                <span>Correo</span>
+                <input name="email" type="email" autocomplete="username" required />
+              </label>
+              <label class="adm-campo mt-4">
+                <span>Contraseña</span>
+                <input name="password" type="password" autocomplete="current-password" required />
+              </label>
+              <p id="login-error" class="mt-4 text-sm text-[#ff9a9a]" role="alert" hidden />
+              <button type="submit" class="btn btn-primary btn-lg mt-6 w-full">Entrar</button>
+            </form>
+          </section>
+
+          <!-- Panel -->
+          <section id="vista-panel" hidden>
+            <header class="sticky top-0 z-20 border-b border-line bg-ink/95 backdrop-blur">
+              <div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+                <div class="min-w-0">
+                  <p class="truncate font-display font-bold text-white" id="negocio-nombre">Dental MX</p>
+                  <p class="flex items-center gap-1.5 text-xs text-mute">
+                    <span id="en-vivo-punto" class="inline-block size-2 rounded-full bg-mute" aria-hidden="true" />
+                    <span id="en-vivo-texto">Conectando…</span>
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button id="btn-avisos" type="button" class="adm-chip whitespace-nowrap" aria-pressed="false">Avisos: no</button>
+                  <button id="btn-salir" type="button" class="adm-chip whitespace-nowrap">Salir</button>
+                </div>
+              </div>
+              <nav class="mx-auto flex max-w-5xl gap-1 px-4 sm:px-6" aria-label="Secciones">
+                <button type="button" class="adm-tab" data-tab="agenda" aria-selected="true">Agenda</button>
+                <button type="button" class="adm-tab" data-tab="bloqueos" aria-selected="false">Bloqueos</button>
+              </nav>
+            </header>
+
+            <div class="mx-auto max-w-5xl px-4 py-5 sm:px-6">
+              <div id="tab-agenda">
+                <div id="pendientes" />
+                <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <div class="adm-segmento" role="group" aria-label="Vista">
+                      <button type="button" data-vista="dia" aria-pressed="true">Día</button>
+                      <button type="button" data-vista="semana" aria-pressed="false">Semana</button>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <button type="button" class="adm-icono" data-nav="-1" aria-label="Anterior">‹</button>
+                      <button type="button" class="adm-chip" data-nav="0">Hoy</button>
+                      <button type="button" class="adm-icono" data-nav="1" aria-label="Siguiente">›</button>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar por estado">
+                    <button type="button" class="adm-chip" data-filtro="todas" aria-pressed="true">Todas</button>
+                    <button type="button" class="adm-chip" data-filtro="pendiente" aria-pressed="false">Pendientes</button>
+                    <button type="button" class="adm-chip" data-filtro="confirmada" aria-pressed="false">Confirmadas</button>
+                    <button type="button" class="adm-chip" data-filtro="cancelada" aria-pressed="false">Canceladas</button>
+                  </div>
+                </div>
+                <h2 id="rango-titulo" class="mt-5 font-display text-xl font-bold text-white first-letter:uppercase" />
+                <div id="lista-citas" class="mt-3" aria-live="polite" />
+              </div>
+
+              <div id="tab-bloqueos" hidden>
+                <h2 class="font-display text-xl font-bold text-white">Bloquear días u horas</h2>
+                <p class="mt-1 text-sm text-mute">Vacaciones, hora de comida extendida, urgencias… En esos horarios no se podrá agendar.</p>
+                <form id="form-bloqueo" class="mt-5 grid gap-4 rounded-2xl border border-line bg-surface p-4 sm:grid-cols-2 sm:p-6" novalidate>
+                  <label class="adm-campo"><span>Desde (día)</span><input name="desde" type="date" required /></label>
+                  <label class="adm-campo"><span>Hasta (día)</span><input name="hasta" type="date" required /></label>
+                  <label class="flex items-center gap-3 sm:col-span-2">
+                    <input name="todo_dia" type="checkbox" class="size-5 accent-[#b5ee3a]" checked />
+                    <span class="text-sm font-semibold text-snow">Todo el día</span>
+                  </label>
+                  <label class="adm-campo" data-horas hidden><span>Hora de inicio</span><input name="hora_desde" type="time" step="900" value="14:00" /></label>
+                  <label class="adm-campo" data-horas hidden><span>Hora de fin</span><input name="hora_hasta" type="time" step="900" value="16:00" /></label>
+                  <label class="adm-campo sm:col-span-2"><span>Motivo (opcional)</span><input name="motivo" maxlength="120" placeholder="Ej. Vacaciones" /></label>
+                  <p id="bloqueo-error" class="text-sm text-[#ff9a9a] sm:col-span-2" role="alert" hidden />
+                  <button type="submit" class="btn btn-primary sm:col-span-2 sm:justify-self-start">Crear bloqueo</button>
+                </form>
+                <h3 class="mt-8 font-display text-lg font-bold text-white">Próximos bloqueos</h3>
+                <div id="lista-bloqueos" class="mt-3" />
+              </div>
+            </div>
+          </section>
+
+          <div id="toasts" class="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4" aria-live="assertive" />
+        </main>
+      )
+    }
+
+    <script>
+      if (document.getElementById('admin')) import('../scripts/admin');
+    </script>
+
+    <style is:global>
+      .adm-campo { display: block; }
+      .adm-campo span { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; font-weight: 600; color: var(--color-snow); }
+      .adm-campo input {
+        width: 100%; min-height: 2.9rem; border-radius: 0.8rem; border: 1px solid var(--color-line);
+        background: var(--color-ink-2); padding: 0.6rem 0.9rem; font-size: 1rem; color: var(--color-snow); color-scheme: dark;
+      }
+      .adm-campo input:focus { outline: 2px solid var(--color-lime); outline-offset: 1px; }
+      .adm-chip {
+        min-height: 2.5rem; border-radius: 999px; border: 1px solid var(--color-line); padding: 0 0.95rem;
+        font-size: 0.85rem; font-weight: 600; color: var(--color-snow); transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+      }
+      .adm-chip:hover { border-color: var(--color-lime); }
+      .adm-chip[aria-pressed='true'] { background: var(--color-lime); border-color: var(--color-lime); color: var(--color-ink); }
+      .adm-icono { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; border: 1px solid var(--color-line); font-size: 1.3rem; line-height: 1; }
+      .adm-icono:hover { border-color: var(--color-lime); color: var(--color-lime); }
+      .adm-segmento { display: inline-flex; border-radius: 999px; border: 1px solid var(--color-line); padding: 0.2rem; }
+      .adm-segmento button { min-height: 2.1rem; border-radius: 999px; padding: 0 0.9rem; font-size: 0.85rem; font-weight: 600; }
+      .adm-segmento button[aria-pressed='true'] { background: var(--color-surface-2); color: var(--color-lime); }
+      .adm-tab { position: relative; padding: 0.75rem 0.9rem; font-size: 0.9rem; font-weight: 600; color: var(--color-mute); }
+      .adm-tab[aria-selected='true'] { color: var(--color-snow); }
+      .adm-tab[aria-selected='true']::after { content: ''; position: absolute; inset: auto 0.9rem -1px; height: 2px; background: var(--color-lime); border-radius: 2px; }
+      .adm-cita { border: 1px solid var(--color-line); border-radius: 1rem; background: var(--color-surface); padding: 1rem; }
+      .adm-cita[data-estado='pendiente'] { border-color: rgb(181 238 58 / 0.55); box-shadow: 0 0 0 1px rgb(181 238 58 / 0.15), 0 10px 30px -18px rgb(181 238 58 / 0.6); }
+      .adm-cita[data-estado='cancelada'] { opacity: 0.55; }
+      .adm-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+      .adm-badge[data-estado='pendiente'] { background: var(--color-lime); color: var(--color-ink); }
+      .adm-badge[data-estado='confirmada'] { background: rgb(255 255 255 / 0.1); color: var(--color-snow); }
+      .adm-badge[data-estado='cancelada'] { background: rgb(255 122 122 / 0.15); color: #ffb3b3; }
+      .adm-accion { display: inline-flex; min-height: 2.6rem; align-items: center; justify-content: center; gap: 0.4rem; border-radius: 999px; padding: 0 1rem; font-size: 0.85rem; font-weight: 600; border: 1px solid var(--color-line); }
+      .adm-accion:hover { border-color: var(--color-lime); color: var(--color-lime); }
+      .adm-accion.primaria { background: var(--color-lime); border-color: var(--color-lime); color: var(--color-ink); }
+      .adm-accion.primaria:hover { color: var(--color-ink); box-shadow: var(--shadow-glow-sm); }
+      .adm-accion:disabled { opacity: 0.5; cursor: wait; }
+      .adm-toast { pointer-events: auto; max-width: 28rem; width: 100%; border-radius: 1rem; border: 1px solid rgb(181 238 58 / 0.5); background: var(--color-surface-2); padding: 0.85rem 1rem; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.9); }
+    </style>
+  </body>
+</html>

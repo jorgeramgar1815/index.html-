@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 
 # PLACEHOLDER: actualizar con el dominio definitivo.
 Sitemap: https://dental-mx-three.vercel.app/sitemap-index.xml

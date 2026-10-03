@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
 import NeonTooth from '../components/NeonTooth.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
+import BookingButton from '../components/BookingButton.astro';
 import Marquee from '../components/Marquee.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ServiceCard from '../components/ServiceCard.astro';
@@ -21,7 +22,7 @@ import fotoConsultorio from '../assets/img/consultorio.jpg';
 import fotoSala from '../assets/img/sala-de-espera.jpg';
 // PLACEHOLDER: retrato ilustrativo; reemplazar por la foto real del doctor (site.doctor.photo).
 import fotoEquipo from '../assets/img/equipo-clinico.jpg';
-import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink } from '../data/site';
+import { faqs, flags, reasons, reservasActivas, services, site, steps, testimonials, tips, waLink } from '../data/site';
 
 // Fondo de la portada: importar una foto aquí para usarla (null = escena de marca con listones de madera).
 const heroImage: ImageMetadata | null = null;
@@ -101,7 +102,7 @@ const schema = [
       </p>
 
       <div class="hero-in mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row" style="--i:3">
-        <WhatsAppButton size="lg" message="Hola, me gustaría agendar una cita en Dental MX." cta="hero-whatsapp" />
+        <BookingButton size="lg" cta="hero-agendar" />
         <a href="#servicios" class="btn btn-ghost btn-lg" data-magnetic>Ver servicios <Icon name="arrow-right" size={18} /></a>
       </div>
     </div>
@@ -155,7 +156,7 @@ const schema = [
         </ol>
       </div>
       <div class="mt-14 flex justify-center" data-reveal>
-        <WhatsAppButton size="lg" label="Empezar por WhatsApp" cta="steps" />
+        <BookingButton size="lg" label={reservasActivas ? 'Agendar mi cita' : 'Empezar por WhatsApp'} cta="steps" />
       </div>
     </div>
   </section>
@@ -192,12 +193,14 @@ const schema = [
                     {s.promo!.note && <p class="mt-1 text-sm text-mute">{s.promo!.note}</p>}
                     <a
                       href={waLink(`Hola, me interesa la promoción de ${s.name.toLowerCase()} (${s.promo!.now}).`)}
-                      target="_blank"
+                      target={reservasActivas ? undefined : '_blank'}
                       rel="noopener"
                       class="btn btn-primary mt-6 min-h-11 px-5 text-sm"
                       data-cta={`promo-${s.slug}`}
+                      data-reservar={reservasActivas || undefined}
+                      data-servicio={reservasActivas ? s.slug : undefined}
                     >
-                      <Icon name="whatsapp" size={17} /> Aprovechar
+                      <Icon name={reservasActivas ? 'calendar' : 'whatsapp'} size={17} /> Aprovechar
                       <span class="sr-only">la promoción de {s.name.toLowerCase()}</span>
                     </a>
                   </div>
@@ -241,7 +244,7 @@ const schema = [
     <div class="container-x relative grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
       <SectionHeading eyebrow="Antes y después" title="Resultados que se notan" intro="Cada tratamiento, diseñado a tu medida.">
         <div class="mt-8">
-          <WhatsAppButton label="Quiero mi valoración" message="Hola, quiero agendar una valoración para ver qué tratamiento me conviene." cta="before-after" />
+          <BookingButton label="Quiero mi valoración" servicio="atencion-personalizada" message="Hola, quiero agendar una valoración para ver qué tratamiento me conviene." cta="before-after" />
         </div>
       </SectionHeading>
       <BeforeAfter />
@@ -389,7 +392,7 @@ const schema = [
             </div>
 
             <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <WhatsAppButton size="lg" cta="final-whatsapp" />
+              <BookingButton size="lg" cta="final-agendar" />
               <a href={`tel:${site.phone.tel}`} class="btn btn-ghost btn-lg" data-magnetic><Icon name="phone" size={18} /> Llamar</a>
             </div>
             <div class="mt-6 flex items-center gap-3 text-sm text-mute">

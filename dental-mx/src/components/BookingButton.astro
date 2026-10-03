@@ -1,0 +1,47 @@
+---
+/**
+ * Botón "Agendar". Con reservaciones configuradas abre el widget de reserva
+ * (con el servicio preseleccionado si se indica); si no, o si falla el JS,
+ * abre WhatsApp como antes.
+ */
+import Icon from './Icon.astro';
+import { reservasActivas, waLink } from '../data/site';
+
+interface Props {
+  label?: string;
+  /** Clave del servicio a preseleccionar (slug de la landing). */
+  servicio?: string;
+  /** Mensaje de WhatsApp para el respaldo. */
+  message?: string;
+  variant?: 'primary' | 'ghost';
+  size?: 'md' | 'lg';
+  class?: string;
+  cta?: string;
+  magnetic?: boolean;
+}
+const {
+  label = reservasActivas ? 'Agendar cita' : 'Agendar por WhatsApp',
+  servicio,
+  message = 'Hola, me gustaría agendar una cita en Dental MX.',
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  cta,
+  magnetic = size === 'lg',
+} = Astro.props;
+---
+
+<a
+  href={waLink(message)}
+  target={reservasActivas ? undefined : '_blank'}
+  rel="noopener"
+  class:list={['btn', variant === 'primary' ? 'btn-primary' : 'btn-ghost', size === 'lg' && 'btn-lg', className]}
+  data-reservar={reservasActivas || undefined}
+  data-servicio={reservasActivas ? servicio : undefined}
+  data-cta={cta}
+  data-magnetic={magnetic || undefined}
+>
+  <Icon name={reservasActivas ? 'calendar' : 'whatsapp'} size={size === 'lg' ? 20 : 18} />
+  <span>{label}</span>
+  {!reservasActivas && <span class="sr-only">(se abre WhatsApp en una pestaña nueva)</span>}
+</a>
