@@ -20,7 +20,7 @@ Oct 2, 2026 · @Jorge · Ajustado al proyecto real el Oct 3, 2026
 | Producto | Software aparte (Agendo), neutro y multi-negocio. Muestra el nombre, giro y dirección del negocio; colores propios (índigo sobre blanco). |
 | Botones | Los botones "Agendar" de la landing son enlaces a `agendo-reservas.vercel.app/dental-mx` (con `?servicio=` cuando aplica). WhatsApp queda para preguntas y como respaldo si no hay enlace (`PUBLIC_AGENDO_URL` vacía). |
 | Horario y duraciones | Simulación: horario de la landing (L–V 10:00–14:00 y 16:00–20:00, sábado 10:00–14:00) y duraciones inventadas. Confirmar con la clínica. |
-| Aviso de cita nueva | Los dos: correo (Resend) y panel en tiempo real con sonido y notificación del navegador. |
+| Aviso de cita nueva | Dentro del panel (en lugar de correo): cada cita nueva deja un aviso guardado; campana con contador y bandeja, en tiempo real con sonido y notificación del navegador. |
 | Supabase | Proyecto nuevo `dental-mx` en la organización de Jorge (plan gratis, us-east-1). |
 | Rama | PR #2 del sitio fusionado a `main`; las reservas se desarrollan después. |
 
@@ -33,7 +33,7 @@ Oct 2, 2026 · @Jorge · Ajustado al proyecto real el Oct 3, 2026
 | Página de reservas por negocio (`/<slug>`) | Recordatorios automáticos al paciente (SMS o correo) |
 | Confirmación por WhatsApp con link wa.me | Sincronización con Google Calendar |
 | Panel de la clínica: ver, confirmar, cancelar, bloquear | Historial clínico o datos médicos |
-| Aviso de cita nueva: correo + tiempo real con sonido | Que el paciente cancele o cambie su cita solo |
+| Avisos de cita nueva dentro del panel (bandeja + tiempo real con sonido) | Que el paciente cancele o cambie su cita solo |
 | Base multi-negocio y tope diario contra abuso | Panel para administrar varios clientes desde una sola cuenta |
 
 No se guardan datos médicos: sólo nombre, teléfono, servicio y una nota corta opcional.
@@ -64,15 +64,13 @@ flowchart LR
     R["Funciones RPC<br/>datos_reserva · dias_disponibles<br/>horarios_disponibles · crear_cita"]
     A["Auth + RLS + Realtime"]
     DB[("Postgres<br/>tablas + exclusión")]
-    F["Edge Function<br/>notificar-cita"]
   end
-  RS["Resend<br/>correo a la clínica"]
   L -- enlace --> W
   W -- anon key --> R
   P -- sesión de usuario --> A
   R --> DB
   A --> DB
-  DB -- trigger pg_net --> F --> RS
+  DB -- trigger: aviso por cita nueva --> A
 ```
 
 - La página de reservas usa la anon key y sólo llama funciones RPC (con `fetch`, sin librería). Las tablas quedan cerradas por RLS. `vercel.json` reescribe `/<slug>` a la página de reservas.
@@ -81,7 +79,7 @@ flowchart LR
 
 ## Modelo de datos y seguridad
 
-Archivos: `agendo/supabase/migrations/` (4 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
+Archivos: `agendo/supabase/migrations/` (5 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
 
 | Tabla | Campos clave | Notas |
 | --- | --- | --- |
@@ -90,6 +88,7 @@ Archivos: `agendo/supabase/migrations/` (4 migraciones), `seed.sql`, `configurar
 | horarios | negocio_id, dia_semana (0–6), abre, cierra | Varias filas por día (hora de comida) |
 | bloqueos | id, negocio_id, inicio, fin, motivo | |
 | citas | id, negocio_id, servicio_id, inicio, fin, nombre, telefono, nota, estado, creada_en, notificada_en | estado: pendiente, confirmada, cancelada |
+| avisos | id, negocio_id, cita_id, tipo, creado_en, leido_en | Uno por cita nueva (trigger); la clínica sólo puede marcarlos como leídos |
 | admins | user_id, negocio_id | Liga usuarios de Supabase Auth con su negocio |
 | ajustes_internos | clave, valor | URL de funciones; nadie la lee por la API |
 
@@ -126,10 +125,10 @@ Archivos: `agendo/supabase/migrations/` (4 migraciones), `seed.sql`, `configurar
 - Confirmar, Cancelar (libera el horario) y WhatsApp al cliente con mensaje listo.
 - Bloqueos: día completo o rango de horas, con lista y opción de quitar.
 - Mi página: enlace de reservas (copiar, abrir, compartir), servicios visibles (interruptor) y horario.
-- Avisos: tiempo real, sonido, notificación del navegador y contador en la pestaña.
+- Avisos: campana con contador de no leídos y bandeja ("Nueva cita · nombre", servicio, día y hora, hace cuánto). Tocar un aviso abre la cita; "Marcar todo como leído". Llegan en tiempo real con sonido, notificación del navegador y contador en la pestaña; los que llegaron con el panel cerrado aparecen al entrar ("Tienes N avisos nuevos").
 - Barra lateral en escritorio y pestañas abajo en celular.
 
-**Correo** — `agendo/supabase/functions/notificar-cita` (Resend). Un correo por cita, idempotente, con enlace al panel.
+**Avisos** — migración 5: tabla `avisos` + trigger en `citas`. Reemplazó al correo (Resend), que quedó apagado.
 
 **Mantenimiento** — `.github/workflows/supabase-keepalive.yml` consulta Supabase dos veces por semana para que el plan gratis no se pause.
 
@@ -137,14 +136,13 @@ Archivos: `agendo/supabase/migrations/` (4 migraciones), `seed.sql`, `configurar
 
 Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan gratis).
 
-- [x] Proyecto creado; 4 migraciones aplicadas y seed cargado.
+- [x] Proyecto creado; 5 migraciones aplicadas y seed cargado.
 - [x] Pruebas (`supabase/tests/pruebas_reservas.sql`) en la base real: todas pasan.
-- [x] Realtime activo en `citas`; `pg_net` y trigger de avisos configurados (`ajustes_internos.url_funciones`).
-- [x] Edge Function `notificar-cita` desplegada (verify JWT desactivado: se protege sola). Probada: el trigger la llama y responde.
+- [x] Realtime activo en `citas` y `avisos`; trigger de avisos probado en producción (dentro de una transacción que se deshizo).
+- [x] Aviso por correo apagado (trigger `citas_avisar_nueva` desactivado). La Edge Function `notificar-cita` sigue publicada pero ya nadie la llama; se puede borrar en Supabase → Edge Functions.
 - [x] Usuario de la clínica creado y ligado a Dental MX (credenciales entregadas por chat; cambiar la contraseña).
 - [x] Proyecto Vercel `agendo` (raíz `agendo/`) con `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY`; dominio `agendo-reservas.vercel.app`.
 - [x] Landing de Dental MX enlazando a `agendo-reservas.vercel.app/dental-mx`.
-- [ ] Correo de avisos: falta la `RESEND_API_KEY` (secreto en Supabase → Edge Functions) y `negocios.email_notificaciones`.
 - [ ] Desactivar el registro público en Supabase → Authentication → Sign In / Providers → "Allow new users to sign up".
 - [x] Keep-alive con la URL y anon key públicas en el workflow (GitHub sólo programa workflows de la rama `main`: se activa al fusionar).
 - [ ] Borrar la cita de prueba "Prueba Sistema" (quedó cancelada; no ocupa horario).
@@ -164,5 +162,5 @@ Verificados en local (Postgres 16 + PostgREST + navegador en celular simulado). 
 - [x] Una cita cancelada libera su horario.
 - [x] Un bloqueo creado en el panel oculta esos horarios en la página de reservas.
 - [x] Las horas mostradas coinciden con la hora de Torreón.
-- [ ] Llega el correo de cita nueva (requiere Resend configurado).
+- [x] Una cita nueva aparece como aviso sin leer en la campana; tocarla abre la cita; marcar como leído persiste al recargar.
 - [ ] El panel muestra "En vivo" y avisa sin recargar (requiere Realtime de Supabase).

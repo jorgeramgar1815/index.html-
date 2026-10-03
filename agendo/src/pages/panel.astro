@@ -78,12 +78,14 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                   </a>
                 ))
               }
+              <div class="my-1 h-px bg-borde" aria-hidden="true" />
+              <button type="button" class="p-nav" data-p-campana>
+                <Fragment set:html={icono('campana')} />
+                <span class="flex-1 text-left">Avisos</span>
+                <span class="p-contador p-contador-azul" data-p-avisos-num hidden />
+              </button>
             </nav>
             <div class="mt-auto grid gap-2 border-t border-borde p-3">
-              <button type="button" class="p-nav" data-p-avisos>
-                <span data-p-avisos-icono />
-                <span class="flex-1 text-left" data-p-avisos-texto>Avisos</span>
-              </button>
               <p class="flex items-center gap-2 px-3 text-xs text-suave">
                 <span class="p-vivo" data-p-vivo /><span data-p-vivo-texto>Conectando…</span>
               </p>
@@ -104,7 +106,9 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                 <p class="truncate font-bold leading-tight text-texto" data-p-nombre>Tu negocio</p>
                 <p class="flex items-center gap-1.5 text-xs text-suave"><span class="p-vivo" data-p-vivo /><span data-p-vivo-texto>Conectando…</span></p>
               </div>
-              <button type="button" class="p-icono-btn" data-p-avisos aria-label="Avisos"><span data-p-avisos-icono /></button>
+              <button type="button" class="p-icono-btn relative" data-p-campana aria-label="Avisos">
+                <Fragment set:html={icono('campana', 22)} /><span class="p-contador p-contador-campana" data-p-avisos-num hidden />
+              </button>
               <button type="button" class="p-icono-btn" data-p-salir aria-label="Salir"><Fragment set:html={icono('salir')} /></button>
             </div>
           </header>
@@ -121,6 +125,11 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
                   <a href="#agenda" class="btn btn-secundario hidden sm:inline-flex">
                     <Fragment set:html={icono('agenda', 18)} />Ver agenda completa
                   </a>
+                </div>
+                <div class="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-marca-100 bg-marca-50 px-4 py-3" data-p-sugerir-sonido hidden>
+                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-white text-marca"><Fragment set:html={icono('campana', 18)} /></span>
+                  <p class="min-w-0 flex-1 text-sm"><b class="text-texto">Entérate al instante.</b> <span class="text-suave">Activa el sonido y las notificaciones para cuando llegue una cita.</span></p>
+                  <button type="button" class="btn btn-primario min-h-10 px-4 text-sm" data-p-activar-sonido>Activar</button>
                 </div>
                 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4" data-p-kpis>
                   {[1, 2, 3, 4].map(() => <div class="esqueleto h-[6.5rem] rounded-[var(--radius-tarjeta)]" />)}
@@ -247,6 +256,23 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
           </nav>
         </div>
 
+        <dialog id="bandeja" class="p-bandeja" aria-labelledby="t-bandeja">
+          <div class="flex h-full flex-col">
+            <div class="flex items-center gap-3 border-b border-borde px-5 py-4">
+              <h2 id="t-bandeja" class="flex-1 text-lg font-bold">Avisos</h2>
+              <button type="button" class="text-sm font-semibold text-marca hover:underline disabled:text-tenue disabled:no-underline" data-p-leer-todo>Marcar todo como leído</button>
+              <button type="button" class="p-icono-btn -mr-2" data-p-cerrar-bandeja aria-label="Cerrar"><Fragment set:html={icono('x')} /></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-3" data-p-bandeja-lista />
+            <label class="flex cursor-pointer items-center gap-3 border-t border-borde px-5 py-4">
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm font-semibold">Sonido y notificaciones</span>
+                <span class="block text-xs text-suave">Suena y aparece un aviso en la pantalla al llegar una cita.</span>
+              </span>
+              <input type="checkbox" class="p-switch" data-p-sonido />
+            </label>
+          </div>
+        </dialog>
         <dialog id="detalle" class="p-dialogo" aria-label="Detalle de la cita">
           <div data-p-detalle />
         </dialog>
@@ -279,6 +305,28 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
       background: #f59e0b; color: #fff; font-size: 0.7rem; font-weight: 800; font-variant-numeric: tabular-nums;
     }
     .p-contador[hidden] { display: none; }
+    .p-contador-azul { background: var(--color-marca); }
+    .p-contador-campana { position: absolute; top: 0.1rem; right: 0.05rem; min-width: 1.1rem; height: 1.1rem; font-size: 0.65rem; background: #ef4444; box-shadow: 0 0 0 2px var(--color-superficie); }
+    .p-bandeja {
+      margin: 0 0 0 auto; height: 100dvh; max-height: none; width: min(26rem, 100%); border: 0; padding: 0;
+      background: var(--color-superficie); box-shadow: var(--shadow-flota);
+    }
+    .p-bandeja[open] { animation: bandeja 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+    .p-bandeja::backdrop { background: rgb(16 24 40 / 0.35); }
+    @keyframes bandeja { from { transform: translateX(2rem); opacity: 0; } }
+    @media (max-width: 639px) {
+      .p-bandeja { margin: auto 0 0; width: 100%; max-width: none; height: auto; max-height: 85dvh; border-radius: 1.25rem 1.25rem 0 0; }
+      @keyframes bandeja { from { transform: translateY(2rem); opacity: 0; } }
+    }
+    .p-aviso {
+      position: relative; display: flex; width: 100%; gap: 0.8rem; border-radius: 0.9rem; padding: 0.8rem 0.9rem; text-align: left;
+      transition: background-color 0.15s;
+    }
+    .p-aviso:hover { background: var(--color-fondo); }
+    .p-aviso[data-nuevo] { background: var(--color-marca-50); }
+    .p-aviso[data-nuevo]::after {
+      content: ''; position: absolute; top: 1.1rem; right: 0.9rem; width: 0.55rem; height: 0.55rem; border-radius: 999px; background: var(--color-marca);
+    }
     .p-icono-btn {
       display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 0.8rem; color: var(--color-suave);
       transition: background-color 0.15s, color 0.15s;

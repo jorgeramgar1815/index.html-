@@ -50,6 +50,10 @@ select pg_temp.ok(json_array_length(public.datos_reserva('dental-mx') -> 'servic
 
 select pg_temp.ok(pg_temp.error_de($$select * from public.citas$$) like '%permission denied%',
   'el público no puede leer la tabla citas');
+
+select pg_temp.ok(pg_temp.error_de($$select * from public.avisos$$) like '%permission denied%',
+  'el público no puede leer avisos');
+
 select pg_temp.ok(pg_temp.error_de($$insert into public.citas (negocio_id, servicio_id, inicio, fin, nombre, telefono) values (gen_random_uuid(), gen_random_uuid(), now(), now() + interval '1h', 'X', '8711111111')$$) like '%permission denied%',
   'el público no puede insertar citas directamente');
 select pg_temp.ok(pg_temp.error_de($$select * from public.negocios$$) like '%permission denied%',
@@ -145,9 +149,19 @@ set local role authenticated;
 
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a002';
 select pg_temp.ok((select count(*) from public.citas) = 0, 'un usuario que no es admin del negocio no ve citas');
+select pg_temp.ok((select count(*) from public.avisos) = 0, 'un usuario que no es admin del negocio no ve avisos');
 
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a001';
 select pg_temp.ok((select count(*) from public.citas) = 2, 'la clínica ve las citas de su negocio');
+
+select pg_temp.ok((select count(*) from public.avisos where leido_en is null) = 2,
+  'cada cita nueva deja un aviso sin leer en el panel');
+
+update public.avisos set leido_en = now();
+select pg_temp.ok((select count(*) from public.avisos where leido_en is null) = 0, 'la clínica marca sus avisos como leídos');
+
+select pg_temp.ok(pg_temp.error_de($$update public.avisos set tipo = 'cita_nueva'$$) like '%permission denied%',
+  'de un aviso la clínica sólo cambia si está leído');
 
 select pg_temp.ok(pg_temp.error_de($$update public.citas set nombre = 'Otro'$$) like '%permission denied%',
   'la clínica no puede editar los datos del paciente, sólo el estado');
