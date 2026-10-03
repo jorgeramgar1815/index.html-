@@ -1,0 +1,406 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import NeonTooth from '../components/NeonTooth.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import Marquee from '../components/Marquee.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import TipCard from '../components/TipCard.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import Photo from '../components/Photo.astro';
+import MapEmbed from '../components/MapEmbed.astro';
+import HoursList from '../components/HoursList.astro';
+import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import fotoSillon from '../assets/img/consultorio-sillon.jpg';
+import fotoRecepcion from '../assets/img/recepcion.jpg';
+import fotoConsultorio from '../assets/img/consultorio.jpg';
+import fotoSala from '../assets/img/sala-de-espera.jpg';
+// PLACEHOLDER: retrato ilustrativo; reemplazar por la foto real del doctor (site.doctor.photo).
+import fotoEquipo from '../assets/img/equipo-clinico.jpg';
+import { faqs, flags, reasons, services, site, steps, testimonials, tips, waLink } from '../data/site';
+
+// Fondo de la portada: importar una foto aquí para usarla (null = escena de marca con listones de madera).
+const heroImage: ImageMetadata | null = null;
+
+const promos = services.filter((s) => s.promo);
+// Banda de servicios: la valoración abre la lista, igual que en la cuadrícula.
+const bandItems = services.map((s) => (s.featured ? 'Valoración' : s.name));
+
+const values = [
+  { icon: 'tooth', title: 'Salud bucal' },
+  { icon: 'shield', title: 'Confianza' },
+  { icon: 'leaf', title: 'Bienestar' },
+];
+
+// Galería del consultorio (fotos en src/assets/img/).
+const gallery = [
+  { scene: 'reception' as const, alt: 'Recepción de Dental MX con mostrador de madera y letrero de neón en forma de diente', label: 'Recepción', src: fotoRecepcion },
+  { scene: 'chair' as const, alt: 'Consultorio con sillón dental, monitor y letrero de neón', label: 'Consultorio', src: fotoConsultorio },
+  { scene: 'lounge' as const, alt: 'Sala de espera con sofá, lámpara de luz cálida y plantas', label: 'Sala de espera', src: fotoSala },
+];
+
+const schema = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@type': 'ItemList',
+    name: 'Servicios de Dental MX',
+    itemListElement: services.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: { '@type': 'MedicalProcedure', name: s.name, description: s.description, url: new URL(`/#${s.slug}`, Astro.site).href },
+    })),
+  },
+];
+---
+
+<BaseLayout schema={schema}>
+  <!-- ═══════════════ HERO (centrado) ═══════════════ -->
+  <section data-hero data-live class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-28 pb-28 text-center sm:pt-32">
+    <div class="absolute inset-0 -z-10" aria-hidden="true">
+      <div class="absolute inset-x-0 -top-[10%] h-[120%] will-change-transform" data-parallax="0.3">
+        {
+          heroImage ? (
+            <Image src={heroImage} alt="" widths={[640, 1024]} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" class="size-full object-cover opacity-70" />
+          ) : (
+            <div class="wood-slats size-full opacity-45" />
+          )
+        }
+      </div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgb(14_16_14/0.55)_0%,rgb(14_16_14/0.93)_62%,#0e100e_100%)]"></div>
+      <div class="aurora absolute inset-0" data-live>
+        <div class="absolute top-[18%] left-1/2 size-[32rem] -translate-x-1/2 glow scale-150 text-lime/20 max-sm:size-[20rem]"></div>
+        <div class="absolute top-[8%] left-[6%] size-[22rem] glow scale-150 text-warm/10"></div>
+        <div class="absolute right-[4%] bottom-[12%] size-[24rem] glow scale-150 text-lime/10"></div>
+      </div>
+      <div class="absolute inset-0 bg-[radial-gradient(520px_circle_at_var(--sx,50%)_var(--sy,38%),rgb(181_238_58/0.09),transparent_62%)]"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent"></div>
+      <div class="grain absolute inset-0"></div>
+    </div>
+
+
+    <div class="container-x relative flex flex-col items-center">
+      <div class="relative">
+        <div class="pointer-events-none absolute inset-0 glow scale-[2] text-lime/25" aria-hidden="true"></div>
+        <NeonTooth draw class="relative w-24 sm:w-32" />
+      </div>
+
+      <h1 class="hero-in mt-8 text-[3.6rem] leading-[0.92] font-extrabold tracking-[-0.03em] sm:text-8xl lg:text-[10rem] xl:text-[11.5rem]" style="--i:1">
+        DENTAL{' '}
+        <span class="inline-block text-lime [text-shadow:0_0_10px_rgb(181_238_58/0.6),0_0_34px_rgb(181_238_58/0.45),0_0_80px_rgb(181_238_58/0.3)]">MX</span>
+      </h1>
+
+      <p class="hero-in mt-6 max-w-xl text-lg leading-relaxed text-snow/75 sm:text-xl" style="--i:2">
+        Cuidado dental integral para toda la familia, con tecnología, trato cercano y precios accesibles.
+      </p>
+
+      <div class="hero-in mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row" style="--i:3">
+        <WhatsAppButton size="lg" message="Hola, me gustaría agendar una cita en Dental MX." cta="hero-whatsapp" />
+        <a href="#servicios" class="btn btn-ghost btn-lg" data-magnetic>Ver servicios <Icon name="arrow-right" size={18} /></a>
+      </div>
+    </div>
+
+    <a href="#servicios" class="scroll-cue absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex" aria-label="Bajar a servicios">
+      <span class="block h-7 w-4 rounded-full border border-white/25 p-1" aria-hidden="true"><span class="block size-1.5 rounded-full bg-lime"></span></span>
+    </a>
+  </section>
+
+  <!-- ═══════════════ BANDA EN MOVIMIENTO ═══════════════ -->
+  <Marquee items={bandItems} speed={45} class="shadow-[0_0_60px_-10px_rgb(181_238_58/0.5)]" />
+
+  <!-- ═══════════════ SERVICIOS ═══════════════ -->
+  <section class="section" id="servicios">
+    <div class="container-x">
+      <SectionHeading
+        align="center"
+        eyebrow="Servicios"
+        title='Todo para tu sonrisa, <span class="text-neon">en un solo lugar</span>'
+        intro="Empieza con una valoración y elige el tratamiento que necesitas."
+      />
+      <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {services.map((s, i) => <ServiceCard service={s} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CÓMO FUNCIONA ═══════════════ -->
+  <section class="section relative overflow-hidden bg-ink-2" aria-labelledby="pasos-title">
+    <div class="pointer-events-none absolute inset-0 grid-fade" aria-hidden="true"></div>
+    <div class="container-x relative">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow mb-4 justify-center" data-reveal>Así de fácil</p>
+        <h2 id="pasos-title" class="text-3xl leading-[1.08] font-bold sm:text-4xl lg:text-[3.25rem]" data-split>Tu cita en <span class="text-neon">3 pasos</span></h2>
+      </div>
+      <div class="relative mt-16">
+        <div class="pointer-events-none absolute top-8 right-[16%] left-[16%] hidden h-px bg-gradient-to-r from-lime/0 via-lime to-lime/0 shadow-[0_0_12px_rgb(181_238_58/0.8)] md:block" data-draw aria-hidden="true"></div>
+        <ol class="relative grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-6">
+          {
+            steps.map((st, i) => (
+              <li class="relative flex flex-col items-center text-center" data-reveal style={`--i:${i + 1}`}>
+                <span class="icon-tube relative size-16 rounded-full bg-ink shadow-[0_0_0_8px_var(--color-ink-2),0_0_30px_-4px_rgb(181_238_58/0.6)]">
+                  <Icon name={st.icon} size={28} />
+                </span>
+                <span class="text-outline-lime mt-4 font-display text-7xl leading-none font-extrabold" aria-hidden="true">0{i + 1}</span>
+                <h3 class="-mt-6 text-2xl font-bold">{st.title}</h3>
+                <p class="mt-2 max-w-60 text-mute">{st.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div class="mt-14 flex justify-center" data-reveal>
+        <WhatsAppButton size="lg" label="Empezar por WhatsApp" cta="steps" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PROMOCIONES ═══════════════ -->
+  {
+    flags.showPrices && promos.length > 0 && (
+      <section class="section" aria-labelledby="promos-title">
+        <div class="container-x">
+          <div data-live class="spin-border grain relative overflow-hidden rounded-[2rem] border border-lime/15 bg-surface p-6 sm:p-10 lg:p-14" data-reveal>
+            <div class="pointer-events-none absolute -top-32 -right-20 size-[26rem] glow scale-150 text-lime/20" aria-hidden="true" />
+            <div class="pointer-events-none absolute inset-0 grid-fade opacity-60" aria-hidden="true" />
+            <div class="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+              <div>
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="eyebrow">Promociones</p>
+                  <PlaceholderBadge label="Precios por confirmar" />
+                </div>
+                <h2 id="promos-title" class="mt-4 text-3xl leading-[1.08] font-bold sm:text-4xl lg:text-5xl" data-split>
+                  Estrena <span class="script-neon text-[1.25em] font-normal" data-nosplit>sonrisa</span> sin romper tu presupuesto
+                </h2>
+                <p class="mt-5 text-lg text-mute">Cupo limitado, sujeto a valoración.</p>
+              </div>
+              {/* PLACEHOLDER: promociones vistas en Facebook; confirmar vigencia antes de publicar. */}
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {promos.map((s, i) => (
+                  <div class="card card-hover flex flex-col bg-ink/60 p-6" data-tilt data-reveal style={`--i:${i + 1}`}>
+                    <span class="icon-tube"><Icon name={s.icon} size={24} /></span>
+                    <p class="mt-5 text-sm font-semibold tracking-[0.14em] text-mute uppercase">{s.name}</p>
+                    <p class="mt-2 flex items-baseline gap-3">
+                      {s.promo!.was && <s class="text-lg text-mute">{s.promo!.was}</s>}
+                      <strong class="text-neon font-display text-4xl font-extrabold">{s.promo!.now}</strong>
+                    </p>
+                    {s.promo!.note && <p class="mt-1 text-sm text-mute">{s.promo!.note}</p>}
+                    <a
+                      href={waLink(`Hola, me interesa la promoción de ${s.name.toLowerCase()} (${s.promo!.now}).`)}
+                      target="_blank"
+                      rel="noopener"
+                      class="btn btn-primary mt-6 min-h-11 px-5 text-sm"
+                      data-cta={`promo-${s.slug}`}
+                    >
+                      <Icon name="whatsapp" size={17} /> Aprovechar
+                      <span class="sr-only">la promoción de {s.name.toLowerCase()}</span>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ═══════════════ POR QUÉ ELEGIRNOS ═══════════════ -->
+  <section class="on-light section bg-paper text-ink">
+    <div class="container-x grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-20">
+      <div class="relative">
+        <div data-reveal="clip">
+          <Photo scene="chair" src={fotoSillon} alt="Sillón dental de Dental MX con lámpara, muro de madera y letrero de neón en forma de diente" class="aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]" />
+        </div>
+      </div>
+      <div>
+        <SectionHeading eyebrow="Por qué elegirnos" title="Nivel de especialista, trato de familia" />
+        <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {
+            reasons.map((r, i) => (
+              <div class="card card-hover p-6" data-reveal data-tilt style={`--i:${i}`}>
+                <span class="icon-tube"><Icon name={r.icon} size={24} /></span>
+                <h3 class="mt-5 text-lg font-bold">{r.title}</h3>
+                <p class="mt-1.5 leading-relaxed text-slate">{r.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ANTES / DESPUÉS ═══════════════ -->
+  <section class="section relative overflow-hidden">
+    <div class="pointer-events-none absolute top-1/3 -left-40 size-[30rem] glow scale-150 text-lime/10" aria-hidden="true"></div>
+    <div class="container-x relative grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <SectionHeading eyebrow="Antes y después" title="Resultados que se notan" intro="Cada tratamiento, diseñado a tu medida.">
+        <div class="mt-8">
+          <WhatsAppButton label="Quiero mi valoración" message="Hola, quiero agendar una valoración para ver qué tratamiento me conviene." cta="before-after" />
+        </div>
+      </SectionHeading>
+      <BeforeAfter />
+    </div>
+  </section>
+
+  <!-- ═══════════════ NOSOTROS ═══════════════ -->
+  <section class="section overflow-hidden bg-ink-2" id="nosotros">
+    <div class="container-x">
+      <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <div class="relative mx-auto w-full max-w-md">
+          <div class="pointer-events-none absolute -inset-6 glow scale-110 text-lime/15" aria-hidden="true"></div>
+          <div data-reveal="clip">
+            {/* PLACEHOLDER: foto del doctor — definir `site.doctor.photo` en src/data/site.ts; mientras tanto, retrato ilustrativo */}
+            <Photo
+              scene="portrait"
+              src={site.doctor.photo || fotoEquipo}
+              sizes="(min-width: 1024px) 448px, 100vw"
+              alt={site.doctor.photo && flags.showDoctorName ? `Retrato de ${site.doctor.name}` : 'Imagen ilustrativa de una dentista sonriendo en el consultorio'}
+              label="Foto del doctor"
+              class="relative aspect-[4/5]"
+            >
+              {!site.doctor.photo && (
+                <span class="absolute right-4 bottom-4 rounded-full border border-white/15 bg-ink/80 px-3 py-1 text-[0.7rem] font-medium text-snow/80 backdrop-blur">Imagen ilustrativa</span>
+              )}
+            </Photo>
+          </div>
+        </div>
+        <div>
+          <SectionHeading eyebrow="Nosotros" title='Una clínica de barrio con estándares <span class="text-neon">de especialista</span>' />
+
+          <div class="card mt-8 p-6" data-reveal>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <p class="font-display text-xl font-bold text-white">{flags.showDoctorName ? site.doctor.name : 'Nuestro equipo clínico'}</p>
+              {flags.showDoctorName && <p class="text-sm text-mute">{site.doctor.license}</p>}
+            </div>
+            <p class="mt-1 font-display text-sm font-semibold text-lime">{flags.showDoctorName ? site.doctor.role : 'Cirujanos dentistas · Atención integral'}</p>
+          </div>
+
+          <ul class="mt-6 flex flex-wrap gap-3" data-reveal>
+            {
+              values.map((v) => (
+                <li class="flex items-center gap-2.5 rounded-full border border-line py-2 pr-4 pl-2">
+                  <span class="icon-tube size-8 rounded-full"><Icon name={v.icon} size={16} /></span>
+                  <span class="font-display text-sm font-semibold text-white">{v.title}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-3 lg:mt-20">
+        {
+          gallery.map((g, i) => (
+            <div data-reveal="clip" style={`--i:${i}`}>
+              <Photo scene={g.scene} src={g.src} alt={g.alt} label={g.label} sizes="(min-width: 640px) 33vw, 100vw" class="aspect-[4/3]" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TESTIMONIOS (carrusel continuo) ═══════════════ -->
+  <section class="section overflow-hidden" id="testimonios">
+    <div class="container-x">
+      <SectionHeading align="center" eyebrow="Testimonios" title='Sonrisas que <span class="text-neon">hablan por nosotros</span>' />
+    </div>
+    {/* PLACEHOLDER: testimonios de ejemplo — reemplazar en src/data/site.ts (estructura lista para 3–6). */}
+    <div class="marquee mt-14" style="--speed:55s" data-reveal data-live>
+      <div class="marquee-track">
+        {
+          [0, 1, 2, 3].map((copy) =>
+            testimonials.map((t, i) => (
+              <div class="w-[19rem] shrink-0 pr-5 sm:w-[24rem]" aria-hidden={copy > 0 ? 'true' : undefined}>
+                <TestimonialCard testimonial={t} index={i} />
+              </div>
+            )),
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TIPS ═══════════════ -->
+  <section class="section pt-0 sm:pt-0 lg:pt-0">
+    <div class="container-x">
+      <SectionHeading eyebrow="Tips Dental MX" title="Pequeños hábitos, sonrisas más sanas" />
+      <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {tips.map((t, i) => <TipCard tip={t} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PREGUNTAS FRECUENTES ═══════════════ -->
+  <section class="section bg-ink-2" id="preguntas">
+    <div class="container-x grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <SectionHeading eyebrow="Preguntas frecuentes" title="Lo que más nos preguntan">
+        <WhatsAppButton class="mt-8" variant="ghost" label="Hacer una pregunta" message="Hola, tengo una duda sobre un tratamiento." cta="faq" />
+      </SectionHeading>
+      <div class="divide-y divide-line border-y border-line" data-reveal>
+        {
+          faqs.map((f) => (
+            <details class="group py-1">
+              <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-6 py-4 font-display text-lg font-semibold transition-colors hover:text-lime [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <span class="grid size-9 shrink-0 place-items-center rounded-full border border-line text-lime transition-[rotate,background-color,color] duration-300 group-open:rotate-45 group-open:bg-lime group-open:text-ink">
+                  <Icon name="plus" size={18} />
+                </span>
+              </summary>
+              <p class="pr-12 pb-5 leading-relaxed text-mute">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CONTACTO ═══════════════ -->
+  <section class="section" id="contacto">
+    <div class="container-x">
+      <div data-live class="spin-border grain relative overflow-hidden rounded-[2rem] border border-lime/15 bg-surface" data-reveal>
+        <div class="pointer-events-none absolute -top-40 -left-24 size-[26rem] glow scale-150 text-lime/15" aria-hidden="true"></div>
+        <div class="relative grid grid-cols-1 lg:grid-cols-2">
+          <div class="p-6 sm:p-12 lg:p-14">
+            <p class="eyebrow">Contacto</p>
+            <h2 class="mt-4 text-3xl leading-[1.08] font-bold sm:text-4xl lg:text-5xl" data-split>
+              Agenda hoy y <span class="script-neon text-[1.3em] font-normal" data-nosplit>sonríe</span> mañana
+            </h2>
+
+            <address class="mt-8 space-y-4 not-italic">
+              <p class="flex gap-3">
+                <Icon name="pin" size={22} class="mt-0.5 shrink-0 text-lime" />
+                <span>{site.address.street}<br /><span class="text-mute">{site.address.neighborhood}, {site.address.postalCode} {site.address.city}, Coah.</span></span>
+              </p>
+              <p class="flex items-center gap-3">
+                <Icon name="phone" size={22} class="shrink-0 text-lime" />
+                <a href={`tel:${site.phone.tel}`} class="underline-offset-4 hover:text-lime hover:underline">{site.phone.display}</a>
+              </p>
+            </address>
+
+            <div class="mt-8 rounded-2xl border border-line bg-ink/40 p-5">
+              <HoursList><h3 class="flex items-center gap-2 font-display font-semibold"><Icon name="clock" size={20} class="text-lime" /> Horario</h3></HoursList>
+            </div>
+
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <WhatsAppButton size="lg" cta="final-whatsapp" />
+              <a href={`tel:${site.phone.tel}`} class="btn btn-ghost btn-lg" data-magnetic><Icon name="phone" size={18} /> Llamar</a>
+            </div>
+            <div class="mt-6 flex items-center gap-3 text-sm text-mute">
+              Síguenos:
+              <a href={site.social.instagram.url} target="_blank" rel="noopener" class="grid size-11 place-items-center rounded-full border border-line text-snow transition-colors hover:border-lime hover:text-lime" aria-label={`Instagram ${site.social.instagram.handle}`}><Icon name="instagram" size={19} /></a>
+              <a href={site.social.facebook.url} target="_blank" rel="noopener" class="grid size-11 place-items-center rounded-full border border-line text-snow transition-colors hover:border-lime hover:text-lime" aria-label="Facebook Dental MX"><Icon name="facebook" size={19} /></a>
+            </div>
+          </div>
+          <MapEmbed class="min-h-[22rem] rounded-none border-0 border-t border-line lg:min-h-full lg:border-t-0 lg:border-l" />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

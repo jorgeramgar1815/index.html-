@@ -1,0 +1,41 @@
+---
+/** Banda de texto en desplazamiento infinito (se pausa al pasar el cursor). */
+interface Props {
+  items: string[];
+  variant?: 'lime' | 'dark';
+  reverse?: boolean;
+  speed?: number;
+  class?: string;
+}
+const { items, variant = 'lime', reverse = false, speed = 40, class: className = '' } = Astro.props;
+// Se duplica el contenido para que el bucle sea continuo.
+const loop = [...items, ...items];
+---
+
+<div
+  class:list={[
+    'marquee py-4 sm:py-5',
+    variant === 'lime' ? 'bg-lime text-ink' : 'border-y border-line bg-ink-2 text-snow/70',
+    className,
+  ]}
+  style={`--speed:${speed}s`}
+  data-live
+>
+  <p class="sr-only">{items.join(', ')}</p>
+  <div class:list={['marquee-track', reverse && '[animation-direction:reverse]']} aria-hidden="true">
+    {
+      [0, 1].map(() => (
+        <ul class="flex shrink-0 items-center">
+          {loop.map((item) => (
+            <li class="flex items-center gap-6 px-6 font-display text-lg font-bold tracking-tight whitespace-nowrap uppercase sm:text-2xl">
+              {item}
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" class:list={[variant === 'lime' ? 'text-ink' : 'text-lime']}>
+                <path d="M12 2c.8 5.6 2.4 7.6 8 8.4v1.2c-5.6.8-7.2 2.8-8 8.4h-1c-.8-5.6-2.4-7.6-8-8.4v-1.2c5.6-.8 7.2-2.8 8-8.4Z" />
+              </svg>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>

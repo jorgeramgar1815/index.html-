@@ -1,0 +1,143 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFab from '../components/WhatsAppFab.astro';
+import { site, flags } from '../data/site';
+// Fuente de los titulares: se precarga para que la portada no cambie de tipografía al cargar.
+import soraFont from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Imagen para compartir en Facebook/WhatsApp (ruta pública). */
+  ogImage?: string;
+  /** JSON-LD adicional para la página (p. ej. FAQPage, BreadcrumbList). */
+  schema?: Record<string, unknown>[];
+}
+
+const { title = site.seo.title, description = site.seo.description, ogImage = '/og.png', schema = [] } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+
+const days: Record<string, string> = {
+  Monday: 'https://schema.org/Monday',
+  Tuesday: 'https://schema.org/Tuesday',
+  Wednesday: 'https://schema.org/Wednesday',
+  Thursday: 'https://schema.org/Thursday',
+  Friday: 'https://schema.org/Friday',
+  Saturday: 'https://schema.org/Saturday',
+  Sunday: 'https://schema.org/Sunday',
+};
+
+// schema.org Dentist (LocalBusiness) — NAP consistente con Facebook.
+const dentist = {
+  '@context': 'https://schema.org',
+  '@type': 'Dentist',
+  '@id': new URL('/#clinica', Astro.site).href,
+  name: site.name,
+  alternateName: site.legalName,
+  slogan: site.tagline,
+  description: site.seo.description,
+  url: new URL('/', Astro.site).href,
+  image: ogImageUrl.href,
+  logo: new URL('/favicon.svg', Astro.site).href,
+  telephone: site.phone.intl.replace(/\s/g, ''),
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
+  },
+  areaServed: { '@type': 'City', name: 'Torreón' },
+  hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.maps.query)}`,
+  // PLACEHOLDER: horario sujeto a confirmación con el cliente.
+  openingHoursSpecification: site.openingHoursSpec.map((o) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: o.days.map((d) => days[d]),
+    opens: o.opens,
+    closes: o.closes,
+  })),
+  sameAs: [site.social.instagram.url],
+  ...(flags.showDoctorName && {
+    employee: { '@type': 'Person', name: site.doctor.name, jobTitle: 'Cirujano dentista' },
+  }),
+};
+---
+
+<!doctype html>
+<html lang="es-MX" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      // Activa las animaciones de scroll; si el script principal no carga en 3 s, se muestra todo sin animar.
+      document.documentElement.classList.replace('no-js', 'js');
+      setTimeout(function () { if (!window.__dmxReady) document.documentElement.classList.remove('js'); }, 3000);
+    </script>
+    <link rel="preload" href={soraFont} as="font" type="font/woff2" crossorigin />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0e100e" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dental MX — Tu sonrisa en manos profesionales" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- SEO local -->
+    <meta name="geo.region" content="MX-COA" />
+    <meta name="geo.placename" content="Torreón" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(dentist)} />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...s })} />)}
+  </head>
+  <body class="min-h-dvh overflow-x-clip">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-lime focus:px-5 focus:py-3 focus:font-semibold focus:text-ink"
+      >Saltar al contenido</a
+    >
+
+    <div
+      id="scroll-progress"
+      class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 origin-left scale-x-0 bg-lime shadow-[0_0_12px_rgb(181_238_58/0.8)]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <Header />
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <Footer />
+    <WhatsAppFab />
+
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

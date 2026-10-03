@@ -1,0 +1,73 @@
+---
+/**
+ * Tarjeta de servicio: todas comparten la misma estructura (ícono y precio,
+ * categoría numerada, nombre, descripción, "Ideal para" y botón abajo).
+ * La tarjeta `featured` (valoración) se resalta como punto de partida.
+ */
+import Icon from './Icon.astro';
+import { flags, waLink, type Service } from '../data/site';
+interface Props {
+  service: Service;
+  index?: number;
+}
+const { service, index = 0 } = Astro.props;
+const featured = !!service.featured;
+---
+
+<article
+  id={service.slug}
+  class:list={[
+    'card card-hover group relative flex h-full scroll-mt-28 flex-col p-6 sm:p-8',
+    featured && 'border-lime/35 bg-[linear-gradient(180deg,rgb(181_238_58/0.07),rgb(181_238_58/0.01)),var(--color-surface)]',
+  ]}
+  data-reveal
+  data-tilt
+  style={`--i:${index % 3}`}
+>
+  <div class="flex items-center justify-between gap-4">
+    <span class="icon-tube"><Icon name={service.icon} size={26} /></span>
+    {
+      featured ? (
+        <span class="rounded-full border border-lime/35 px-3.5 py-1.5 font-display text-[0.8rem] font-semibold text-lime">Empieza aquí</span>
+      ) : (
+        flags.showPrices &&
+        service.promo && (
+          /* PLACEHOLDER: precio promocional por confirmar con el cliente */
+          <p class="inline-flex items-baseline gap-2 rounded-full bg-lime px-3.5 py-1.5 text-[0.8rem] font-semibold text-ink shadow-[var(--shadow-glow-sm)]">
+            {service.promo.was && <s class="font-normal opacity-60">{service.promo.was}</s>}
+            <strong class="font-display">{service.promo.now}</strong>
+          </p>
+        )
+      )
+    }
+  </div>
+
+  <p class="mt-6 text-xs font-semibold tracking-[0.16em] text-mute uppercase">
+    {String(index + 1).padStart(2, '0')} · {service.category}
+  </p>
+  <h3 class="mt-2 text-[1.35rem] font-bold text-white">{service.name}</h3>
+  <p class="mt-2 leading-relaxed text-mute">{service.short}</p>
+
+  <p class="mt-5 text-xs font-semibold text-snow/60" id={`${service.slug}-ideal`}>Ideal para</p>
+  <ul class="mt-2 flex flex-1 flex-wrap content-start gap-2" aria-labelledby={`${service.slug}-ideal`}>
+    {service.forWho.map((f) => <li class="h-fit rounded-full border border-line bg-white/[0.03] px-3 py-1 text-xs font-medium text-snow/80">{f}</li>)}
+  </ul>
+
+  <a
+    href={waLink(service.waMessage)}
+    target="_blank"
+    rel="noopener"
+    class:list={[
+      'mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 font-display text-sm font-semibold transition-[background-color,color,box-shadow] duration-300',
+      featured
+        ? 'bg-lime text-ink hover:shadow-[var(--shadow-glow)]'
+        : 'border border-lime/35 text-lime hover:bg-lime hover:text-ink hover:shadow-[var(--shadow-glow-sm)]',
+    ]}
+    data-cta={`service-${service.slug}`}
+  >
+    <Icon name="whatsapp" size={17} />
+    {featured ? 'Agendar valoración' : 'Preguntar por WhatsApp'}
+    {!featured && <Icon name="arrow-right" size={15} class="transition-transform duration-300 group-hover:translate-x-1" />}
+    <span class="sr-only">{featured ? '' : `sobre ${service.name.toLowerCase()} `}(se abre WhatsApp en una pestaña nueva)</span>
+  </a>
+</article>

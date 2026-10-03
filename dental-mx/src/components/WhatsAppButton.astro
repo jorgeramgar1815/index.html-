@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+import { waLink } from '../data/site';
+
+interface Props {
+  /** Mensaje prellenado contextual (por sección / servicio). */
+  message?: string;
+  label?: string;
+  variant?: 'primary' | 'ghost';
+  size?: 'md' | 'lg';
+  class?: string;
+  /** Identificador para analítica (atributo data-cta). */
+  cta?: string;
+  /** Atrae el botón hacia el cursor (escritorio). */
+  magnetic?: boolean;
+}
+const { message, label = 'Agendar por WhatsApp', variant = 'primary', size = 'md', class: className = '', cta, magnetic = size === 'lg' } = Astro.props;
+---
+
+<a
+  href={waLink(message)}
+  target="_blank"
+  rel="noopener"
+  class:list={['btn', variant === 'primary' ? 'btn-primary' : 'btn-ghost', size === 'lg' && 'btn-lg', className]}
+  data-cta={cta}
+  data-magnetic={magnetic || undefined}
+>
+  <Icon name="whatsapp" size={size === 'lg' ? 20 : 18} />
+  <span>{label}</span>
+  <span class="sr-only">(se abre WhatsApp en una pestaña nueva)</span>
+</a>

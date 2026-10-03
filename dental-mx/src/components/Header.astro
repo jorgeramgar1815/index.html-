@@ -1,0 +1,114 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav, site, waLink } from '../data/site';
+---
+
+<header
+  id="site-header"
+  class="group/header fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ease-out data-[solid=true]:border-b data-[solid=true]:border-line data-[solid=true]:bg-ink/85 data-[solid=true]:backdrop-blur-xl"
+  data-solid="false"
+>
+  <div class="container-x flex h-[4.5rem] items-center justify-between gap-4 lg:h-20">
+    <a href="/" class="relative z-10 rounded-lg" aria-label="DENTAL MX, ir al inicio">
+      <Logo />
+    </a>
+
+    <nav aria-label="Principal" class="hidden md:block">
+      <ul class="flex items-center gap-1 lg:gap-2">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                data-spy={item.id}
+                class="group/link relative rounded-full px-3 py-2 text-[0.94rem] font-medium text-snow/75 transition-colors hover:text-white aria-[current=true]:text-white lg:px-4"
+              >
+                {item.label}
+                <span
+                  class="absolute inset-x-3 -bottom-0.5 h-0.5 scale-x-0 rounded-full bg-lime shadow-[0_0_10px_rgb(181_238_58/0.9)] transition-transform duration-500 group-aria-[current=true]/link:scale-x-100 lg:inset-x-4"
+                  aria-hidden="true"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="relative z-10 flex items-center gap-2">
+      <a
+        href={waLink()}
+        target="_blank"
+        rel="noopener"
+        class="btn btn-primary hidden min-h-11 px-5 text-sm sm:inline-flex"
+        data-cta="header-whatsapp"
+      >
+        <Icon name="whatsapp" size={18} />
+        Agendar cita
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="grid size-11 place-items-center rounded-full border border-line bg-white/5 text-white md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Abrir menú"
+      >
+        <span class="menu-open-icon"><Icon name="menu" size={22} /></span>
+        <span class="menu-close-icon hidden"><Icon name="close" size={22} /></span>
+      </button>
+    </div>
+  </div>
+
+</header>
+
+<!-- Menú móvil -->
+<div
+  id="mobile-menu"
+  class="invisible fixed inset-0 top-[4.5rem] z-40 flex flex-col bg-ink/97 opacity-0 backdrop-blur-xl transition-[opacity,visibility] duration-300 data-[open=true]:visible data-[open=true]:opacity-100 md:hidden"
+  data-open="false"
+>
+  <nav aria-label="Móvil" class="container-x flex flex-1 flex-col pt-6 pb-8">
+    <ul class="flex flex-col">
+      {
+        nav.map((item, i) => (
+          <li class="mobile-link border-b border-line" style={`--i:${i}`}>
+            <a
+              href={item.href}
+              data-spy={item.id}
+              class="flex items-center justify-between py-4 font-display text-3xl font-bold tracking-tight text-snow aria-[current=true]:text-lime"
+            >
+              {item.label}
+              <Icon name="arrow-right" size={22} class="text-mute" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-auto space-y-4 pt-8">
+      <a href={waLink()} target="_blank" rel="noopener" class="btn btn-primary btn-lg w-full" data-cta="menu-whatsapp">
+        <Icon name="whatsapp" size={20} /> Agendar por WhatsApp
+      </a>
+      <p class="text-center text-sm text-mute">{site.address.street} · {site.address.neighborhood}</p>
+    </div>
+  </nav>
+</div>
+
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-link {
+      opacity: 0;
+      transform: translateY(10px);
+      transition:
+        opacity 0.5s var(--ease-out-soft),
+        transform 0.5s var(--ease-out-soft);
+    }
+    [data-open='true'] .mobile-link {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i) * 60ms + 80ms);
+    }
+  }
+</style>

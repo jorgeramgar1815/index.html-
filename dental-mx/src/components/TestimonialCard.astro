@@ -1,0 +1,30 @@
+---
+import Icon from './Icon.astro';
+import PlaceholderBadge from './PlaceholderBadge.astro';
+interface Props {
+  testimonial: { name: string; detail: string; text: string; rating: number };
+  index?: number;
+  class?: string;
+}
+const { testimonial: t, index = 0, class: className = '' } = Astro.props;
+const initials = t.name.split(' ').map((p) => p[0]).join('').slice(0, 2);
+---
+
+<figure class:list={['card flex h-full flex-col p-6 sm:p-7', className]} style={`--i:${index}`}>
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex gap-1 text-lime" aria-label={`${t.rating} de 5 estrellas`} role="img">
+      {Array.from({ length: t.rating }).map(() => <Icon name="star" size={18} class="fill-current" />)}
+    </div>
+    <PlaceholderBadge label="Ejemplo" />
+  </div>
+  <blockquote class="mt-5 flex-1 text-lg leading-relaxed text-snow/90">
+    <p>“{t.text}”</p>
+  </blockquote>
+  <figcaption class="mt-6 flex items-center gap-3 border-t border-line pt-5">
+    <span class="grid size-11 place-items-center rounded-full bg-lime/15 font-display text-sm font-bold text-lime ring-1 ring-lime/30" aria-hidden="true">{initials}</span>
+    <span>
+      <span class="block font-display font-semibold text-white">{t.name}</span>
+      <span class="block text-sm text-mute">{t.detail}</span>
+    </span>
+  </figcaption>
+</figure>

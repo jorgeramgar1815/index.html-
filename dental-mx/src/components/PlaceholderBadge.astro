@@ -1,0 +1,8 @@
+---
+/** Etiqueta visible de contenido provisional. Se oculta con `flags.placeholderBadges = false`. */
+import { flags } from '../data/site';
+interface Props { label?: string; class?: string }
+const { label = 'Por confirmar', class: className = '' } = Astro.props;
+---
+
+{flags.placeholderBadges && <span class:list={['ph-badge', className]} data-placeholder>{label}</span>}
