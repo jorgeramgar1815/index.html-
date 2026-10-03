@@ -372,6 +372,8 @@ const secciones: { id: string; nombre: string; icono: NombreIcono }[] = [
     .p-accion[data-tipo='confirmar'] { background: var(--color-confirmada); border-color: var(--color-confirmada); color: #fff; }
     .p-accion[data-tipo='confirmar']:hover { filter: brightness(1.08); }
     .p-accion[data-tipo='wa'] { color: #128c4b; }
+    .p-accion[data-tipo='eliminar'] { color: var(--color-peligro); }
+    .p-accion[data-tipo='eliminar']:hover { border-color: #fed7aa; background: #fff7ed; }
     .p-accion[data-tipo='cancelar']:hover { color: var(--color-peligro); border-color: #fed7aa; background: #fff7ed; }
 
     .p-linea { position: relative; display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 0.75rem; }

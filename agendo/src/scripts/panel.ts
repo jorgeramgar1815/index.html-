@@ -206,6 +206,7 @@ function acciones(c: Cita) {
       ${c.estado === 'pendiente' ? `<button type="button" class="p-accion max-sm:flex-1" data-tipo="confirmar" data-accion="confirmada" data-id="${c.id}">${icono('check', 17)}Confirmar</button>` : ''}
       <a class="p-accion" data-tipo="wa" href="${esc(enlaceWa(c))}" target="_blank" rel="noopener">${ICONO_WA(16)}WhatsApp</a>
       ${c.estado !== 'cancelada' ? `<button type="button" class="p-accion" data-tipo="cancelar" data-accion="cancelada" data-id="${c.id}" title="Cancelar cita">${icono('x', 16)}<span class="max-sm:sr-only">Cancelar</span></button>` : ''}
+      ${c.estado === 'cancelada' ? `<button type="button" class="p-accion" data-tipo="eliminar" data-eliminar="${c.id}" title="Eliminar del historial">${icono('basura', 16)}Eliminar</button>` : ''}
     </div>`;
 }
 
@@ -252,6 +253,31 @@ document.addEventListener('click', async (e) => {
   }
   $<HTMLDialogElement>('#detalle').close();
   toast(nuevo === 'confirmada' ? 'Cita confirmada. Avísale por WhatsApp.' : 'Cita cancelada · el horario quedó libre');
+  await refrescar();
+});
+
+// Eliminar del historial (sólo citas canceladas; la base de datos también lo exige).
+document.addEventListener('click', async (e) => {
+  const b = (e.target as Element).closest<HTMLButtonElement>('[data-eliminar]');
+  if (!b) return;
+  const ids = b.dataset.eliminar!.split(',').filter(Boolean);
+  const pregunta =
+    ids.length === 1
+      ? '¿Eliminar esta cita cancelada? Se borra del historial y no se puede deshacer.'
+      : `¿Eliminar ${ids.length} citas canceladas? Se borran del historial y no se puede deshacer.`;
+  if (!confirm(pregunta)) return;
+  b.disabled = true;
+  const { data, error } = await supabase.from('citas').delete().in('id', ids).eq('estado', 'cancelada').select('id');
+  if (error || !data?.length) {
+    b.disabled = false;
+    return toast(error ? `No se pudo eliminar: ${error.message}` : 'Sólo se pueden eliminar citas canceladas');
+  }
+  const borradas = new Set(data.map((x) => x.id as string));
+  borradas.forEach((id) => st.citas.delete(id));
+  st.avisos = st.avisos.filter((a) => !a.cita_id || !borradas.has(a.cita_id));
+  pintarBandeja();
+  $<HTMLDialogElement>('#detalle').close();
+  toast(borradas.size === 1 ? 'Cita eliminada del historial' : `${borradas.size} citas eliminadas del historial`);
   await refrescar();
 });
 
@@ -437,11 +463,22 @@ async function cargarAgenda() {
   }
   const citas = (filas ?? []) as unknown as Cita[];
   recordar(citas);
-  const filtroTxt = st.filtro === 'todas' ? '' : ` ${ETIQUETA[st.filtro].toLowerCase()}`;
+  const PLURAL: Record<Estado, string> = { pendiente: 'por confirmar', confirmada: 'confirmadas', cancelada: 'canceladas' };
+  const filtroTxt = st.filtro === 'todas' ? '' : ` ${PLURAL[st.filtro]}`;
+  const conteo = st.filtro === 'todas' ? plural(citas.length, 'cita', 'citas')
+    : citas.length === 1 ? `1 cita ${ETIQUETA[st.filtro].toLowerCase()}` : `${citas.length} citas${filtroTxt}`;
+  const canceladas = citas.filter((c) => c.estado === 'cancelada');
+  const limpiar =
+    st.filtro === 'cancelada' && canceladas.length > 1
+      ? `<div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-borde bg-superficie px-4 py-3">
+           <p class="text-sm text-suave">¿Ya no necesitas estas citas canceladas?</p>
+           <button type="button" class="p-accion" data-tipo="eliminar" data-eliminar="${canceladas.map((c) => c.id).join(',')}">${icono('basura', 16)}Eliminar las ${canceladas.length}</button>
+         </div>`
+      : '';
 
   if (st.vista === 'dia') {
     caja.innerHTML = citas.length
-      ? `<p class="mb-3 text-sm font-medium text-suave">${plural(citas.length, 'cita', 'citas')}${filtroTxt}</p>
+      ? `${limpiar}<p class="mb-3 text-sm font-medium text-suave">${conteo}</p>
          <div class="grid gap-3 lg:grid-cols-2">${citas.map((c) => tarjetaCita(c)).join('')}</div>`
       : vacio(`Sin citas${filtroTxt} este día.`);
     return;
@@ -484,10 +521,10 @@ async function cargarAgenda() {
       <div class="grid gap-3">${porDia.get(f)!.map((c) => tarjetaCita(c)).join('')}</div>`,
     )
     .join('');
-  caja.innerHTML = `
+  caja.innerHTML = `${limpiar}
     <div class="hidden lg:block">
       <div class="mb-3 flex flex-wrap items-center gap-4 text-xs font-semibold text-suave">
-        <span>${plural(citas.length, 'cita', 'citas')}${filtroTxt}</span>
+        <span>${conteo}</span>
         <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-amber-400"></span>Por confirmar</span>
         <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-emerald-500"></span>Confirmada</span>
         <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-slate-400"></span>Cancelada</span>

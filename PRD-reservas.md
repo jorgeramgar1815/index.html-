@@ -79,7 +79,7 @@ flowchart LR
 
 ## Modelo de datos y seguridad
 
-Archivos: `agendo/supabase/migrations/` (5 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
+Archivos: `agendo/supabase/migrations/` (6 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
 
 | Tabla | Campos clave | Notas |
 | --- | --- | --- |
@@ -98,7 +98,7 @@ Archivos: `agendo/supabase/migrations/` (5 migraciones), `seed.sql`, `configurar
 - Público (anon): sólo lee servicios activos; no puede leer ni insertar citas, ni leer negocios.
 - Público agenda y consulta sólo con funciones `security definer` (`search_path` vacío).
 - Restricción de exclusión `btree_gist` sobre `tstzrange(inicio, fin, '[)')` por negocio, excluyendo canceladas: impide citas encimadas aunque lleguen al mismo tiempo; permite citas seguidas.
-- La clínica sólo ve y edita lo de su negocio, y de las citas sólo puede cambiar el `estado`.
+- La clínica sólo ve y edita lo de su negocio; de las citas sólo puede cambiar el `estado` y sólo puede borrar las canceladas.
 
 **Reglas de negocio en `crear_cita`** (todas del lado del servidor)
 
@@ -123,6 +123,7 @@ Archivos: `agendo/supabase/migrations/` (5 migraciones), `seed.sql`, `configurar
 - Inicio: saludo con el nombre del negocio, números del día (citas hoy, por confirmar, próximos 7 días, reservas nuevas), siguiente cita, "Por confirmar" con botones grandes y la línea del día.
 - Agenda por día o semana (columnas en escritorio, lista en celular), filtros por estado y detalle de cita.
 - Confirmar, Cancelar (libera el horario) y WhatsApp al cliente con mensaje listo.
+- Eliminar del historial: sólo citas canceladas (botón "Eliminar" y, con el filtro "Canceladas", "Eliminar las N"). La base de datos lo exige (política RLS).
 - Bloqueos: día completo o rango de horas, con lista y opción de quitar.
 - Mi página: enlace de reservas (copiar, abrir, compartir), servicios visibles (interruptor) y horario.
 - Avisos: campana con contador de no leídos y bandeja ("Nueva cita · nombre", servicio, día y hora, hace cuánto). Tocar un aviso abre la cita; "Marcar todo como leído". Llegan en tiempo real con sonido, notificación del navegador y contador en la pestaña; los que llegaron con el panel cerrado aparecen al entrar ("Tienes N avisos nuevos").
@@ -136,7 +137,7 @@ Archivos: `agendo/supabase/migrations/` (5 migraciones), `seed.sql`, `configurar
 
 Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan gratis).
 
-- [x] Proyecto creado; 5 migraciones aplicadas y seed cargado.
+- [x] Proyecto creado; 6 migraciones aplicadas y seed cargado.
 - [x] Pruebas (`supabase/tests/pruebas_reservas.sql`) en la base real: todas pasan.
 - [x] Realtime activo en `citas` y `avisos`; trigger de avisos probado en producción (dentro de una transacción que se deshizo).
 - [x] Aviso por correo apagado (trigger `citas_avisar_nueva` desactivado). La Edge Function `notificar-cita` sigue publicada pero ya nadie la llama; se puede borrar en Supabase → Edge Functions.

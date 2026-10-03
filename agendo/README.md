@@ -12,7 +12,7 @@ Producción: <https://agendo-reservas.vercel.app> (proyecto Vercel `agendo`, ra�
 
 - `supabase/migrations/` — esquema + RLS, funciones RPC, tiempo real, perfil del negocio, avisos en el panel.
 - `supabase/seed.sql` — Dental MX (simulado). `supabase/configurar.sql` — liga el usuario del panel.
-- `supabase/tests/pruebas_reservas.sql` — 33 reglas (hace ROLLBACK).
+- `supabase/tests/pruebas_reservas.sql` — 36 reglas (hace ROLLBACK).
 
 ### Agregar otro negocio
 

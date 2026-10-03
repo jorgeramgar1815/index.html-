@@ -25,6 +25,7 @@ const RUTAS = {
   nuevo: '<path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 18.5 12 15.6 7 18.5l1.4-5.7L4 9l5.8-.7z"/>',
   nota: '<path d="M5 4h14v11l-5 5H5z"/><path d="M14 20v-5h5"/>',
   mas: '<path d="M12 5v14M5 12h14"/>',
+  basura: '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
   ojo: '<path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7"/><circle cx="12" cy="12" r="2.8"/>',
 } as const;
 

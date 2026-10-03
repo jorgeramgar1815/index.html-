@@ -174,6 +174,10 @@ select pg_temp.ok((select count(*) from public.citas where estado = 'confirmada'
                   and (select count(*) from public.citas where estado = 'cancelada') = 1,
   'la clínica confirma y cancela citas');
 
+delete from public.citas where estado = 'confirmada';
+select pg_temp.ok((select count(*) from public.citas where estado = 'confirmada') = 1,
+  'la clínica no puede eliminar una cita confirmada (primero se cancela)');
+
 insert into public.bloqueos (negocio_id, inicio, fin, motivo)
 select negocio, pg_temp.t(lunes, '17:00'), pg_temp.t(lunes, '18:00'), 'Junta' from ref;
 
@@ -184,6 +188,23 @@ select pg_temp.ok(exists (select 1 from public.horarios_disponibles('dental-mx',
   'una cita cancelada libera su horario')
 from ref;
 
+reset role;
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a002';
+delete from public.citas where estado = 'cancelada';
+reset role;
+select pg_temp.ok((select count(*) from public.citas where estado = 'cancelada') = 1,
+  'otro usuario no puede eliminar citas del negocio');
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000a001';
+delete from public.citas where estado = 'cancelada';
+reset role;
+select pg_temp.ok((select count(*) from public.citas where estado = 'cancelada') = 0
+                  and (select count(*) from public.avisos) = 1,
+  'la clínica elimina sus citas canceladas y su aviso se borra con ella');
+set local role anon;
+
 select pg_temp.ok(not exists (select 1 from public.horarios_disponibles('dental-mx', valoracion, lunes) where hora in ('17:00', '17:30'))
                   and exists (select 1 from public.horarios_disponibles('dental-mx', valoracion, lunes) where hora = '18:00'),
   'un bloqueo oculta esos horarios')
@@ -192,7 +213,8 @@ from ref;
 reset role;
 
 -- Tope diario de citas desde el widget (freno contra abuso).
-update public.negocios set max_citas_dia = 2 where slug = 'dental-mx';
+-- (Queda 1 cita creada hoy: la cancelada se eliminó arriba.)
+update public.negocios set max_citas_dia = 1 where slug = 'dental-mx';
 set local role anon;
 select pg_temp.ok(pg_temp.error_de(format($$select public.crear_cita('dental-mx', %L, %L, 'Carla', '8714444444')$$, valoracion, pg_temp.t(lunes, '13:00'))) = 'LIMITE_DIARIO',
   'al llegar al tope diario de citas se rechazan nuevas')
