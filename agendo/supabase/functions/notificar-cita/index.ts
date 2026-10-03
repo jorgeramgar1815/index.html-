@@ -6,9 +6,9 @@
 // Variables (Supabase → Edge Functions → Secrets):
 //   RESEND_API_KEY   clave de https://resend.com (plan gratis: 3,000 correos/mes)
 //   AVISOS_REMITENTE opcional, ej. "Agendo <citas@tudominio.com>".
-//   AGENDO_URL opcional: dirección de Agendo para el enlace al panel.
 //                    Sin dominio verificado en Resend usa "onboarding@resend.dev"
 //                    (sólo puede enviar al correo de tu cuenta de Resend).
+//   AGENDO_URL       opcional: dirección de Agendo para el enlace al panel.
 // SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY las pone Supabase automáticamente.
 //
 // Seguridad: sólo actúa sobre citas creadas hace menos de 10 minutos y aún no

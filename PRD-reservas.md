@@ -1,10 +1,10 @@
-# PRD — Sistema de reservaciones Dental MX
+# PRD — Agendo, sistema de reservaciones (primer cliente: Dental MX)
 
 Oct 2, 2026 · @Jorge · Ajustado al proyecto real el Oct 3, 2026
 
 ## Resumen
 
-Agregar a la landing de Dental MX (Astro estático en Vercel, carpeta `dental-mx/`) un sistema para que los pacientes agenden citas solos y la clínica las administre desde un panel. El backend vive en Supabase y es multi-negocio desde el inicio (columna `negocio_id`), para reutilizarlo con otros clientes cambiando sólo el `slug`.
+**Agendo** (carpeta `agendo/`, Astro estático en Vercel) es un software de reservas propio, con diseño neutro que no usa los colores de ningún negocio, para usarlo con varios clientes. Cada negocio tiene su página de reservas en `/<slug>` (ej. `/dental-mx`) y un panel en `/panel` personalizado con su nombre. La landing de Dental MX (`dental-mx/`) sólo enlaza a su página en Agendo. El backend vive en Supabase y es multi-negocio (columna `negocio_id`).
 
 **Objetivos**
 
@@ -17,7 +17,8 @@ Agregar a la landing de Dental MX (Astro estático en Vercel, carpeta `dental-mx
 
 | Tema | Decisión |
 | --- | --- |
-| Botones | Todos los botones "Agendar" abren el widget. WhatsApp queda para preguntas (FAQ, tarjetas de servicio, botón flotante) y como respaldo si las reservas no están configuradas. |
+| Producto | Software aparte (Agendo), neutro y multi-negocio. Muestra el nombre, giro y dirección del negocio; colores propios (índigo sobre blanco). |
+| Botones | Los botones "Agendar" de la landing son enlaces a `agendo-reservas.vercel.app/dental-mx` (con `?servicio=` cuando aplica). WhatsApp queda para preguntas y como respaldo si no hay enlace (`PUBLIC_AGENDO_URL` vacía). |
 | Horario y duraciones | Simulación: horario de la landing (L–V 10:00–14:00 y 16:00–20:00, sábado 10:00–14:00) y duraciones inventadas. Confirmar con la clínica. |
 | Aviso de cita nueva | Los dos: correo (Resend) y panel en tiempo real con sonido y notificación del navegador. |
 | Supabase | Proyecto nuevo `dental-mx` en la organización de Jorge (plan gratis, us-east-1). |
@@ -29,11 +30,11 @@ Agregar a la landing de Dental MX (Astro estático en Vercel, carpeta `dental-mx
 | --- | --- |
 | Catálogo de servicios con duración | Varios dentistas con agenda propia |
 | Horario semanal y bloqueos de fechas u horas | Pagos o anticipos en línea |
-| Widget de reserva en la landing | Recordatorios automáticos al paciente (SMS o correo) |
+| Página de reservas por negocio (`/<slug>`) | Recordatorios automáticos al paciente (SMS o correo) |
 | Confirmación por WhatsApp con link wa.me | Sincronización con Google Calendar |
 | Panel de la clínica: ver, confirmar, cancelar, bloquear | Historial clínico o datos médicos |
 | Aviso de cita nueva: correo + tiempo real con sonido | Que el paciente cancele o cambie su cita solo |
-| Base multi-negocio y tope diario contra abuso | Panel para administrar varios clientes |
+| Base multi-negocio y tope diario contra abuso | Panel para administrar varios clientes desde una sola cuenta |
 
 No se guardan datos médicos: sólo nombre, teléfono, servicio y una nota corta opcional.
 
@@ -48,15 +49,16 @@ No se guardan datos médicos: sólo nombre, teléfono, servicio y una nota corta
 | implantes | Implantes | 60 min |
 | piezas-dentales | Piezas dentales | 60 min |
 
-La clave permite que un botón de la landing abra el widget con el servicio ya elegido (`data-servicio`).
+La clave permite que un enlace llegue con el servicio ya elegido: `/dental-mx?servicio=ortodoncia`.
 
 ## Arquitectura
 
 ```mermaid
 flowchart LR
-  subgraph Vercel["Vercel · landing Dental MX (Astro)"]
-    W["Widget de reserva<br/>Reservas.astro + reservas.ts"]
-    P["Panel de la clínica<br/>/admin (admin.ts + supabase-js)"]
+  L["Landing Dental MX<br/>(sólo enlaces)"]
+  subgraph Vercel["Vercel · Agendo (Astro)"]
+    W["Página de reservas<br/>/&lt;slug&gt; (reservar.ts)"]
+    P["Panel del negocio<br/>/panel (panel.ts + supabase-js)"]
   end
   subgraph Supabase
     R["Funciones RPC<br/>datos_reserva · dias_disponibles<br/>horarios_disponibles · crear_cita"]
@@ -65,6 +67,7 @@ flowchart LR
     F["Edge Function<br/>notificar-cita"]
   end
   RS["Resend<br/>correo a la clínica"]
+  L -- enlace --> W
   W -- anon key --> R
   P -- sesión de usuario --> A
   R --> DB
@@ -72,17 +75,17 @@ flowchart LR
   DB -- trigger pg_net --> F --> RS
 ```
 
-- El widget usa la anon key y sólo llama funciones RPC (con `fetch`, sin librería: ~15 KB que se descargan sólo al abrirlo). Las tablas quedan cerradas por RLS.
+- La página de reservas usa la anon key y sólo llama funciones RPC (con `fetch`, sin librería). Las tablas quedan cerradas por RLS. `vercel.json` reescribe `/<slug>` a la página de reservas.
 - El panel entra con Supabase Auth y sólo ve su negocio. Recibe las citas nuevas por Realtime y, de respaldo, revisa cada minuto.
-- Si `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` no están configuradas, los botones "Agendar" siguen abriendo WhatsApp.
+- Agendo necesita `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` (proyecto Vercel `agendo`, raíz `agendo/`). La landing ya no usa Supabase.
 
 ## Modelo de datos y seguridad
 
-Archivos: `dental-mx/supabase/migrations/` (3 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
+Archivos: `agendo/supabase/migrations/` (4 migraciones), `seed.sql`, `configurar.sql`, `tests/pruebas_reservas.sql`.
 
 | Tabla | Campos clave | Notas |
 | --- | --- | --- |
-| negocios | id, slug, nombre, whatsapp, zona_horaria, email_notificaciones, reglas | Reglas configurables: anticipación (2 h), días máx. (30), paso (30 min), pendientes por teléfono (2), tope diario (40) |
+| negocios | id, slug, nombre, giro, direccion, whatsapp, zona_horaria, email_notificaciones, reglas | Reglas configurables: anticipación (2 h), días máx. (30), paso (30 min), pendientes por teléfono (2), tope diario (40) |
 | servicios | id, negocio_id, clave, nombre, duracion_min, activo | |
 | horarios | negocio_id, dia_semana (0–6), abre, cierra | Varias filas por día (hora de comida) |
 | bloqueos | id, negocio_id, inicio, fin, motivo | |
@@ -104,27 +107,29 @@ Archivos: `dental-mx/supabase/migrations/` (3 migraciones), `seed.sql`, `configu
 - La hora de fin la calcula la base de datos con la duración del servicio.
 - Teléfono de 10 dígitos (acepta +52 / 521 y lo normaliza); máximo 2 citas pendientes por teléfono.
 - Tope de citas creadas por día (freno contra bots que llamen la API directo) y campo trampa.
-- Errores con código (`HORARIO_OCUPADO`, `LIMITE_TELEFONO`, …) que el widget traduce a español.
+- Errores con código (`HORARIO_OCUPADO`, `LIMITE_TELEFONO`, …) que la página de reservas traduce a español.
 
 ## Requisitos funcionales (implementados)
 
-**Widget** — `src/components/Reservas.astro`, `src/scripts/reservas.ts`
+**Página de reservas** — `agendo/src/pages/reservar.astro`, `src/scripts/reservar.ts` (ruta `/<slug>`)
 
-- Se abre en modal desde cualquier `[data-reservar]` (hoja inferior en celular, ventana centrada en escritorio).
+- Encabezado con el negocio (iniciales, nombre, giro y dirección) y pasos 1-2-3; resumen lateral en escritorio.
 - Servicio → calendario de 30 días (sólo días con horarios) → horas libres (mañana / tarde) → datos → éxito con "Avisar por WhatsApp".
-- Estados de carga, "sin horarios ese día", errores claros y salida a WhatsApp.
+- Estados de carga, "sin horarios ese día", errores claros y salida a WhatsApp; negocio inexistente muestra un aviso.
 - Si alguien ganó el horario, avisa y recarga las horas.
-- Enlace al aviso de privacidad en el formulario.
 
-**Panel** — `src/pages/admin.astro`, `src/scripts/admin.ts` (ruta `/admin`, `noindex`, fuera del sitemap)
+**Panel** — `agendo/src/pages/panel.astro`, `src/scripts/panel.ts` (ruta `/panel`, `noindex`)
 
-- Login con correo y contraseña (Supabase Auth).
-- "Por confirmar" arriba; agenda por día o semana con navegación y filtros por estado.
-- Confirmar, Cancelar (libera el horario) y WhatsApp al paciente con mensaje listo.
+- Login con correo y contraseña (Supabase Auth); el panel toma el nombre del negocio del usuario.
+- Inicio: saludo con el nombre del negocio, números del día (citas hoy, por confirmar, próximos 7 días, reservas nuevas), siguiente cita, "Por confirmar" con botones grandes y la línea del día.
+- Agenda por día o semana (columnas en escritorio, lista en celular), filtros por estado y detalle de cita.
+- Confirmar, Cancelar (libera el horario) y WhatsApp al cliente con mensaje listo.
 - Bloqueos: día completo o rango de horas, con lista y opción de quitar.
-- Avisos: tiempo real, sonido, notificación del navegador y contador en la pestaña ("Avisos: sí").
+- Mi página: enlace de reservas (copiar, abrir, compartir), servicios visibles (interruptor) y horario.
+- Avisos: tiempo real, sonido, notificación del navegador y contador en la pestaña.
+- Barra lateral en escritorio y pestañas abajo en celular.
 
-**Correo** — `supabase/functions/notificar-cita` (Resend). Un correo por cita, idempotente.
+**Correo** — `agendo/supabase/functions/notificar-cita` (Resend). Un correo por cita, idempotente, con enlace al panel.
 
 **Mantenimiento** — `.github/workflows/supabase-keepalive.yml` consulta Supabase dos veces por semana para que el plan gratis no se pause.
 
@@ -132,12 +137,13 @@ Archivos: `dental-mx/supabase/migrations/` (3 migraciones), `seed.sql`, `configu
 
 Proyecto Supabase: `dental-mx` (ref `pfqswksorjvxtpbcuoam`, us-east-1, plan gratis).
 
-- [x] Proyecto creado; 3 migraciones aplicadas y seed cargado.
+- [x] Proyecto creado; 4 migraciones aplicadas y seed cargado.
 - [x] Pruebas (`supabase/tests/pruebas_reservas.sql`) en la base real: todas pasan.
 - [x] Realtime activo en `citas`; `pg_net` y trigger de avisos configurados (`ajustes_internos.url_funciones`).
 - [x] Edge Function `notificar-cita` desplegada (verify JWT desactivado: se protege sola). Probada: el trigger la llama y responde.
 - [x] Usuario de la clínica creado y ligado a Dental MX (credenciales entregadas por chat; cambiar la contraseña).
-- [x] Variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` en Vercel (production, preview, development).
+- [x] Proyecto Vercel `agendo` (raíz `agendo/`) con `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY`; dominio `agendo-reservas.vercel.app`.
+- [x] Landing de Dental MX enlazando a `agendo-reservas.vercel.app/dental-mx`.
 - [ ] Correo de avisos: falta la `RESEND_API_KEY` (secreto en Supabase → Edge Functions) y `negocios.email_notificaciones`.
 - [ ] Desactivar el registro público en Supabase → Authentication → Sign In / Providers → "Allow new users to sign up".
 - [x] Keep-alive con la URL y anon key públicas en el workflow (GitHub sólo programa workflows de la rama `main`: se activa al fusionar).
@@ -156,7 +162,7 @@ Verificados en local (Postgres 16 + PostgREST + navegador en celular simulado). 
 - [x] El botón de WhatsApp abre el chat de la clínica con el mensaje correcto.
 - [x] La clínica ve la cita nueva en el panel y puede confirmarla y cancelarla.
 - [x] Una cita cancelada libera su horario.
-- [x] Un bloqueo creado en el panel oculta esos horarios en el widget.
+- [x] Un bloqueo creado en el panel oculta esos horarios en la página de reservas.
 - [x] Las horas mostradas coinciden con la hora de Torreón.
 - [ ] Llega el correo de cita nueva (requiere Resend configurado).
 - [ ] El panel muestra "En vivo" y avisa sin recargar (requiere Realtime de Supabase).

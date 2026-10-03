@@ -16,15 +16,10 @@ Las URLs anteriores (`/servicios`, `/nosotros`, `/contacto`) redirigen a su secc
 
 ## Reservaciones en línea
 
-Widget de reserva (modal) + panel de la clínica en `/admin`, con Supabase como backend. Especificación, decisiones y puesta en marcha: [`PRD-reservas.md`](../PRD-reservas.md).
+Las citas se agendan en **Agendo**, el software de reservas de este repositorio (`../agendo/`). La landing sólo enlaza a la página de Dental MX en Agendo: <https://agendo-reservas.vercel.app/dental-mx>. Especificación y puesta en marcha: [`PRD-reservas.md`](../PRD-reservas.md).
 
-- **Activación:** variables `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_ANON_KEY` (ver `.env.example`). Sin ellas, los botones "Agendar" abren WhatsApp como antes y `/admin` muestra un aviso.
-- **Botones:** cualquier elemento con `data-reservar` abre el widget; `data-servicio="<clave>"` preselecciona el servicio. Componente: `BookingButton.astro`.
-- **Base de datos:** `supabase/migrations/` (esquema + RLS, funciones RPC, avisos), `supabase/seed.sql` (Dental MX simulado), `supabase/configurar.sql` (admin, correo, URL de funciones).
-- **Pruebas:** `supabase/tests/pruebas_reservas.sql` (28 reglas, hace ROLLBACK).
-- **Correo de cita nueva:** Edge Function `supabase/functions/notificar-cita` (Resend).
-- **Keep-alive:** `.github/workflows/supabase-keepalive.yml`.
-- El widget pesa ~15 KB y se descarga sólo al tocar "Agendar"; el panel carga `supabase-js` sólo en `/admin`.
+- **Enlace:** `reservaLink()` en `src/data/site.ts`; se puede cambiar con `PUBLIC_AGENDO_URL`. Vacía, los botones "Agendar" abren WhatsApp.
+- **Servicio preseleccionado:** `BookingButton servicio="<clave>"` → `/dental-mx?servicio=<clave>`.
 
 ## Comandos
 
